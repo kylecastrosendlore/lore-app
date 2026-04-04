@@ -1,65 +1,738 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import Link from "next/link";
+
+/* ───────────────────────────────────────────
+   ANIMATION HELPERS — same DNA as the briefs
+   ─────────────────────────────────────────── */
+
+const fadeUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" },
+};
+
+const stagger = {
+  animate: { transition: { staggerChildren: 0.15 } },
+};
+
+/* Typewriter — word-by-word like the briefs */
+function useTypewriter(
+  text: string,
+  speed: number = 80,
+  inView: boolean,
+  delay: number = 0
+) {
+  const [displayText, setDisplayText] = useState("");
+  const [showCursor, setShowCursor] = useState(true);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!inView || hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    let timeoutId: NodeJS.Timeout;
+    const startTyping = () => {
+      const words = text.split(" ");
+      let currentIndex = 0;
+      const typeWord = () => {
+        if (currentIndex < words.length) {
+          setDisplayText(words.slice(0, currentIndex + 1).join(" "));
+          currentIndex++;
+          timeoutId = setTimeout(typeWord, speed);
+        } else {
+          setTimeout(() => setShowCursor(false), 500);
+        }
+      };
+      typeWord();
+    };
+    timeoutId = setTimeout(startTyping, delay);
+    return () => clearTimeout(timeoutId);
+  }, [text, speed, inView, delay]);
+
+  return { displayText, showCursor };
+}
+
+/* Gold particles floating upward */
+function GoldParticles({ count = 25 }: { count?: number }) {
+  const particles = useRef(
+    Array.from({ length: count }, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 2 + Math.random() * 2,
+      duration: 15 + Math.random() * 10,
+      delay: Math.random() * 5,
+    }))
+  ).current;
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            width: p.size,
+            height: p.size,
+            left: `${p.x}%`,
+            backgroundColor: "rgba(201, 169, 110, 0.08)",
+          }}
+          initial={{ y: "100vh", opacity: 0 }}
+          animate={{ y: "-10vh", opacity: [0, 0.08, 0.08, 0] }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* Gold divider that draws itself */
+function GoldDivider({ inView }: { inView: boolean }) {
+  return (
+    <div className="w-24 h-px mx-auto my-8 overflow-hidden">
+      <motion.div
+        className="h-full"
+        style={{ backgroundColor: "#c9a96e" }}
+        initial={{ width: 0 }}
+        animate={inView ? { width: "100%" } : { width: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
+      />
+    </div>
+  );
+}
+
+/* Eyebrow label — mono, uppercase, gold, animated tracking */
+function Eyebrow({
+  text,
+  inView,
+  delay = 0,
+}: {
+  text: string;
+  inView: boolean;
+  delay?: number;
+}) {
+  return (
+    <motion.span
+      className="font-mono text-[10px] uppercase block"
+      style={{ color: "#c9a96e" }}
+      initial={{ letterSpacing: "0.1em", opacity: 0 }}
+      animate={
+        inView
+          ? { letterSpacing: "0.2em", opacity: 1 }
+          : { letterSpacing: "0.1em", opacity: 0 }
+      }
+      transition={{ duration: 0.4, delay, ease: "easeOut" }}
+    >
+      {text}
+    </motion.span>
+  );
+}
+
+/* Scroll cue at the bottom of hero */
+function ScrollCue() {
+  return (
+    <motion.div
+      className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 3, duration: 0.6 }}
+    >
+      <span
+        className="font-mono text-[10px] uppercase"
+        style={{ letterSpacing: "0.2em", color: "#6b6480" }}
+      >
+        Scroll
+      </span>
+      <motion.div
+        className="w-px h-8"
+        style={{
+          background:
+            "linear-gradient(to bottom, #c9a96e, transparent)",
+        }}
+        animate={{ scaleY: [1, 0.5, 1] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      />
+    </motion.div>
+  );
+}
+
+/* Drifting background glow */
+function DriftingGlow() {
+  return (
+    <>
+      <motion.div
+        className="fixed inset-0 z-0 pointer-events-none opacity-30"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(83, 74, 183, 0.15) 0%, transparent 60%)",
+        }}
+        animate={{
+          backgroundPosition: ["0% 0%", "100% 50%", "50% 100%", "0% 0%"],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+      />
+      <motion.div
+        className="fixed inset-0 z-0 pointer-events-none opacity-20"
+        animate={{
+          background: [
+            "radial-gradient(ellipse 60% 40% at 30% 30%, rgba(242, 143, 181, 0.1) 0%, transparent 50%)",
+            "radial-gradient(ellipse 60% 40% at 70% 60%, rgba(242, 143, 181, 0.1) 0%, transparent 50%)",
+            "radial-gradient(ellipse 60% 40% at 40% 70%, rgba(242, 143, 181, 0.1) 0%, transparent 50%)",
+            "radial-gradient(ellipse 60% 40% at 30% 30%, rgba(242, 143, 181, 0.1) 0%, transparent 50%)",
+          ],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+      />
+    </>
+  );
+}
+
+/* Card shimmer on scroll-in */
+function CardShimmer({ inView }: { inView: boolean }) {
+  const [hasShimmered, setHasShimmered] = useState(false);
+  useEffect(() => {
+    if (inView && !hasShimmered) setHasShimmered(true);
+  }, [inView, hasShimmered]);
+  if (!hasShimmered) return null;
+  return (
+    <motion.div
+      className="absolute inset-0 pointer-events-none z-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: [0, 1, 0] }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <motion.div
+        className="absolute inset-y-0 w-32"
+        style={{
+          background:
+            "linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent)",
+        }}
+        initial={{ left: "-10%" }}
+        animate={{ left: "110%" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      />
+    </motion.div>
+  );
+}
+
+/* Magnetic CTA button — same as the briefs */
+function MagneticButton({
+  children,
+  href,
+}: {
+  children: React.ReactNode;
+  href: string;
+}) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouse = (e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const maxMove = 8;
+    const x = ((e.clientX - centerX) / (rect.width / 2)) * maxMove;
+    const y = ((e.clientY - centerY) / (rect.height / 2)) * maxMove;
+    setPosition({ x, y });
+  };
+
+  return (
+    <motion.a
+      ref={ref}
+      href={href}
+      className="relative inline-flex items-center justify-center px-10 py-4 rounded-full font-mono text-xs uppercase overflow-hidden"
+      style={{
+        letterSpacing: "0.2em",
+        backgroundColor: "#f28fb5",
+        color: "#0d0b17",
+        x: position.x,
+        y: position.y,
+      }}
+      onMouseMove={handleMouse}
+      onMouseLeave={() => setPosition({ x: 0, y: 0 })}
+      animate={{ scale: [1, 1.04, 1] }}
+      transition={{
+        scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+      }}
+      whileHover={{ scale: 1.06 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <span className="relative z-10 font-bold">{children}</span>
+    </motion.a>
+  );
+}
+
+/* ───────────────────────────────────────────
+   SECTION COMPONENTS
+   ─────────────────────────────────────────── */
+
+function HeroSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+  const { displayText, showCursor } = useTypewriter(
+    "Inboxes are graveyards for cold emails.",
+    80,
+    inView,
+    500
+  );
+
+  return (
+    <section
+      ref={ref}
+      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden"
+    >
+      <GoldParticles />
+      <CardShimmer inView={inView} />
+
+      <motion.div
+        className="relative z-10 max-w-3xl mx-auto"
+        variants={stagger}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+      >
+        {/* Logo / Brand */}
+        <motion.div variants={fadeUp} className="mb-12">
+          <Eyebrow text="Intelligence Briefs" inView={inView} />
+          <h2
+            className="font-mono text-sm uppercase mt-3 font-bold"
+            style={{ letterSpacing: "0.3em", color: "#e8e4f4" }}
+          >
+            LORE
+          </h2>
+        </motion.div>
+
+        {/* Hero headline — typewriter */}
+        <motion.h1
+          variants={fadeUp}
+          className="font-serif text-5xl md:text-7xl font-light leading-tight mb-8"
+          style={{ color: "#e8e4f4" }}
+        >
+          {displayText}
+          {showCursor && (
+            <motion.span
+              className="inline-block w-[3px] h-[1em] ml-1 align-middle"
+              style={{ backgroundColor: "#f28fb5" }}
+              animate={{ opacity: [1, 0] }}
+              transition={{ duration: 0.5, repeat: Infinity }}
+            />
+          )}
+        </motion.h1>
+
+        <GoldDivider inView={inView} />
+
+        <motion.p
+          variants={fadeUp}
+          className="font-sans text-lg md:text-xl font-light max-w-xl mx-auto mb-12"
+          style={{ color: "#b8b4c8" }}
+        >
+          LORE replaces forgettable cold outreach with cinematic,
+          hyper-researched intelligence briefs your prospects actually want to
+          read.
+        </motion.p>
+
+        <motion.div variants={fadeUp}>
+          <MagneticButton href="/intake">
+            Build Your Brief
+          </MagneticButton>
+        </motion.div>
+      </motion.div>
+
+      <ScrollCue />
+    </section>
+  );
+}
+
+function ProblemSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  const stats = [
+    { value: "97%", label: "of cold emails are never opened" },
+    { value: "3 sec", label: "before a prospect decides to delete" },
+    { value: "$0", label: "ROI on outreach that gets ignored" },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 py-24"
+      style={{ backgroundColor: "#110d1f" }}
+    >
+      <CardShimmer inView={inView} />
+      <motion.div
+        className="relative z-10 max-w-4xl mx-auto"
+        variants={stagger}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+      >
+        <motion.div variants={fadeUp}>
+          <Eyebrow text="The Problem" inView={inView} />
+        </motion.div>
+
+        <motion.h2
+          variants={fadeUp}
+          className="font-serif text-4xl md:text-6xl font-light mt-6 mb-6"
+          style={{ color: "#e8e4f4" }}
+        >
+          Your outreach is{" "}
+          <span style={{ color: "#f28fb5" }}>invisible.</span>
+        </motion.h2>
+
+        <motion.p
+          variants={fadeUp}
+          className="font-sans text-lg font-light max-w-2xl mx-auto mb-16"
+          style={{ color: "#b8b4c8" }}
+        >
+          Everyone sends the same templated emails. The same LinkedIn
+          messages. The same pitch decks. Your prospects are drowning in
+          noise, and you look exactly like everyone else.
+        </motion.p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {stats.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              variants={fadeUp}
+              className="p-8 rounded-xl border"
+              style={{
+                borderColor: "#2a2340",
+                backgroundColor: "rgba(30, 21, 53, 0.5)",
+              }}
+            >
+              <motion.div
+                className="font-serif text-4xl md:text-5xl font-light mb-3"
+                style={{ color: "#f28fb5" }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={
+                  inView
+                    ? { opacity: 1, scale: 1 }
+                    : { opacity: 0, scale: 0.8 }
+                }
+                transition={{
+                  delay: 0.3 + i * 0.15,
+                  type: "spring",
+                  stiffness: 80,
+                  damping: 20,
+                }}
+              >
+                {stat.value}
+              </motion.div>
+              <div
+                className="font-mono text-[10px] uppercase"
+                style={{ letterSpacing: "0.15em", color: "#6b6480" }}
+              >
+                {stat.label}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+function SolutionSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section
+      ref={ref}
+      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 py-24"
+      style={{ backgroundColor: "#0f0b1a" }}
+    >
+      <CardShimmer inView={inView} />
+      <motion.div
+        className="relative z-10 max-w-4xl mx-auto"
+        variants={stagger}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+      >
+        <motion.div variants={fadeUp}>
+          <Eyebrow text="The LORE Way" inView={inView} />
+        </motion.div>
+
+        <motion.h2
+          variants={fadeUp}
+          className="font-serif text-4xl md:text-6xl font-light mt-6 mb-6"
+          style={{ color: "#e8e4f4" }}
+        >
+          Not an email.{" "}
+          <span style={{ color: "#c9a96e" }}>An experience.</span>
+        </motion.h2>
+
+        <motion.p
+          variants={fadeUp}
+          className="font-sans text-lg font-light max-w-2xl mx-auto mb-16"
+          style={{ color: "#b8b4c8" }}
+        >
+          A LORE brief is a cinematic, scroll-driven intelligence page built
+          around a single person. Data-rich. Beautifully designed.
+          Impossible to ignore.
+        </motion.p>
+
+        {/* Feature cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+          {[
+            {
+              icon: "01",
+              title: "Hyper-Researched",
+              desc: "We pull real data \u2014 company metrics, market position, growth signals, content gaps \u2014 and weave it into a narrative built for one person.",
+            },
+            {
+              icon: "02",
+              title: "Cinematic Design",
+              desc: "Full-screen cards with scroll-driven animations, charts that draw themselves, and a visual language that commands attention.",
+            },
+            {
+              icon: "03",
+              title: "AI-Powered Intelligence",
+              desc: "Claude analyzes your prospect\u2019s digital footprint and generates insights no template could ever produce.",
+            },
+            {
+              icon: "04",
+              title: "Delivered as a Link",
+              desc: "One URL. No attachments. No spam filters. A living, breathing page your prospect opens and actually reads.",
+            },
+          ].map((feature, i) => (
+            <motion.div
+              key={feature.title}
+              className="p-8 rounded-xl border text-left"
+              style={{
+                borderColor: "#2a2340",
+                backgroundColor: "rgba(30, 21, 53, 0.3)",
+              }}
+              initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+              animate={
+                inView
+                  ? { opacity: 1, x: 0 }
+                  : { opacity: 0, x: i % 2 === 0 ? -30 : 30 }
+              }
+              transition={{
+                delay: 0.2 + i * 0.15,
+                type: "spring",
+                stiffness: 60,
+                damping: 18,
+              }}
+            >
+              <span
+                className="font-mono text-xs font-bold"
+                style={{ color: "#c9a96e" }}
+              >
+                {feature.icon}
+              </span>
+              <h3
+                className="font-serif text-2xl font-light mt-3 mb-3"
+                style={{ color: "#e8e4f4" }}
+              >
+                {feature.title}
+              </h3>
+              <p
+                className="font-sans text-sm font-light leading-relaxed"
+                style={{ color: "#b8b4c8" }}
+              >
+                {feature.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+function HowItWorksSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  const steps = [
+    {
+      num: "01",
+      title: "Tell us who",
+      desc: "Fill out a quick intake form with your prospect\u2019s name, company, and what you\u2019re offering.",
+    },
+    {
+      num: "02",
+      title: "We research",
+      desc: "Apollo enrichment + AI analysis digs into their company data, market position, and digital footprint.",
+    },
+    {
+      num: "03",
+      title: "Brief generated",
+      desc: "Claude crafts a cinematic intelligence brief with real data, visualizations, and a personalized narrative.",
+    },
+    {
+      num: "04",
+      title: "Send & stand out",
+      desc: "You get a unique URL and email copy package. Drop it in a LinkedIn DM or email. Watch them open it.",
+    },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 py-24"
+      style={{ backgroundColor: "#130d20" }}
+    >
+      <CardShimmer inView={inView} />
+      <motion.div
+        className="relative z-10 max-w-3xl mx-auto text-center"
+        variants={stagger}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+      >
+        <motion.div variants={fadeUp}>
+          <Eyebrow text="How It Works" inView={inView} />
+        </motion.div>
+
+        <motion.h2
+          variants={fadeUp}
+          className="font-serif text-4xl md:text-6xl font-light mt-6 mb-16"
+          style={{ color: "#e8e4f4" }}
+        >
+          Four steps to{" "}
+          <span style={{ color: "#f28fb5" }}>unforgettable.</span>
+        </motion.h2>
+
+        <div className="space-y-0">
+          {steps.map((step, i) => (
+            <motion.div
+              key={step.num}
+              className="flex items-start gap-6 text-left py-8"
+              style={{
+                borderBottom:
+                  i < steps.length - 1 ? "1px solid #2a2340" : "none",
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={
+                inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
+              }
+              transition={{ delay: 0.3 + i * 0.2, duration: 0.5 }}
+            >
+              <span
+                className="font-mono text-2xl font-bold shrink-0 mt-1"
+                style={{ color: "#c9a96e" }}
+              >
+                {step.num}
+              </span>
+              <div>
+                <h3
+                  className="font-serif text-2xl font-light mb-2"
+                  style={{ color: "#e8e4f4" }}
+                >
+                  {step.title}
+                </h3>
+                <p
+                  className="font-sans text-sm font-light leading-relaxed"
+                  style={{ color: "#b8b4c8" }}
+                >
+                  {step.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+function CTASection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section
+      ref={ref}
+      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden"
+      style={{ backgroundColor: "#0d0b17" }}
+    >
+      <GoldParticles count={40} />
+      <CardShimmer inView={inView} />
+
+      <motion.div
+        className="relative z-10 max-w-2xl mx-auto"
+        variants={stagger}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+      >
+        <motion.div variants={fadeUp}>
+          <Eyebrow text="Get Started" inView={inView} />
+        </motion.div>
+
+        <motion.h2
+          variants={fadeUp}
+          className="font-serif text-4xl md:text-6xl font-light mt-6 mb-6"
+          style={{ color: "#e8e4f4" }}
+        >
+          Ready to be{" "}
+          <span style={{ color: "#c9a96e" }}>remembered?</span>
+        </motion.h2>
+
+        <GoldDivider inView={inView} />
+
+        <motion.p
+          variants={fadeUp}
+          className="font-sans text-lg font-light max-w-xl mx-auto mb-12"
+          style={{ color: "#b8b4c8" }}
+        >
+          Build your first LORE intelligence brief in minutes. Give your
+          prospect something they&apos;ve never seen before.
+        </motion.p>
+
+        <motion.div variants={fadeUp}>
+          <MagneticButton href="/intake">
+            Build Your Brief
+          </MagneticButton>
+        </motion.div>
+
+        <motion.p
+          variants={fadeUp}
+          className="font-mono text-[10px] uppercase mt-8"
+          style={{ letterSpacing: "0.15em", color: "#6b6480" }}
+        >
+          No subscription required
+        </motion.p>
+      </motion.div>
+    </section>
+  );
+}
+
+/* ───────────────────────────────────────────
+   PAGE
+   ─────────────────────────────────────────── */
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="relative hide-scrollbar" style={{ backgroundColor: "#0d0b17" }}>
+      <DriftingGlow />
+      <HeroSection />
+      <ProblemSection />
+      <SolutionSection />
+      <HowItWorksSection />
+      <CTASection />
+
+      {/* Footer */}
+      <footer
+        className="py-12 text-center border-t"
+        style={{ borderColor: "#2a2340", backgroundColor: "#0d0b17" }}
+      >
+        <p
+          className="font-mono text-[10px] uppercase"
+          style={{ letterSpacing: "0.2em", color: "#6b6480" }}
+        >
+          &copy; {new Date().getFullYear()} LORE &mdash; Intelligence
+          Briefs
+        </p>
+      </footer>
+    </main>
   );
 }
