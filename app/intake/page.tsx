@@ -68,16 +68,16 @@ const STEP_CONFIG: Record<
   { titles: string[]; total: number }
 > = {
   job_seeker: {
-    titles: ["Resume", "About You", "Target", "Context", "Review"],
-    total: 5,
+    titles: ["Resume", "About You", "Target", "Context", "Preview", "Review"],
+    total: 6,
   },
   hiring_manager: {
-    titles: ["Candidate Resume", "About You", "The Role", "Review"],
-    total: 4,
+    titles: ["Candidate Resume", "About You", "The Role", "Preview", "Review"],
+    total: 5,
   },
   salesperson: {
-    titles: ["About You", "Prospect", "Context", "Review"],
-    total: 4,
+    titles: ["About You", "Prospect", "Context", "Preview", "Review"],
+    total: 5,
   },
 };
 
@@ -1240,14 +1240,343 @@ function SP_StepContext({
    REVIEW STEP (shared across all flows)
    ─────────────────────────────────────────── */
 
+/* ───────────────────────────────────────────
+   BRIEF PREVIEW — a teaser before payment
+   ─────────────────────────────────────────── */
+
+function StepPreview({
+  userType,
+  formData,
+}: {
+  userType: Exclude<UserType, null>;
+  formData: FormData;
+}) {
+  const targetLabel =
+    userType === "hiring_manager" ? "candidate" : "prospect";
+  const recipientName = formData.targetName || "your target";
+  const senderName = formData.senderName || "You";
+
+  return (
+    <div>
+      <h2
+        className="font-serif text-3xl md:text-4xl font-light mb-2"
+        style={{ color: "#e8e4f4" }}
+      >
+        Brief preview
+      </h2>
+      <p
+        className="font-sans text-base font-light mb-8"
+        style={{ color: "#9890ab" }}
+      >
+        Here&apos;s a taste of what LORE is building for you.
+      </p>
+
+      {/* Mini brief preview card */}
+      <div
+        className="rounded-2xl border overflow-hidden"
+        style={{
+          borderColor: "#2a2340",
+          backgroundColor: "#0d0b17",
+        }}
+      >
+        {/* Preview header */}
+        <div
+          className="p-8 md:p-12 text-center"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, #1e1535 0%, #0d0b17 70%)",
+          }}
+        >
+          <div
+            className="inline-block mb-5 px-4 py-2 border rounded-full"
+            style={{ borderColor: "#c9a96e" }}
+          >
+            <span
+              className="font-mono text-xs uppercase"
+              style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+            >
+              {userType === "job_seeker"
+                ? `A brief for ${recipientName}`
+                : userType === "hiring_manager"
+                ? `${recipientName} — Candidate Brief`
+                : `Intel brief: ${recipientName}`}
+            </span>
+          </div>
+          <h3
+            className="font-serif text-2xl md:text-4xl font-light leading-tight mb-3"
+            style={{ color: "#e8e4f4" }}
+          >
+            {userType === "job_seeker" ? (
+              <>
+                {recipientName} &mdash; I didn&apos;t send a resume.{" "}
+                <em
+                  className="font-normal italic"
+                  style={{ color: "#f28fb5" }}
+                >
+                  I built this instead.
+                </em>
+              </>
+            ) : userType === "hiring_manager" ? (
+              <>
+                Why {recipientName} stands out{" "}
+                <em
+                  className="font-normal italic"
+                  style={{ color: "#f28fb5" }}
+                >
+                  for this role.
+                </em>
+              </>
+            ) : (
+              <>
+                {recipientName},{" "}
+                <em
+                  className="font-normal italic"
+                  style={{ color: "#f28fb5" }}
+                >
+                  this was built for you.
+                </em>
+              </>
+            )}
+          </h3>
+          <div className="w-16 h-px mx-auto my-5" style={{ backgroundColor: "#c9a96e" }} />
+          <p
+            className="font-sans text-base font-light max-w-md mx-auto"
+            style={{ color: "#9890ab" }}
+          >
+            {userType === "job_seeker"
+              ? `A cinematic look at what ${senderName} brings to ${formData.targetCompany || "the team"}.`
+              : userType === "hiring_manager"
+              ? `A visual intelligence brief on ${recipientName} for the ${formData.roleHiringFor || "open"} role.`
+              : `Personalized research and pitch for ${recipientName} at ${formData.targetCompany || "their company"}.`}
+          </p>
+        </div>
+
+        {/* Blurred teaser sections */}
+        <div className="px-8 md:px-12 pb-8 space-y-4">
+          {[
+            { label: "Research & Intelligence", color: "#c9a96e" },
+            { label: "Gap Analysis & Strategy", color: "#f28fb5" },
+            { label: "Execution Plan", color: "#534AB7" },
+          ].map((section) => (
+            <div
+              key={section.label}
+              className="p-5 rounded-lg border relative overflow-hidden"
+              style={{
+                borderColor: "#2a2340",
+                backgroundColor: "rgba(30, 21, 53, 0.3)",
+              }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: section.color }}
+                />
+                <span
+                  className="font-mono text-xs uppercase"
+                  style={{ letterSpacing: "0.1em", color: section.color }}
+                >
+                  {section.label}
+                </span>
+              </div>
+              {/* Blurred placeholder lines */}
+              <div className="space-y-2" style={{ filter: "blur(6px)", userSelect: "none" }}>
+                <div className="h-3 rounded-full w-full" style={{ backgroundColor: "rgba(232, 228, 244, 0.08)" }} />
+                <div className="h-3 rounded-full w-4/5" style={{ backgroundColor: "rgba(232, 228, 244, 0.06)" }} />
+                <div className="h-3 rounded-full w-3/5" style={{ backgroundColor: "rgba(232, 228, 244, 0.04)" }} />
+              </div>
+              {/* Lock overlay */}
+              <div className="absolute inset-0 flex items-center justify-center bg-[#0d0b17]/40">
+                <span
+                  className="font-mono text-xs uppercase px-3 py-1.5 rounded-full border"
+                  style={{
+                    letterSpacing: "0.1em",
+                    color: "#9890ab",
+                    borderColor: "#2a2340",
+                    backgroundColor: "rgba(13, 11, 23, 0.8)",
+                  }}
+                >
+                  Unlocks after payment
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Email preview teaser */}
+        <div className="px-8 md:px-12 pb-8">
+          <div
+            className="p-5 rounded-lg border"
+            style={{
+              borderColor: "rgba(201, 169, 110, 0.3)",
+              backgroundColor: "rgba(201, 169, 110, 0.05)",
+            }}
+          >
+            <span
+              className="font-mono text-xs uppercase block mb-2"
+              style={{ letterSpacing: "0.1em", color: "#c9a96e" }}
+            >
+              Also included
+            </span>
+            <p className="font-sans text-base" style={{ color: "#d2cfe0" }}>
+              AI-generated subject line + email copy optimized for open rates
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <p
+        className="font-sans text-sm font-light text-center mt-6"
+        style={{ color: "#9890ab" }}
+      >
+        Your full brief, email copy, and subject line unlock on the next step.
+      </p>
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────────
+   PRICING TIER SELECTOR
+   ─────────────────────────────────────────── */
+
+function PricingSelector({
+  selected,
+  onChange,
+}: {
+  selected: string;
+  onChange: (plan: string) => void;
+}) {
+  const plans = [
+    {
+      id: "one_off",
+      name: "Single Brief",
+      price: "$14.99",
+      period: "one-time",
+      desc: "One cinematic brief + email copy",
+      features: ["1 intelligence brief", "AI subject line + email", "1 round of revisions"],
+      color: "#9890ab",
+    },
+    {
+      id: "subscription",
+      name: "Unlimited",
+      price: "$49.99",
+      period: "/month",
+      desc: "Unlimited briefs, cancel anytime",
+      features: ["Unlimited briefs", "AI subject line + email", "1 round of revisions each", "Cancel anytime"],
+      popular: true,
+      color: "#f28fb5",
+    },
+    {
+      id: "pack_five",
+      name: "5-Pack",
+      price: "$59.99",
+      period: "one-time",
+      desc: "5 briefs + 1 free (6 total)",
+      features: ["6 briefs (5 + 1 free)", "AI subject line + email", "1 round of revisions each", "Best per-brief value"],
+      color: "#c9a96e",
+    },
+  ];
+
+  return (
+    <div className="mt-8">
+      <span
+        className="font-mono text-xs uppercase block mb-5 text-center"
+        style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+      >
+        Choose your plan
+      </span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {plans.map((plan) => (
+          <button
+            key={plan.id}
+            type="button"
+            onClick={() => onChange(plan.id)}
+            className="p-5 rounded-xl border text-left transition-all duration-200 relative"
+            style={{
+              borderColor:
+                selected === plan.id
+                  ? plan.color
+                  : "#2a2340",
+              backgroundColor:
+                selected === plan.id
+                  ? `rgba(${plan.color === "#f28fb5" ? "242,143,181" : plan.color === "#c9a96e" ? "201,169,110" : "152,144,171"}, 0.08)`
+                  : "rgba(30, 21, 53, 0.3)",
+            }}
+          >
+            {plan.popular && (
+              <span
+                className="absolute -top-3 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase px-3 py-1 rounded-full"
+                style={{
+                  letterSpacing: "0.1em",
+                  backgroundColor: "#f28fb5",
+                  color: "#0d0b17",
+                }}
+              >
+                Most popular
+              </span>
+            )}
+            <div className="mb-3">
+              <span
+                className="font-mono text-xs uppercase block mb-1"
+                style={{ letterSpacing: "0.1em", color: plan.color }}
+              >
+                {plan.name}
+              </span>
+              <div className="flex items-baseline gap-1">
+                <span
+                  className="font-serif text-3xl font-light"
+                  style={{ color: "#e8e4f4" }}
+                >
+                  {plan.price}
+                </span>
+                <span
+                  className="font-sans text-sm"
+                  style={{ color: "#9890ab" }}
+                >
+                  {plan.period}
+                </span>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              {plan.features.map((f) => (
+                <div key={f} className="flex items-start gap-2">
+                  <span
+                    className="shrink-0 mt-1"
+                    style={{ color: plan.color }}
+                  >
+                    &#10003;
+                  </span>
+                  <span
+                    className="font-sans text-sm"
+                    style={{ color: "#d2cfe0" }}
+                  >
+                    {f}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────────
+   REVIEW STEP
+   ─────────────────────────────────────────── */
+
 function StepReview({
   userType,
   formData,
   onEdit,
+  selectedPlan,
+  onPlanChange,
 }: {
   userType: Exclude<UserType, null>;
   formData: FormData;
   onEdit: (step: number) => void;
+  selectedPlan: string;
+  onPlanChange: (plan: string) => void;
 }) {
   const buildSections = () => {
     if (userType === "job_seeker") {
@@ -1446,41 +1775,8 @@ function StepReview({
         ))}
       </div>
 
-      {/* Price */}
-      <div
-        className="mt-8 p-6 rounded-xl border text-center"
-        style={{
-          borderColor: "rgba(201, 169, 110, 0.3)",
-          backgroundColor: "rgba(201, 169, 110, 0.05)",
-        }}
-      >
-        <span
-          className="font-mono text-xs uppercase block mb-2"
-          style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
-        >
-          Your LORE Brief
-        </span>
-        <div className="flex items-center justify-center gap-3">
-          <span
-            className="font-serif text-4xl font-light"
-            style={{ color: "#e8e4f4" }}
-          >
-            $29
-          </span>
-          <span
-            className="font-sans text-base font-light"
-            style={{ color: "#9890ab" }}
-          >
-            one-time
-          </span>
-        </div>
-        <p
-          className="font-sans text-sm font-light mt-2"
-          style={{ color: "#9890ab" }}
-        >
-          Cinematic brief + AI-generated email &amp; subject line
-        </p>
-      </div>
+      {/* Pricing tiers */}
+      <PricingSelector selected={selectedPlan} onChange={onPlanChange} />
     </div>
   );
 }
@@ -1494,6 +1790,7 @@ export default function IntakePage() {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<FormData>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedPlan, setSelectedPlan] = useState("one_off");
 
   const config = userType ? STEP_CONFIG[userType] : null;
   const totalSteps = config?.total ?? 0;
@@ -1610,119 +1907,48 @@ export default function IntakePage() {
   const renderStep = () => {
     if (!userType) return null;
 
+    /* Job Seeker: Resume(0) → About(1) → Target(2) → Context(3) → Preview(4) → Review(5) */
     if (userType === "job_seeker") {
       if (step === 0)
-        return (
-          <JS_StepResume
-            formData={formData}
-            setField={setField}
-            onFileRead={handleFileRead}
-            errors={errors}
-          />
-        );
+        return <JS_StepResume formData={formData} setField={setField} onFileRead={handleFileRead} errors={errors} />;
       if (step === 1)
-        return (
-          <JS_StepAboutYou
-            formData={formData}
-            setField={setField}
-            errors={errors}
-          />
-        );
+        return <JS_StepAboutYou formData={formData} setField={setField} errors={errors} />;
       if (step === 2)
-        return (
-          <JS_StepTarget
-            formData={formData}
-            setField={setField}
-            errors={errors}
-          />
-        );
+        return <JS_StepTarget formData={formData} setField={setField} errors={errors} />;
       if (step === 3)
-        return (
-          <JS_StepContext
-            formData={formData}
-            setField={setField}
-            errors={errors}
-          />
-        );
+        return <JS_StepContext formData={formData} setField={setField} errors={errors} />;
       if (step === 4)
-        return (
-          <StepReview
-            userType={userType}
-            formData={formData}
-            onEdit={(s) => setStep(s)}
-          />
-        );
+        return <StepPreview userType={userType} formData={formData} />;
+      if (step === 5)
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} />;
     }
 
+    /* Hiring Manager: Resume(0) → About(1) → Role(2) → Preview(3) → Review(4) */
     if (userType === "hiring_manager") {
       if (step === 0)
-        return (
-          <HM_StepResume
-            formData={formData}
-            setField={setField}
-            onFileRead={handleFileRead}
-            errors={errors}
-          />
-        );
+        return <HM_StepResume formData={formData} setField={setField} onFileRead={handleFileRead} errors={errors} />;
       if (step === 1)
-        return (
-          <HM_StepAboutYou
-            formData={formData}
-            setField={setField}
-            errors={errors}
-          />
-        );
+        return <HM_StepAboutYou formData={formData} setField={setField} errors={errors} />;
       if (step === 2)
-        return (
-          <HM_StepRole
-            formData={formData}
-            setField={setField}
-            errors={errors}
-          />
-        );
+        return <HM_StepRole formData={formData} setField={setField} errors={errors} />;
       if (step === 3)
-        return (
-          <StepReview
-            userType={userType}
-            formData={formData}
-            onEdit={(s) => setStep(s)}
-          />
-        );
+        return <StepPreview userType={userType} formData={formData} />;
+      if (step === 4)
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} />;
     }
 
+    /* Salesperson: About(0) → Prospect(1) → Context(2) → Preview(3) → Review(4) */
     if (userType === "salesperson") {
       if (step === 0)
-        return (
-          <SP_StepAboutYou
-            formData={formData}
-            setField={setField}
-            errors={errors}
-          />
-        );
+        return <SP_StepAboutYou formData={formData} setField={setField} errors={errors} />;
       if (step === 1)
-        return (
-          <SP_StepProspect
-            formData={formData}
-            setField={setField}
-            errors={errors}
-          />
-        );
+        return <SP_StepProspect formData={formData} setField={setField} errors={errors} />;
       if (step === 2)
-        return (
-          <SP_StepContext
-            formData={formData}
-            setField={setField}
-            errors={errors}
-          />
-        );
+        return <SP_StepContext formData={formData} setField={setField} errors={errors} />;
       if (step === 3)
-        return (
-          <StepReview
-            userType={userType}
-            formData={formData}
-            onEdit={(s) => setStep(s)}
-          />
-        );
+        return <StepPreview userType={userType} formData={formData} />;
+      if (step === 4)
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} />;
     }
 
     return null;
@@ -1756,6 +1982,7 @@ export default function IntakePage() {
             setStep(0);
             setFormData(emptyForm);
             setErrors({});
+            setSelectedPlan("one_off");
           }}
           className="font-mono text-xs uppercase transition-colors hover:text-[#f28fb5]"
           style={{ letterSpacing: "0.15em", color: "#9890ab" }}
