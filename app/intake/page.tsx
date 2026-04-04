@@ -1897,10 +1897,60 @@ export default function IntakePage() {
     if (step > 0) setStep(step - 1);
   };
 
-  const handleProceedToPayment = () => {
-    alert(
-      "Payment integration coming in Phase 5! Your brief data has been captured."
-    );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleProceedToPayment = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch("/api/briefs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userType,
+          senderName: formData.senderName,
+          senderRole: formData.senderRole,
+          senderBackground: formData.senderBackground,
+          senderCompany: formData.senderCompany,
+          senderCompanyDesc: formData.senderCompanyDesc,
+          resumeText: formData.resumeText,
+          resumeFileName: formData.resumeFileName,
+          targetName: formData.targetName,
+          targetTitle: formData.targetTitle,
+          targetCompany: formData.targetCompany,
+          targetLinkedIn: formData.targetLinkedIn,
+          outreachType: formData.outreachType,
+          goal: formData.goal,
+          notes: formData.notes,
+          roleHiringFor: formData.roleHiringFor,
+          roleCompelling: formData.roleCompelling,
+          specificAngle: formData.specificAngle,
+          prospectIndustry: formData.prospectIndustry,
+          painPoints: formData.painPoints,
+          yourProduct: formData.yourProduct,
+          plan: selectedPlan,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Something went wrong. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      /* Brief saved — redirect to payment in Phase 5.
+         For now, show success with the brief ID. */
+      alert(
+        `Brief saved! ID: ${data.briefId}\n\nStripe checkout coming in Phase 5.`
+      );
+      setIsSubmitting(false);
+    } catch {
+      alert("Network error. Please check your connection and try again.");
+      setIsSubmitting(false);
+    }
   };
 
   /* ── Render step content ── */
@@ -2062,13 +2112,15 @@ export default function IntakePage() {
           ) : (
             <motion.button
               onClick={handleProceedToPayment}
+              disabled={isSubmitting}
               className="font-mono text-sm uppercase px-8 py-3 rounded-full font-bold transition-all duration-200"
               style={{
                 letterSpacing: "0.15em",
-                backgroundColor: "#c9a96e",
+                backgroundColor: isSubmitting ? "#6b6480" : "#c9a96e",
                 color: "#0d0b17",
+                opacity: isSubmitting ? 0.7 : 1,
               }}
-              animate={{ scale: [1, 1.03, 1] }}
+              animate={isSubmitting ? {} : { scale: [1, 1.03, 1] }}
               transition={{
                 scale: {
                   duration: 2,
@@ -2076,10 +2128,10 @@ export default function IntakePage() {
                   ease: "easeInOut",
                 },
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={isSubmitting ? {} : { scale: 1.05 }}
+              whileTap={isSubmitting ? {} : { scale: 0.98 }}
             >
-              Proceed to Payment
+              {isSubmitting ? "Saving..." : "Proceed to Payment"}
             </motion.button>
           )}
         </div>
