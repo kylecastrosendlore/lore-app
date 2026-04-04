@@ -1363,39 +1363,6 @@ function SampleBriefSection() {
               </p>
             </div>
 
-            {/* ─── Card 7: First 90 Days ─── */}
-            <div
-              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
-              style={{ backgroundColor: "#0d0f1a" }}
-            >
-              <span
-                className="font-mono text-sm uppercase block mb-4"
-                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
-              >
-                My First 90 Days
-              </span>
-              <h4
-                className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
-                style={{ color: "#e8e4f4" }}
-              >
-                Three moves I&apos;d make{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>starting day one.</em>
-              </h4>
-              <div className="w-full max-w-lg space-y-8 text-left">
-                {[
-                  { num: "01", title: "Launch short-form video series", desc: "Map top 20 posts → Reels. 6% becomes 40%." },
-                  { num: "02", title: "Creator collaboration pipeline", desc: "Turn Bloom's organic taggers into co-creation partners." },
-                  { num: "03", title: "Video analytics dashboard", desc: "Real-time ROI tracking for every content decision." },
-                ].map((play) => (
-                  <div key={play.num} className="relative pl-6 border-l-2" style={{ borderColor: "#c9a96e" }}>
-                    <span className="font-mono text-sm uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>{play.num}</span>
-                    <h5 className="font-serif text-xl md:text-2xl font-light mt-1 mb-2" style={{ color: "#e8e4f4" }}>{play.title}</h5>
-                    <p className="font-sans text-base font-light leading-relaxed" style={{ color: "#9890ab" }}>{play.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* ─── Card 8: Marcus's CTA ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center text-center"
