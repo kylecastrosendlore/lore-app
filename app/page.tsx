@@ -698,21 +698,48 @@ function HowItWorksSection() {
    SAMPLE BRIEF — mini version of Bloom brief
    ─────────────────────────────────────────── */
 
+/* Mini doughnut chart for sample brief */
+function MiniDoughnut() {
+  const segments = [
+    { percent: 61, color: "#f28fb5", offset: 0 },
+    { percent: 33, color: "#c9a96e", offset: 61 },
+    { percent: 6, color: "#534AB7", offset: 94 },
+  ];
+  const circumference = 2 * Math.PI * 40;
+
+  return (
+    <svg viewBox="0 0 100 100" className="w-40 h-40 md:w-48 md:h-48 mx-auto">
+      <circle cx="50" cy="50" r="40" fill="none" stroke="#1e1535" strokeWidth="10" />
+      {segments.map((seg, i) => (
+        <motion.circle
+          key={`doughnut-${i}`}
+          cx="50"
+          cy="50"
+          r="40"
+          fill="none"
+          stroke={seg.color}
+          strokeWidth="10"
+          strokeLinecap="butt"
+          strokeDasharray={`${(seg.percent / 100) * circumference} ${circumference}`}
+          strokeDashoffset={-(seg.offset / 100) * circumference}
+          style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.3 + i * 0.2 }}
+        />
+      ))}
+    </svg>
+  );
+}
+
 function SampleBriefSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
-  /* Slot machine stats for the mini brief */
   const stat1 = useSlotMachine(11, 800, inView);
   const stat2 = useSlotMachine(6, 800, inView);
   const stat3 = useSlotMachine(340, 800, inView);
-
-  const gaps = [
-    "No video strategy in place",
-    "Untapped paid channels",
-    "Missing direct-to-consumer product line",
-    "Zero B2B partnerships",
-  ];
+  const stat4 = useSlotMachine(3, 800, inView);
 
   return (
     <section
@@ -747,170 +774,384 @@ function SampleBriefSection() {
           style={{ color: "#b8b4c8" }}
         >
           This is what your recipient sees &mdash; a cinematic page built
-          entirely around them.
+          entirely around them. Scroll through it.
         </motion.p>
 
-        {/* Mini brief preview card */}
+        {/* Scrollable brief preview */}
         <motion.div
           variants={fadeUp}
-          className="rounded-2xl border overflow-hidden max-w-4xl mx-auto"
+          className="rounded-2xl border max-w-4xl mx-auto relative"
           style={{
             borderColor: "#2a2340",
             backgroundColor: "#0d0b17",
+            height: "70vh",
           }}
         >
-          {/* Brief hero */}
+          {/* Scroll container */}
           <div
-            className="p-8 md:p-12 text-center"
+            className="overflow-y-auto h-full rounded-2xl"
             style={{
-              background:
-                "radial-gradient(ellipse at center, #1e1535 0%, #0d0b17 70%)",
+              scrollbarWidth: "thin",
+              scrollbarColor: "#2a2340 #0d0b17",
             }}
           >
+            {/* ─── Card 1: Hero ─── */}
             <div
-              className="inline-block mb-4 px-4 py-2 border rounded-full"
-              style={{ borderColor: "#c9a96e" }}
+              className="p-8 md:p-16 text-center min-h-[70vh] flex flex-col items-center justify-center"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, #1e1535 0%, #0d0b17 70%)",
+              }}
             >
-              <span
-                className="font-mono text-[10px] uppercase"
-                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              <div
+                className="inline-block mb-6 px-4 py-2 border rounded-full"
+                style={{ borderColor: "#c9a96e" }}
               >
-                Built exclusively for Jenna
-              </span>
-            </div>
-            <h3
-              className="font-serif text-3xl md:text-5xl font-light leading-tight mb-4"
-              style={{ color: "#e8e4f4" }}
-            >
-              Jenna &mdash; Bloom built a brand{" "}
-              <em
-                className="font-normal italic"
-                style={{ color: "#f28fb5" }}
-              >
-                the world found on its own.
-              </em>
-            </h3>
-            <GoldDivider inView={inView} />
-            <p
-              className="font-sans text-base font-light max-w-lg mx-auto"
-              style={{ color: "#b8b4c8" }}
-            >
-              This is your cinematic intelligence brief &mdash; a look at what
-              you&apos;ve built, where the gaps live, and what comes next.
-            </p>
-          </div>
-
-          {/* Stats row */}
-          <div
-            className="grid grid-cols-3 gap-4 p-6 md:p-8 border-t"
-            style={{ borderColor: "#2a2340" }}
-          >
-            {[
-              { val: stat1, suffix: "", label: "Years Building" },
-              { val: stat2, suffix: "", label: "Brands Launched" },
-              { val: stat3, suffix: "K", label: "Avg Followers" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <motion.div
-                  className="font-serif text-3xl md:text-4xl font-light"
-                  style={{
-                    color: "#f28fb5",
-                    transform: `scale(${s.val.scale})`,
-                  }}
-                >
-                  {s.val.displayValue}
-                  {s.suffix}
-                </motion.div>
-                <div
-                  className="font-mono text-[9px] uppercase mt-1"
-                  style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
-                >
-                  {s.label}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Gap analysis preview */}
-          <div
-            className="p-6 md:p-8 border-t"
-            style={{ borderColor: "#2a2340" }}
-          >
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
                 <span
-                  className="font-mono text-[10px] uppercase block mb-4"
+                  className="font-mono text-[10px] uppercase"
                   style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
                 >
-                  The Analysis
+                  Built exclusively for Jenna
                 </span>
-                <h4
-                  className="font-serif text-xl font-light mb-1"
-                  style={{ color: "#e8e4f4" }}
-                >
-                  Strong foundation.{" "}
-                  <em
-                    className="font-normal italic"
-                    style={{ color: "#f28fb5" }}
-                  >
-                    Room to run.
-                  </em>
-                </h4>
               </div>
-              <div>
-                <span
-                  className="font-mono text-[10px] uppercase block mb-4"
-                  style={{ letterSpacing: "0.2em", color: "#6b6480" }}
-                >
-                  Identified Gaps
+              <h3
+                className="font-serif text-3xl md:text-5xl font-light leading-tight mb-4"
+                style={{ color: "#e8e4f4" }}
+              >
+                Jenna &mdash; Bloom built a brand{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>
+                  the world found on its own.
+                </em>
+              </h3>
+              <GoldDivider inView={inView} />
+              <p
+                className="font-sans text-base font-light max-w-lg mx-auto"
+                style={{ color: "#b8b4c8" }}
+              >
+                This is your cinematic intelligence brief &mdash; a look at
+                what you&apos;ve built, where the gaps live, and what comes
+                next.
+              </p>
+              <div className="mt-12">
+                <motion.div
+                  className="w-px h-8 mx-auto"
+                  style={{ background: "linear-gradient(to bottom, #c9a96e, transparent)" }}
+                  animate={{ scaleY: [1, 0.5, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.2em", color: "#6b6480" }}>
+                  Scroll
                 </span>
-                <ul className="space-y-2">
-                  {gaps.map((gap, i) => (
-                    <motion.li
-                      key={gap}
-                      className="flex items-center gap-2"
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={
-                        inView
-                          ? { opacity: 1, x: 0 }
-                          : { opacity: 0, x: 20 }
-                      }
-                      transition={{ delay: 0.8 + i * 0.15 }}
+              </div>
+            </div>
+
+            {/* ─── Card 2: Stats ─── */}
+            <div
+              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
+              style={{ backgroundColor: "#110d1f" }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase block mb-10"
+                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              >
+                The Builder
+              </span>
+              <div className="grid grid-cols-2 gap-6 md:gap-8 w-full max-w-lg">
+                {[
+                  { val: stat1, suffix: "", label: "Years Building" },
+                  { val: stat2, suffix: "", label: "Brands Launched" },
+                  { val: stat3, suffix: "K", label: "Avg Followers" },
+                  { val: stat4, suffix: "", label: "Acquisitions" },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="p-6 border rounded-lg text-center"
+                    style={{ borderColor: "#2a2340", backgroundColor: "rgba(13, 11, 23, 0.5)" }}
+                  >
+                    <motion.div
+                      className="font-serif text-4xl md:text-5xl font-light"
+                      style={{ color: "#f28fb5", transform: `scale(${s.val.scale})` }}
                     >
-                      <span
-                        className="w-1.5 h-1.5 rounded-full shrink-0"
-                        style={{ backgroundColor: "#f28fb5" }}
-                      />
-                      <span
-                        className="font-sans text-sm font-light"
-                        style={{ color: "#b8b4c8" }}
-                      >
-                        {gap}
-                      </span>
-                    </motion.li>
+                      {s.val.displayValue}{s.suffix}
+                    </motion.div>
+                    <div
+                      className="font-mono text-[9px] uppercase mt-2"
+                      style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+                    >
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ─── Card 3: Growth ─── */}
+            <div
+              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
+              style={{ backgroundColor: "#0f0b1a" }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase block mb-4"
+                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              >
+                Growth Trajectory
+              </span>
+              <h4
+                className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
+                style={{ color: "#e8e4f4" }}
+              >
+                A brand that grew{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>
+                  without paid media.
+                </em>
+              </h4>
+              <div className="w-full max-w-lg">
+                <svg viewBox="0 0 400 160" className="w-full">
+                  {[0, 1, 2, 3].map((i) => (
+                    <line key={`g-${i}`} x1="0" y1={i * 40 + 20} x2="400" y2={i * 40 + 20} stroke="#2a2340" strokeWidth="1" />
                   ))}
-                </ul>
+                  {["2022", "2023", "2024", "2025"].map((yr, i) => (
+                    <text key={yr} x={i * 120 + 20} y="155" fill="#6b6480" fontSize="9" fontFamily="monospace">{yr}</text>
+                  ))}
+                  <motion.path
+                    d="M 20 120 Q 100 110 180 80 T 380 20"
+                    fill="none" stroke="#f28fb5" strokeWidth="2.5" strokeLinecap="round"
+                    initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+                    transition={{ duration: 2, ease: "easeOut", delay: 0.3 }}
+                  />
+                  <motion.path
+                    d="M 20 130 Q 100 125 180 100 T 380 40"
+                    fill="none" stroke="#c9a96e" strokeWidth="2.5" strokeLinecap="round"
+                    initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+                    transition={{ duration: 2, ease: "easeOut", delay: 0.6 }}
+                  />
+                </svg>
+                <div className="flex gap-6 mt-4 justify-center">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#f28fb5" }} />
+                    <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>Instagram</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#c9a96e" }} />
+                    <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>Email List</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ─── Card 4: Gap Analysis ─── */}
+            <div
+              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
+              style={{ backgroundColor: "#130d20" }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase block mb-4"
+                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              >
+                The Analysis
+              </span>
+              <h4
+                className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
+                style={{ color: "#e8e4f4" }}
+              >
+                Strong foundation.{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>Room to run.</em>
+              </h4>
+              <div className="grid md:grid-cols-2 gap-6 w-full max-w-2xl text-left">
+                <div className="p-6 border rounded-lg" style={{ borderColor: "#2a2340" }}>
+                  <span className="font-mono text-[10px] uppercase block mb-4" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
+                    What Bloom Has Built
+                  </span>
+                  <ul className="space-y-3">
+                    {["340K organic followers", "Trusted editorial voice", "Engaged community", "Email list of superfans"].map((item) => (
+                      <li key={item} className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#c9a96e" }} />
+                        <span className="font-sans text-sm font-light" style={{ color: "#b8b4c8" }}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="p-6 border rounded-lg" style={{ borderColor: "rgba(242, 143, 181, 0.3)", backgroundColor: "rgba(242, 143, 181, 0.05)" }}>
+                  <span className="font-mono text-[10px] uppercase block mb-4" style={{ letterSpacing: "0.2em", color: "#f28fb5" }}>
+                    Where the Gap Lives
+                  </span>
+                  <ul className="space-y-3">
+                    {["No video strategy", "Untapped paid channels", "Missing product line", "Zero B2B partnerships"].map((item) => (
+                      <li key={item} className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#f28fb5" }} />
+                        <span className="font-sans text-sm font-light" style={{ color: "#b8b4c8" }}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* ─── Card 5: Content Mix ─── */}
+            <div
+              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center text-center"
+              style={{ backgroundColor: "#0b0d1a" }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase block mb-4"
+                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              >
+                Content Analysis
+              </span>
+              <div className="mb-2">
+                <span className="font-serif text-6xl md:text-8xl font-light" style={{ color: "#f28fb5" }}>6%</span>
+              </div>
+              <p className="font-serif text-xl md:text-2xl mb-10" style={{ color: "#e8e4f4" }}>
+                video. For a brand with{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>340K followers.</em>
+              </p>
+              <MiniDoughnut />
+              <div className="flex gap-6 mt-6 justify-center flex-wrap">
+                {[
+                  { label: "Static (61%)", color: "#f28fb5" },
+                  { label: "Written (33%)", color: "#c9a96e" },
+                  { label: "Video (6%)", color: "#534AB7" },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ─── Card 6: Market Position ─── */}
+            <div
+              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
+              style={{ backgroundColor: "#100b18" }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase block mb-4"
+                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              >
+                Market Position
+              </span>
+              <h4
+                className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
+                style={{ color: "#e8e4f4" }}
+              >
+                Positioned at the{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>intersection of growth.</em>
+              </h4>
+              <div className="w-full max-w-lg space-y-6">
+                {[
+                  { label: "Creator Economy", value: 78, color: "#f28fb5" },
+                  { label: "Wellness Market", value: 64, color: "#c9a96e" },
+                  { label: "D2C Beauty", value: 52, color: "#534AB7" },
+                ].map((bar) => (
+                  <div key={bar.label}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>{bar.label}</span>
+                      <span className="font-serif text-xl font-light" style={{ color: bar.color }}>{bar.value}%</span>
+                    </div>
+                    <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "#1e1535" }}>
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: bar.color }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${bar.value}%` }}
+                        transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="font-mono text-[8px] uppercase mt-6" style={{ letterSpacing: "0.1em", color: "#6b6480" }}>
+                Source: Market Analysis 2026
+              </p>
+            </div>
+
+            {/* ─── Card 7: Three Plays ─── */}
+            <div
+              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
+              style={{ backgroundColor: "#0d0f1a" }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase block mb-4"
+                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              >
+                The Playbook
+              </span>
+              <h4
+                className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
+                style={{ color: "#e8e4f4" }}
+              >
+                Three moves that{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>change everything.</em>
+              </h4>
+              <div className="w-full max-w-lg space-y-8 text-left">
+                {[
+                  { num: "01", title: "Launch a video-first content arm", desc: "Transform the 6% into 40%. Short-form for discovery, long-form for depth. The algorithm rewards video \u2014 Bloom should too." },
+                  { num: "02", title: "Build the product constellation", desc: "340K followers waiting to buy. Digital products first, physical goods second. Capture the intent that's already there." },
+                  { num: "03", title: "Open the partnership layer", desc: "B2B is the unlock. Brands want access to Bloom's audience. Create the infrastructure to say yes." },
+                ].map((play) => (
+                  <div key={play.num} className="relative pl-6 border-l-2" style={{ borderColor: "#c9a96e" }}>
+                    <span className="font-mono text-[10px] uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>{play.num}</span>
+                    <h5 className="font-serif text-xl font-light mt-1 mb-2" style={{ color: "#e8e4f4" }}>{play.title}</h5>
+                    <p className="font-sans text-sm font-light leading-relaxed" style={{ color: "#6b6480" }}>{play.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ─── Card 8: Brief CTA ─── */}
+            <div
+              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center text-center"
+              style={{
+                background: "radial-gradient(ellipse at center, #1e1535 0%, #0d0b17 70%)",
+              }}
+            >
+              <h4
+                className="font-serif text-3xl md:text-5xl font-light leading-tight mb-4"
+                style={{ color: "#e8e4f4" }}
+              >
+                Ready to turn insight{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>into action?</em>
+              </h4>
+              <GoldDivider inView={inView} />
+              <p
+                className="font-sans text-base font-light max-w-lg mx-auto mb-10"
+                style={{ color: "#b8b4c8" }}
+              >
+                This brief is just the beginning. Let&apos;s build the
+                strategy that takes Bloom from where it is to where it should
+                be.
+              </p>
+              <motion.button
+                className="px-8 py-4 rounded-full font-mono text-xs uppercase"
+                style={{
+                  letterSpacing: "0.2em",
+                  backgroundColor: "#f28fb5",
+                  color: "#0d0b17",
+                }}
+                animate={{ scale: [1, 1.04, 1] }}
+                transition={{ scale: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+                whileHover={{ scale: 1.06 }}
+              >
+                <span className="font-bold">Let&apos;s Talk Strategy</span>
+              </motion.button>
+              <div className="mt-12">
+                <span className="font-mono text-[10px] uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
+                  LORE Intelligence Brief
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Fade overlay at bottom to indicate "there's more" */}
+          {/* Top + bottom fade overlays for the scroll container */}
           <div
-            className="h-16 relative"
-            style={{
-              background:
-                "linear-gradient(to bottom, transparent, #0d0b17)",
-            }}
-          >
-            <div className="absolute inset-x-0 bottom-4 text-center">
-              <span
-                className="font-mono text-[10px] uppercase"
-                style={{ letterSpacing: "0.2em", color: "#6b6480" }}
-              >
-                ↓ Brief continues with plays, charts & CTA
-              </span>
-            </div>
-          </div>
+            className="absolute top-0 left-0 right-0 h-8 pointer-events-none rounded-t-2xl z-20"
+            style={{ background: "linear-gradient(to bottom, #0d0b17, transparent)" }}
+          />
+          <div
+            className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none rounded-b-2xl z-20"
+            style={{ background: "linear-gradient(to top, #0d0b17, transparent)" }}
+          />
         </motion.div>
       </motion.div>
     </section>
