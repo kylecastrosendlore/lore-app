@@ -119,7 +119,7 @@ function Eyebrow({
 }) {
   return (
     <motion.span
-      className="font-mono text-[10px] uppercase block"
+      className="font-mono text-sm uppercase block"
       style={{ color: "#c9a96e" }}
       initial={{ letterSpacing: "0.1em", opacity: 0 }}
       animate={
@@ -144,8 +144,8 @@ function ScrollCue() {
       transition={{ delay: 3, duration: 0.6 }}
     >
       <span
-        className="font-mono text-[10px] uppercase"
-        style={{ letterSpacing: "0.2em", color: "#6b6480" }}
+        className="font-mono text-xs uppercase"
+        style={{ letterSpacing: "0.2em", color: "#9890ab" }}
       >
         Scroll
       </span>
@@ -246,7 +246,7 @@ function MagneticButton({
     <motion.a
       ref={ref}
       href={href}
-      className="relative inline-flex items-center justify-center px-10 py-4 rounded-full font-mono text-xs uppercase overflow-hidden"
+      className="relative inline-flex items-center justify-center px-12 py-5 rounded-full font-mono text-sm uppercase overflow-hidden"
       style={{
         letterSpacing: "0.2em",
         backgroundColor: "#f28fb5",
@@ -354,15 +354,15 @@ function Navbar() {
             <a
               key={link.label}
               href={link.href}
-              className="font-mono text-[10px] uppercase transition-colors duration-200 hover:text-[#f28fb5]"
-              style={{ letterSpacing: "0.15em", color: "#6b6480" }}
+              className="font-mono text-xs uppercase transition-colors duration-200 hover:text-[#f28fb5]"
+              style={{ letterSpacing: "0.15em", color: "#9890ab" }}
             >
               {link.label}
             </a>
           ))}
           <a
             href="/intake"
-            className="font-mono text-[10px] uppercase px-5 py-2 rounded-full transition-all duration-200 hover:scale-105"
+            className="font-mono text-xs font-bold uppercase px-6 py-2.5 rounded-full transition-all duration-200 hover:scale-105"
             style={{
               letterSpacing: "0.15em",
               backgroundColor: "#f28fb5",
@@ -404,8 +404,8 @@ function Navbar() {
               key={link.label}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="font-mono text-[11px] uppercase py-2 transition-colors hover:text-[#f28fb5]"
-              style={{ letterSpacing: "0.15em", color: "#6b6480" }}
+              className="font-mono text-sm uppercase py-2 transition-colors hover:text-[#f28fb5]"
+              style={{ letterSpacing: "0.15em", color: "#9890ab" }}
             >
               {link.label}
             </a>
@@ -413,7 +413,7 @@ function Navbar() {
           <a
             href="/intake"
             onClick={() => setMobileOpen(false)}
-            className="font-mono text-[11px] uppercase px-5 py-3 rounded-full text-center"
+            className="font-mono text-sm font-bold uppercase px-5 py-3 rounded-full text-center"
             style={{
               letterSpacing: "0.15em",
               backgroundColor: "#f28fb5",
@@ -498,13 +498,11 @@ function HeroSection() {
 
         <motion.p
           variants={fadeUp}
-          className="font-sans text-lg md:text-xl font-light max-w-xl mx-auto mb-12"
-          style={{ color: "#b8b4c8" }}
+          className="font-sans text-xl md:text-2xl font-light max-w-xl mx-auto mb-12"
+          style={{ color: "#d2cfe0" }}
         >
-          Whether you&apos;re a job seeker trying to land the interview or a
-          hiring manager sourcing top talent &mdash; LORE replaces forgettable
-          outreach with cinematic intelligence briefs that get opened, read,
-          and remembered.
+          Job seeker or hiring manager &mdash; LORE replaces forgettable
+          outreach with cinematic briefs that get opened, read, and remembered.
         </motion.p>
 
         <motion.div variants={fadeUp}>
@@ -558,12 +556,11 @@ function ProblemSection() {
 
         <motion.p
           variants={fadeUp}
-          className="font-sans text-lg font-light max-w-2xl mx-auto mb-16"
-          style={{ color: "#b8b4c8" }}
+          className="font-sans text-xl font-light max-w-2xl mx-auto mb-16"
+          style={{ color: "#d2cfe0" }}
         >
-          Job seekers send the same resume to 200 companies. Hiring managers
-          blast the same InMail to 200 candidates. Everyone sounds the same.
-          Everyone gets ignored.
+          Same resume to 200 companies. Same InMail to 200 candidates.
+          Everyone sounds the same. Everyone gets ignored.
         </motion.p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -596,15 +593,15 @@ function ProblemSection() {
                 {stat.value}
               </motion.div>
               <div
-                className="font-mono text-[10px] uppercase"
-                style={{ letterSpacing: "0.15em", color: "#6b6480" }}
+                className="font-mono text-xs uppercase"
+                style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}
               >
                 {stat.label}
               </div>
               {stat.source && (
                 <div
-                  className="font-mono text-[8px] uppercase mt-2"
-                  style={{ color: "#534AB7" }}
+                  className="font-mono text-[10px] uppercase mt-2"
+                  style={{ color: "#7B6FD4" }}
                 >
                   Woodpecker.co 20M email study
                 </div>
@@ -649,13 +646,10 @@ function SolutionSection() {
 
         <motion.p
           variants={fadeUp}
-          className="font-sans text-lg font-light max-w-2xl mx-auto mb-16"
-          style={{ color: "#b8b4c8" }}
+          className="font-sans text-xl font-light max-w-2xl mx-auto mb-16"
+          style={{ color: "#d2cfe0" }}
         >
-          A LORE brief is a cinematic, scroll-driven intelligence page built
-          for one person. Whether it&apos;s a hiring manager you want to
-          impress or a candidate you need to land &mdash; this is how you
-          stand out.
+          A cinematic, scroll-driven page built for one person. This is how you stand out.
         </motion.p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
@@ -663,32 +657,32 @@ function SolutionSection() {
             {
               icon: "01",
               title: "Hyper-Researched",
-              desc: "Real data on the person, their company, market position, and growth signals \u2014 woven into a narrative that shows you did the work. Not a template. Not a mass blast.",
+              desc: "Real data on the person, their company, and growth signals — not a template.",
             },
             {
               icon: "02",
               title: "Cinematic Design",
-              desc: "Full-screen cards with scroll-driven animations, charts that draw themselves, and a visual language that commands attention. Spotify Wrapped meets executive intelligence.",
+              desc: "Scroll-driven animations, self-drawing charts. Spotify Wrapped meets intelligence.",
             },
             {
               icon: "03",
               title: "AI-Powered Intelligence",
-              desc: "Our proprietary AI engine analyzes digital footprints, enriches public data, and generates insights no template could ever produce. All in minutes.",
+              desc: "Our proprietary engine analyzes footprints and generates insights in minutes.",
             },
             {
               icon: "04",
               title: "Delivered as a Link",
-              desc: "One URL. No attachments. No spam filters. A living, breathing page that opens instantly and makes the recipient feel like the only person in the room.",
+              desc: "One URL. No attachments. No spam filters. Opens instantly.",
             },
             {
               icon: "05",
-              title: "Email & Subject Lines That Convert",
-              desc: "Every brief comes with AI-generated outreach copy \u2014 subject lines and email drafts engineered to maximize open rates. Personalized outreach gets 80% more link clicks than generic sends.",
+              title: "Emails That Convert",
+              desc: "AI-generated subject lines and drafts. 80% more clicks than generic sends.",
             },
             {
               icon: "06",
               title: "Tailored, Not Templated",
-              desc: "Studies show personalized outreach generates 142% more replies than mass emails. LORE briefs are built one-to-one, researched individually, and impossible to mistake for a blast.",
+              desc: "Built one-to-one. 142% more replies than mass outreach.",
             },
           ].map((feature, i) => (
             <motion.div
@@ -712,20 +706,20 @@ function SolutionSection() {
               }}
             >
               <span
-                className="font-mono text-xs font-bold"
+                className="font-mono text-sm font-bold"
                 style={{ color: "#c9a96e" }}
               >
                 {feature.icon}
               </span>
               <h3
-                className="font-serif text-2xl font-light mt-3 mb-3"
+                className="font-serif text-2xl md:text-3xl font-light mt-3 mb-3"
                 style={{ color: "#e8e4f4" }}
               >
                 {feature.title}
               </h3>
               <p
-                className="font-sans text-sm font-light leading-relaxed"
-                style={{ color: "#b8b4c8" }}
+                className="font-sans text-base font-light leading-relaxed"
+                style={{ color: "#d2cfe0" }}
               >
                 {feature.desc}
               </p>
@@ -745,22 +739,22 @@ function HowItWorksSection() {
     {
       num: "01",
       title: "Tell us who",
-      desc: "Fill out a quick intake form \u2014 whether it\u2019s the hiring manager at your dream company or a candidate you\u2019re recruiting. Name, company, and what you\u2019re after.",
+      desc: "Name, company, and what you\u2019re after. Takes 60 seconds.",
     },
     {
       num: "02",
       title: "We research everything",
-      desc: "Our AI engine enriches public data, analyzes their company, market position, and digital footprint \u2014 building a complete intelligence profile in minutes.",
+      desc: "AI-powered deep dive into their company, role, and digital footprint.",
     },
     {
       num: "03",
-      title: "Brief + outreach generated",
-      desc: "You get a cinematic intelligence brief with real data and visualizations, plus AI-written email copy and subject lines designed to maximize opens and clicks.",
+      title: "Brief + email generated",
+      desc: "Cinematic brief with real data, plus subject lines and email copy that convert.",
     },
     {
       num: "04",
       title: "Send & stand out",
-      desc: "Drop your brief link in a LinkedIn DM or use the generated email. Your recipient opens a page built just for them \u2014 and you\u2019re instantly unforgettable.",
+      desc: "One link. One page built just for them. Instantly unforgettable.",
     },
   ];
 
@@ -807,21 +801,21 @@ function HowItWorksSection() {
               transition={{ delay: 0.3 + i * 0.2, duration: 0.5 }}
             >
               <span
-                className="font-mono text-2xl font-bold shrink-0 mt-1"
+                className="font-mono text-3xl font-bold shrink-0 mt-1"
                 style={{ color: "#c9a96e" }}
               >
                 {step.num}
               </span>
               <div>
                 <h3
-                  className="font-serif text-2xl font-light mb-2"
+                  className="font-serif text-2xl md:text-3xl font-light mb-2"
                   style={{ color: "#e8e4f4" }}
                 >
                   {step.title}
                 </h3>
                 <p
-                  className="font-sans text-sm font-light leading-relaxed"
-                  style={{ color: "#b8b4c8" }}
+                  className="font-sans text-lg font-light leading-relaxed"
+                  style={{ color: "#d2cfe0" }}
                 >
                   {step.desc}
                 </p>
@@ -912,11 +906,11 @@ function SampleBriefSection() {
 
         <motion.p
           variants={fadeUp}
-          className="font-sans text-lg font-light max-w-xl mx-auto mb-16"
-          style={{ color: "#b8b4c8" }}
+          className="font-sans text-xl font-light max-w-xl mx-auto mb-16"
+          style={{ color: "#d2cfe0" }}
         >
-          Marcus is applying for Head of Video Strategy at Bloom.
-          Instead of a resume, he sent this. Scroll through it.
+          Marcus applied for Head of Video Strategy at Bloom.
+          Instead of a resume, he sent this.
         </motion.p>
 
         {/* Scrollable brief preview */}
@@ -946,11 +940,11 @@ function SampleBriefSection() {
               }}
             >
               <div
-                className="inline-block mb-6 px-4 py-2 border rounded-full"
+                className="inline-block mb-6 px-5 py-2.5 border rounded-full"
                 style={{ borderColor: "#c9a96e" }}
               >
                 <span
-                  className="font-mono text-[10px] uppercase"
+                  className="font-mono text-xs uppercase"
                   style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
                 >
                   A brief for Jenna, from Marcus Chen
@@ -967,13 +961,11 @@ function SampleBriefSection() {
               </h3>
               <GoldDivider inView={inView} />
               <p
-                className="font-sans text-base font-light max-w-lg mx-auto"
-                style={{ color: "#b8b4c8" }}
+                className="font-sans text-lg font-light max-w-lg mx-auto"
+                style={{ color: "#d2cfe0" }}
               >
-                This is my application for Head of Video Strategy at
-                Bloom &mdash; a look at what you&apos;ve built, where the
-                biggest opportunity lives, and what I&apos;d do in my first
-                90 days.
+                My application for Head of Video Strategy at Bloom &mdash;
+                what you&apos;ve built, the biggest opportunity, and my first 90 days.
               </p>
               <div className="mt-12">
                 <motion.div
@@ -982,7 +974,7 @@ function SampleBriefSection() {
                   animate={{ scaleY: [1, 0.5, 1] }}
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                 />
-                <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.2em", color: "#6b6480" }}>
+                <span className="font-mono text-xs uppercase" style={{ letterSpacing: "0.2em", color: "#9890ab" }}>
                   Scroll
                 </span>
               </div>
@@ -994,7 +986,7 @@ function SampleBriefSection() {
               style={{ backgroundColor: "#110d1f" }}
             >
               <span
-                className="font-mono text-[10px] uppercase block mb-10"
+                className="font-mono text-sm uppercase block mb-10"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
                 I Did My Homework
@@ -1018,7 +1010,7 @@ function SampleBriefSection() {
                       {s.val.displayValue}{s.suffix}
                     </motion.div>
                     <div
-                      className="font-mono text-[9px] uppercase mt-2"
+                      className="font-mono text-xs uppercase mt-2"
                       style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
                     >
                       {s.label}
@@ -1034,7 +1026,7 @@ function SampleBriefSection() {
               style={{ backgroundColor: "#0f0b1a" }}
             >
               <span
-                className="font-mono text-[10px] uppercase block mb-4"
+                className="font-mono text-sm uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
                 Your Growth Story
@@ -1072,11 +1064,11 @@ function SampleBriefSection() {
                 <div className="flex gap-6 mt-4 justify-center">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#f28fb5" }} />
-                    <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>Instagram</span>
+                    <span className="font-mono text-xs uppercase" style={{ letterSpacing: "0.15em", color: "#d2cfe0" }}>Instagram</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#c9a96e" }} />
-                    <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>Email List</span>
+                    <span className="font-mono text-xs uppercase" style={{ letterSpacing: "0.15em", color: "#d2cfe0" }}>Email List</span>
                   </div>
                 </div>
               </div>
@@ -1088,7 +1080,7 @@ function SampleBriefSection() {
               style={{ backgroundColor: "#130d20" }}
             >
               <span
-                className="font-mono text-[10px] uppercase block mb-4"
+                className="font-mono text-sm uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
                 Where I Fit In
@@ -1104,12 +1096,12 @@ function SampleBriefSection() {
               {/* What Bloom has built — compact */}
               <div className="w-full max-w-2xl mb-8">
                 <div className="p-5 border rounded-lg" style={{ borderColor: "#2a2340" }}>
-                  <span className="font-mono text-[10px] uppercase block mb-3" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
+                  <span className="font-mono text-xs uppercase block mb-3" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
                     What Bloom Has Built
                   </span>
                   <div className="flex flex-wrap gap-3">
                     {["340K organic followers", "Trusted editorial voice", "Engaged community", "Email list of superfans"].map((item) => (
-                      <span key={item} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-sans font-light" style={{ borderColor: "#2a2340", color: "#b8b4c8" }}>
+                      <span key={item} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-sans font-light" style={{ borderColor: "#2a2340", color: "#d2cfe0" }}>
                         <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#c9a96e" }} />
                         {item}
                       </span>
@@ -1120,34 +1112,34 @@ function SampleBriefSection() {
 
               {/* Where Marcus makes impact — detailed strategy cards */}
               <div className="w-full max-w-2xl">
-                <span className="font-mono text-[10px] uppercase block mb-5 text-center" style={{ letterSpacing: "0.2em", color: "#f28fb5" }}>
+                <span className="font-mono text-sm uppercase block mb-5 text-center" style={{ letterSpacing: "0.2em", color: "#f28fb5" }}>
                   Where I Can Make Impact
                 </span>
                 <div className="space-y-4">
                   {[
                     {
                       action: "Launch a short-form video engine",
-                      how: "Repurpose Bloom\u2019s top 50 static posts into Reels and TikToks using existing brand assets \u2014 no new photoshoots needed.",
-                      metric: "+35% projected reach",
-                      why: "Brands that add short-form video see 35\u201348% higher reach within 90 days (Meta Business Suite, 2025).",
+                      how: "Repurpose top 50 posts into Reels/TikToks — no new photoshoots.",
+                      metric: "+35% reach",
+                      why: "Short-form video = 35–48% higher reach in 90 days (Meta, 2025).",
                     },
                     {
-                      action: "Build a creator collaboration pipeline",
-                      how: "Identify 20 micro-creators in the wellness space already tagging Bloom organically and formalize co-creation partnerships.",
-                      metric: "2\u20133x engagement lift",
-                      why: "Creator collaborations drive 2\u20133x higher engagement than branded content alone \u2014 and Bloom\u2019s community is already doing it for free.",
+                      action: "Build a creator collab pipeline",
+                      how: "Formalize partnerships with 20 micro-creators already tagging Bloom.",
+                      metric: "2–3x engagement",
+                      why: "Creator collabs drive 2–3x higher engagement than branded content.",
                     },
                     {
-                      action: "Stand up video-to-product conversion",
-                      how: "Integrate shoppable video links into every Reel and Story, connecting content directly to Bloom\u2019s product catalog.",
-                      metric: "$40K+ projected monthly revenue",
-                      why: "At 340K followers with a 2.8% conversion rate and $42 AOV, even a modest video-to-cart funnel unlocks $40K+/mo.",
+                      action: "Video-to-product conversion",
+                      how: "Shoppable links in every Reel and Story → Bloom's product catalog.",
+                      metric: "$40K+/mo",
+                      why: "340K followers × 2.8% conversion × $42 AOV = $40K+/mo revenue.",
                     },
                     {
-                      action: "Implement a video analytics dashboard",
-                      how: "Connect Instagram Insights, TikTok Analytics, and Shopify into a single real-time dashboard to track video ROI weekly.",
-                      metric: "100% attribution clarity",
-                      why: "Bloom\u2019s job listing cites \u2018data-driven decision making\u2019 as a core value \u2014 this makes video accountable from day one.",
+                      action: "Video analytics dashboard",
+                      how: "Instagram + TikTok + Shopify → one real-time ROI dashboard.",
+                      metric: "Full attribution",
+                      why: "Bloom's listing cites 'data-driven' as core — this delivers it.",
                     },
                   ].map((item, i) => (
                     <div
@@ -1156,18 +1148,18 @@ function SampleBriefSection() {
                       style={{ borderColor: "rgba(242, 143, 181, 0.2)", backgroundColor: "rgba(242, 143, 181, 0.03)" }}
                     >
                       <div className="flex items-start justify-between gap-4 mb-2">
-                        <h5 className="font-serif text-lg font-light" style={{ color: "#e8e4f4" }}>
+                        <h5 className="font-serif text-xl font-light" style={{ color: "#e8e4f4" }}>
                           {item.action}
                         </h5>
-                        <span className="font-mono text-[10px] uppercase shrink-0 px-2 py-1 rounded-full border" style={{ letterSpacing: "0.1em", color: "#f28fb5", borderColor: "rgba(242, 143, 181, 0.3)" }}>
+                        <span className="font-mono text-xs uppercase shrink-0 px-3 py-1.5 rounded-full border font-bold" style={{ letterSpacing: "0.1em", color: "#f28fb5", borderColor: "rgba(242, 143, 181, 0.3)" }}>
                           {item.metric}
                         </span>
                       </div>
-                      <p className="font-sans text-sm font-light leading-relaxed mb-2" style={{ color: "#b8b4c8" }}>
+                      <p className="font-sans text-base font-light leading-relaxed mb-2" style={{ color: "#d2cfe0" }}>
                         <span style={{ color: "#c9a96e" }}>How:</span> {item.how}
                       </p>
-                      <p className="font-sans text-xs font-light leading-relaxed" style={{ color: "#6b6480" }}>
-                        <span style={{ color: "#534AB7" }}>Why it works:</span> {item.why}
+                      <p className="font-sans text-sm font-light leading-relaxed" style={{ color: "#9890ab" }}>
+                        <span style={{ color: "#7B6FD4" }}>Why:</span> {item.why}
                       </p>
                     </div>
                   ))}
@@ -1181,15 +1173,15 @@ function SampleBriefSection() {
               style={{ backgroundColor: "#0b0d1a" }}
             >
               <span
-                className="font-mono text-[10px] uppercase block mb-4"
+                className="font-mono text-sm uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
                 The Opportunity
               </span>
               <div className="mb-2">
-                <span className="font-serif text-6xl md:text-8xl font-light" style={{ color: "#f28fb5" }}>6%</span>
+                <span className="font-serif text-7xl md:text-9xl font-light" style={{ color: "#f28fb5" }}>6%</span>
               </div>
-              <p className="font-serif text-xl md:text-2xl mb-6" style={{ color: "#e8e4f4" }}>
+              <p className="font-serif text-2xl md:text-3xl mb-6" style={{ color: "#e8e4f4" }}>
                 video. For a brand with{" "}
                 <em className="font-normal italic" style={{ color: "#f28fb5" }}>340K followers.</em>
               </p>
@@ -1200,27 +1192,27 @@ function SampleBriefSection() {
                 </div>
                 <div className="text-left space-y-3">
                   {[
-                    { label: "Static (61%)", color: "#f28fb5", note: "High effort, low discoverability — algorithm deprioritizes static in 2026" },
-                    { label: "Written (33%)", color: "#c9a96e", note: "Strong for SEO and email, but doesn\u2019t drive social reach or shares" },
-                    { label: "Video (6%)", color: "#534AB7", note: "The algorithm\u2019s #1 format — and Bloom is barely using it" },
+                    { label: "Static (61%)", color: "#f28fb5", note: "Algorithm deprioritizes static in 2026" },
+                    { label: "Written (33%)", color: "#c9a96e", note: "Good for SEO, doesn't drive social reach" },
+                    { label: "Video (6%)", color: "#534AB7", note: "Algorithm's #1 format — barely used" },
                   ].map((item) => (
-                    <div key={item.label} className="flex items-start gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: item.color }} />
+                    <div key={item.label} className="flex items-start gap-3">
+                      <div className="w-3 h-3 rounded-full shrink-0 mt-1" style={{ backgroundColor: item.color }} />
                       <div>
-                        <span className="font-mono text-[9px] uppercase block" style={{ letterSpacing: "0.1em", color: item.color }}>{item.label}</span>
-                        <span className="font-sans text-xs font-light" style={{ color: "#6b6480" }}>{item.note}</span>
+                        <span className="font-mono text-xs uppercase block" style={{ letterSpacing: "0.1em", color: item.color }}>{item.label}</span>
+                        <span className="font-sans text-sm font-light" style={{ color: "#9890ab" }}>{item.note}</span>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="w-full max-w-2xl p-5 border rounded-lg text-left" style={{ borderColor: "#2a2340", backgroundColor: "rgba(30, 21, 53, 0.3)" }}>
-                <span className="font-mono text-[9px] uppercase block mb-2" style={{ letterSpacing: "0.1em", color: "#c9a96e" }}>Why this matters now</span>
-                <p className="font-sans text-sm font-light leading-relaxed" style={{ color: "#b8b4c8" }}>
-                  Bloom&apos;s job listing for Head of Video Strategy says{" "}
-                  <span style={{ color: "#f28fb5" }}>&ldquo;transform our content mix to video-first.&rdquo;</span>{" "}
-                  This tells me the team already knows 6% isn&apos;t enough. I&apos;ve done this exact transformation before — and I have the numbers to prove it.
+              <div className="w-full max-w-2xl p-6 border rounded-lg text-left" style={{ borderColor: "#2a2340", backgroundColor: "rgba(30, 21, 53, 0.3)" }}>
+                <span className="font-mono text-xs uppercase block mb-2" style={{ letterSpacing: "0.1em", color: "#c9a96e" }}>Why this matters now</span>
+                <p className="font-sans text-base font-light leading-relaxed" style={{ color: "#d2cfe0" }}>
+                  Bloom&apos;s listing says{" "}
+                  <span style={{ color: "#f28fb5" }}>&ldquo;transform to video-first.&rdquo;</span>{" "}
+                  The team knows 6% isn&apos;t enough. I&apos;ve done this before — with numbers to prove it.
                 </p>
               </div>
             </div>
@@ -1231,7 +1223,7 @@ function SampleBriefSection() {
               style={{ backgroundColor: "#100b18" }}
             >
               <span
-                className="font-mono text-[10px] uppercase block mb-4"
+                className="font-mono text-sm uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
                 My Execution Plan
@@ -1243,8 +1235,8 @@ function SampleBriefSection() {
                 6% → 40%.{" "}
                 <em className="font-normal italic" style={{ color: "#f28fb5" }}>Here&apos;s exactly how.</em>
               </h4>
-              <p className="font-sans text-sm font-light mb-10 text-center max-w-lg" style={{ color: "#6b6480" }}>
-                A phased 90-day rollout that turns Bloom&apos;s existing content library into a video-first engine — no new hires needed in Phase 1.
+              <p className="font-sans text-base font-light mb-10 text-center max-w-lg" style={{ color: "#9890ab" }}>
+                90-day rollout. Existing content. No new hires in Phase 1.
               </p>
               <div className="w-full max-w-2xl space-y-4">
                 {[
@@ -1252,33 +1244,33 @@ function SampleBriefSection() {
                     phase: "Days 1–30",
                     title: "Audit + Quick Wins",
                     actions: [
-                      "Audit Bloom\u2019s top 50 posts by engagement — identify 20 that convert to Reels with minimal production",
-                      "Launch 3x/week short-form posting cadence using repurposed assets",
-                      "Set up tracking: Instagram Insights + TikTok Analytics piped into a shared dashboard",
+                      "Identify top 20 posts that convert to Reels",
+                      "Launch 3x/week short-form cadence",
+                      "Set up unified analytics dashboard",
                     ],
-                    outcome: "Target: 15 Reels live, baseline metrics established",
+                    outcome: "15 Reels live · Baseline metrics set",
                     color: "#c9a96e",
                   },
                   {
                     phase: "Days 31–60",
                     title: "Scale + Collaborate",
                     actions: [
-                      "Identify 10 micro-creators already tagging Bloom organically — formalize co-creation partnerships",
-                      "Introduce 1x/week long-form video (behind-the-brand, founder stories) for YouTube and IGTV",
-                      "A/B test video-to-product shoppable links on top-performing Reels",
+                      "Formalize 10 micro-creator partnerships",
+                      "Launch weekly long-form video series",
+                      "A/B test shoppable links on top Reels",
                     ],
-                    outcome: "Target: 20% content mix is now video, first creator collabs live",
+                    outcome: "20% video mix · First creator collabs live",
                     color: "#f28fb5",
                   },
                   {
                     phase: "Days 61–90",
                     title: "Optimize + Prove ROI",
                     actions: [
-                      "Analyze what\u2019s working: double down on top 3 formats, cut underperformers",
-                      "Launch shoppable video storefront connecting content directly to Bloom\u2019s catalog",
-                      "Present first Video ROI Report to leadership: reach, engagement, conversion, revenue attributed",
+                      "Double down on top 3 formats, cut underperformers",
+                      "Launch shoppable video storefront",
+                      "Present Video ROI Report to leadership",
                     ],
-                    outcome: "Target: 40% video mix, measurable revenue attribution, repeatable playbook",
+                    outcome: "40% video mix · Revenue attribution · Repeatable playbook",
                     color: "#534AB7",
                   },
                 ].map((phase) => (
@@ -1288,21 +1280,21 @@ function SampleBriefSection() {
                     style={{ borderColor: "#2a2340", backgroundColor: "rgba(30, 21, 53, 0.3)" }}
                   >
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="font-mono text-[10px] uppercase px-2 py-1 rounded-full border" style={{ letterSpacing: "0.1em", color: phase.color, borderColor: phase.color }}>
+                      <span className="font-mono text-xs uppercase px-3 py-1.5 rounded-full border font-bold" style={{ letterSpacing: "0.1em", color: phase.color, borderColor: phase.color }}>
                         {phase.phase}
                       </span>
-                      <h5 className="font-serif text-lg font-light" style={{ color: "#e8e4f4" }}>{phase.title}</h5>
+                      <h5 className="font-serif text-xl font-light" style={{ color: "#e8e4f4" }}>{phase.title}</h5>
                     </div>
                     <ul className="space-y-2 mb-3">
                       {phase.actions.map((action, i) => (
                         <li key={i} className="flex items-start gap-2">
-                          <span className="w-1 h-1 rounded-full shrink-0 mt-2" style={{ backgroundColor: phase.color }} />
-                          <span className="font-sans text-xs font-light leading-relaxed" style={{ color: "#b8b4c8" }}>{action}</span>
+                          <span className="w-1.5 h-1.5 rounded-full shrink-0 mt-2" style={{ backgroundColor: phase.color }} />
+                          <span className="font-sans text-base font-light leading-relaxed" style={{ color: "#d2cfe0" }}>{action}</span>
                         </li>
                       ))}
                     </ul>
-                    <div className="pt-2 border-t" style={{ borderColor: "#2a2340" }}>
-                      <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.1em", color: phase.color }}>
+                    <div className="pt-3 border-t" style={{ borderColor: "#2a2340" }}>
+                      <span className="font-mono text-xs uppercase font-bold" style={{ letterSpacing: "0.1em", color: phase.color }}>
                         {phase.outcome}
                       </span>
                     </div>
@@ -1317,7 +1309,7 @@ function SampleBriefSection() {
               style={{ backgroundColor: "#0d0b17" }}
             >
               <span
-                className="font-mono text-[10px] uppercase block mb-4"
+                className="font-mono text-sm uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
                 Proof It Works
@@ -1326,25 +1318,25 @@ function SampleBriefSection() {
                 className="font-serif text-2xl md:text-4xl font-light mb-4 text-center"
                 style={{ color: "#e8e4f4" }}
               >
-                I ran this exact playbook at{" "}
+                Same playbook.{" "}
                 <em className="font-normal italic" style={{ color: "#f28fb5" }}>Meridian Media.</em>
               </h4>
-              <p className="font-sans text-sm font-light mb-10 text-center max-w-lg" style={{ color: "#6b6480" }}>
-                Meridian was a wellness publisher with 180K followers and zero video. Sound familiar? Here&apos;s what happened in 6 months.
+              <p className="font-sans text-base font-light mb-10 text-center max-w-lg" style={{ color: "#9890ab" }}>
+                180K followers. Zero video. Here&apos;s what happened in 6 months.
               </p>
 
               <div className="w-full max-w-lg space-y-6 mb-8">
                 {[
-                  { label: "Video Engagement Lift", display: "312%", value: 100, color: "#f28fb5", context: "From 1.2% to 4.9% avg engagement rate after launching 3x/week Reels" },
-                  { label: "Audience Growth (6 Months)", display: "89%", value: 89, color: "#c9a96e", context: "180K → 340K followers driven primarily by short-form video discovery" },
-                  { label: "Content-to-Lead Conversion", display: "4.2x", value: 84, color: "#534AB7", context: "Video CTAs converted 4.2x higher than static posts for email signups" },
+                  { label: "Engagement Lift", display: "312%", value: 100, color: "#f28fb5", context: "1.2% → 4.9% avg engagement" },
+                  { label: "Audience Growth", display: "89%", value: 89, color: "#c9a96e", context: "180K → 340K in 6 months" },
+                  { label: "Conversion Lift", display: "4.2x", value: 84, color: "#534AB7", context: "Video CTAs vs static posts" },
                 ].map((bar) => (
                   <div key={bar.label}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>{bar.label}</span>
-                      <span className="font-serif text-xl font-light" style={{ color: bar.color }}>{bar.display}</span>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="font-mono text-xs uppercase" style={{ letterSpacing: "0.15em", color: "#d2cfe0" }}>{bar.label}</span>
+                      <span className="font-serif text-2xl font-light" style={{ color: bar.color }}>{bar.display}</span>
                     </div>
-                    <div className="h-2.5 rounded-full overflow-hidden mb-1.5" style={{ backgroundColor: "#1e1535" }}>
+                    <div className="h-3 rounded-full overflow-hidden mb-2" style={{ backgroundColor: "#1e1535" }}>
                       <motion.div
                         className="h-full rounded-full"
                         style={{ backgroundColor: bar.color }}
@@ -1353,21 +1345,21 @@ function SampleBriefSection() {
                         transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
                       />
                     </div>
-                    <p className="font-sans text-[11px] font-light" style={{ color: "#6b6480" }}>{bar.context}</p>
+                    <p className="font-sans text-sm font-light" style={{ color: "#9890ab" }}>{bar.context}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="w-full max-w-lg p-4 border rounded-lg text-center" style={{ borderColor: "rgba(201, 169, 110, 0.3)", backgroundColor: "rgba(201, 169, 110, 0.05)" }}>
-                <p className="font-sans text-sm font-light" style={{ color: "#b8b4c8" }}>
-                  Meridian&apos;s video content now generates{" "}
-                  <span className="font-serif" style={{ color: "#c9a96e" }}>$52K/month</span>{" "}
-                  in attributable revenue. Bloom&apos;s audience is nearly identical in size and demo — the same playbook applies.
+              <div className="w-full max-w-lg p-5 border rounded-lg text-center" style={{ borderColor: "rgba(201, 169, 110, 0.3)", backgroundColor: "rgba(201, 169, 110, 0.05)" }}>
+                <p className="font-sans text-base font-light" style={{ color: "#d2cfe0" }}>
+                  Meridian&apos;s video now drives{" "}
+                  <span className="font-serif text-xl" style={{ color: "#c9a96e" }}>$52K/month</span>{" "}
+                  in revenue. Same audience size. Same playbook.
                 </p>
               </div>
 
-              <p className="font-mono text-[8px] uppercase mt-4" style={{ letterSpacing: "0.1em", color: "#6b6480" }}>
-                Meridian Media, Head of Video Content, 2023–2025
+              <p className="font-mono text-xs uppercase mt-4" style={{ letterSpacing: "0.1em", color: "#9890ab" }}>
+                Meridian Media · Head of Video · 2023–2025
               </p>
             </div>
 
@@ -1377,7 +1369,7 @@ function SampleBriefSection() {
               style={{ backgroundColor: "#0d0f1a" }}
             >
               <span
-                className="font-mono text-[10px] uppercase block mb-4"
+                className="font-mono text-sm uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
                 My First 90 Days
@@ -1391,14 +1383,14 @@ function SampleBriefSection() {
               </h4>
               <div className="w-full max-w-lg space-y-8 text-left">
                 {[
-                  { num: "01", title: "Audit & launch a short-form series", desc: "I'd map Bloom's top 20 performing posts, reverse-engineer what resonates, and launch a weekly short-form series within 30 days. Transform that 6% into 40%." },
-                  { num: "02", title: "Build the creator collaboration pipeline", desc: "Bloom's audience trusts editorial voices. I'd create an inbound system for creator partnerships that turns Bloom into a platform, not just a brand." },
-                  { num: "03", title: "Stand up a video analytics dashboard", desc: "What gets measured gets managed. I'd build a real-time dashboard tracking video engagement, conversion, and audience growth so every decision is data-backed." },
+                  { num: "01", title: "Launch short-form video series", desc: "Map top 20 posts → Reels. 6% becomes 40%." },
+                  { num: "02", title: "Creator collaboration pipeline", desc: "Turn Bloom's organic taggers into co-creation partners." },
+                  { num: "03", title: "Video analytics dashboard", desc: "Real-time ROI tracking for every content decision." },
                 ].map((play) => (
                   <div key={play.num} className="relative pl-6 border-l-2" style={{ borderColor: "#c9a96e" }}>
-                    <span className="font-mono text-[10px] uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>{play.num}</span>
-                    <h5 className="font-serif text-xl font-light mt-1 mb-2" style={{ color: "#e8e4f4" }}>{play.title}</h5>
-                    <p className="font-sans text-sm font-light leading-relaxed" style={{ color: "#6b6480" }}>{play.desc}</p>
+                    <span className="font-mono text-sm uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>{play.num}</span>
+                    <h5 className="font-serif text-xl md:text-2xl font-light mt-1 mb-2" style={{ color: "#e8e4f4" }}>{play.title}</h5>
+                    <p className="font-sans text-base font-light leading-relaxed" style={{ color: "#9890ab" }}>{play.desc}</p>
                   </div>
                 ))}
               </div>
@@ -1420,15 +1412,13 @@ function SampleBriefSection() {
               </h4>
               <GoldDivider inView={inView} />
               <p
-                className="font-sans text-base font-light max-w-lg mx-auto mb-10"
-                style={{ color: "#b8b4c8" }}
+                className="font-sans text-lg font-light max-w-lg mx-auto mb-10"
+                style={{ color: "#d2cfe0" }}
               >
-                I built this because Bloom deserves better than a cold
-                application. Let&apos;s talk about what video-first looks
-                like for a brand that&apos;s already winning.
+                Bloom deserves better than a cold application. Let&apos;s talk video-first.
               </p>
               <motion.button
-                className="px-8 py-4 rounded-full font-mono text-xs uppercase"
+                className="px-10 py-5 rounded-full font-mono text-sm uppercase"
                 style={{
                   letterSpacing: "0.2em",
                   backgroundColor: "#f28fb5",
@@ -1441,7 +1431,7 @@ function SampleBriefSection() {
                 <span className="font-bold">Let&apos;s Talk, Jenna</span>
               </motion.button>
               <div className="mt-12">
-                <span className="font-mono text-[10px] uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
+                <span className="font-mono text-xs uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
                   LORE Intelligence Brief &mdash; Built by Marcus Chen
                 </span>
               </div>
@@ -1499,12 +1489,10 @@ function CTASection() {
 
         <motion.p
           variants={fadeUp}
-          className="font-sans text-lg font-light max-w-xl mx-auto mb-12"
-          style={{ color: "#b8b4c8" }}
+          className="font-sans text-xl font-light max-w-xl mx-auto mb-12"
+          style={{ color: "#d2cfe0" }}
         >
-          Whether you&apos;re chasing your dream job or recruiting the perfect
-          candidate &mdash; build your first LORE intelligence brief in
-          minutes and give them something they&apos;ve never seen before.
+          Build your first intelligence brief in minutes. Give them something they&apos;ve never seen before.
         </motion.p>
 
         <motion.div variants={fadeUp}>
@@ -1515,8 +1503,8 @@ function CTASection() {
 
         <motion.p
           variants={fadeUp}
-          className="font-mono text-[10px] uppercase mt-8"
-          style={{ letterSpacing: "0.15em", color: "#6b6480" }}
+          className="font-mono text-xs uppercase mt-8"
+          style={{ letterSpacing: "0.15em", color: "#9890ab" }}
         >
           No subscription required &bull; Brief + email copy included
         </motion.p>
@@ -1550,8 +1538,8 @@ export default function Home() {
         style={{ borderColor: "#2a2340", backgroundColor: "#0d0b17" }}
       >
         <p
-          className="font-mono text-[10px] uppercase"
-          style={{ letterSpacing: "0.2em", color: "#6b6480" }}
+          className="font-mono text-xs uppercase"
+          style={{ letterSpacing: "0.2em", color: "#9890ab" }}
         >
           &copy; {new Date().getFullYear()} LORE &mdash; Intelligence
           Briefs
