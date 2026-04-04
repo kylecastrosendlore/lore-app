@@ -303,6 +303,132 @@ function useSlotMachine(target: number, duration: number = 800, inView: boolean)
 }
 
 /* ───────────────────────────────────────────
+   NAVIGATION
+   ─────────────────────────────────────────── */
+
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const links = [
+    { label: "Problem", href: "#problem" },
+    { label: "How It Works", href: "#how-it-works" },
+    { label: "Sample Brief", href: "#sample-brief" },
+  ];
+
+  return (
+    <motion.nav
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{
+        backgroundColor: scrolled ? "rgba(13, 11, 23, 0.92)" : "transparent",
+        backdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: scrolled ? "1px solid rgba(42, 35, 64, 0.5)" : "1px solid transparent",
+      }}
+      initial={{ y: -80 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+    >
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
+        <a href="#" className="flex items-center gap-3 group">
+          <span
+            className="font-serif text-2xl font-light tracking-wide"
+            style={{ color: "#e8e4f4" }}
+          >
+            L
+            <span style={{ color: "#f28fb5" }}>O</span>
+            R
+            <span style={{ color: "#c9a96e" }}>E</span>
+          </span>
+        </a>
+
+        {/* Desktop links */}
+        <div className="hidden md:flex items-center gap-8">
+          {links.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              className="font-mono text-[10px] uppercase transition-colors duration-200 hover:text-[#f28fb5]"
+              style={{ letterSpacing: "0.15em", color: "#6b6480" }}
+            >
+              {link.label}
+            </a>
+          ))}
+          <a
+            href="/intake"
+            className="font-mono text-[10px] uppercase px-5 py-2 rounded-full transition-all duration-200 hover:scale-105"
+            style={{
+              letterSpacing: "0.15em",
+              backgroundColor: "#f28fb5",
+              color: "#0d0b17",
+            }}
+          >
+            Build Your Brief
+          </a>
+        </div>
+
+        {/* Mobile menu button */}
+        <button
+          className="md:hidden flex flex-col gap-1.5 p-2"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          <motion.span
+            className="w-5 h-px block"
+            style={{ backgroundColor: "#e8e4f4" }}
+            animate={mobileOpen ? { rotate: 45, y: 3.5 } : { rotate: 0, y: 0 }}
+          />
+          <motion.span
+            className="w-5 h-px block"
+            style={{ backgroundColor: "#e8e4f4" }}
+            animate={mobileOpen ? { rotate: -45, y: -3.5 } : { rotate: 0, y: 0 }}
+          />
+        </button>
+      </div>
+
+      {/* Mobile menu */}
+      <motion.div
+        className="md:hidden overflow-hidden"
+        initial={{ height: 0 }}
+        animate={{ height: mobileOpen ? "auto" : 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="px-6 pb-6 flex flex-col gap-4">
+          {links.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="font-mono text-[11px] uppercase py-2 transition-colors hover:text-[#f28fb5]"
+              style={{ letterSpacing: "0.15em", color: "#6b6480" }}
+            >
+              {link.label}
+            </a>
+          ))}
+          <a
+            href="/intake"
+            onClick={() => setMobileOpen(false)}
+            className="font-mono text-[11px] uppercase px-5 py-3 rounded-full text-center"
+            style={{
+              letterSpacing: "0.15em",
+              backgroundColor: "#f28fb5",
+              color: "#0d0b17",
+            }}
+          >
+            Build Your Brief
+          </a>
+        </div>
+      </motion.div>
+    </motion.nav>
+  );
+}
+
+/* ───────────────────────────────────────────
    SECTION COMPONENTS
    ─────────────────────────────────────────── */
 
@@ -330,14 +456,26 @@ function HeroSection() {
         initial="initial"
         animate={inView ? "animate" : "initial"}
       >
-        <motion.div variants={fadeUp} className="mb-12">
-          <Eyebrow text="Intelligence Briefs" inView={inView} />
-          <h2
-            className="font-mono text-sm uppercase mt-3 font-bold"
-            style={{ letterSpacing: "0.3em", color: "#e8e4f4" }}
+        {/* Big LORE brand */}
+        <motion.div variants={fadeUp} className="mb-10">
+          <motion.h2
+            className="font-serif text-6xl md:text-8xl font-light tracking-wide mb-3"
+            style={{ color: "#e8e4f4" }}
+            animate={{
+              textShadow: [
+                "0 0 20px rgba(242, 143, 181, 0)",
+                "0 0 40px rgba(242, 143, 181, 0.15)",
+                "0 0 20px rgba(242, 143, 181, 0)",
+              ],
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
           >
-            LORE
-          </h2>
+            L
+            <span style={{ color: "#f28fb5" }}>O</span>
+            R
+            <span style={{ color: "#c9a96e" }}>E</span>
+          </motion.h2>
+          <Eyebrow text="Intelligence Briefs" inView={inView} />
         </motion.div>
 
         <motion.h1
@@ -393,6 +531,7 @@ function ProblemSection() {
 
   return (
     <section
+      id="problem"
       ref={ref}
       className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 py-24"
       style={{ backgroundColor: "#110d1f" }}
@@ -627,6 +766,7 @@ function HowItWorksSection() {
 
   return (
     <section
+      id="how-it-works"
       ref={ref}
       className="relative min-h-screen flex flex-col items-center justify-center px-6 py-24"
       style={{ backgroundColor: "#130d20" }}
@@ -744,6 +884,7 @@ function SampleBriefSection() {
 
   return (
     <section
+      id="sample-brief"
       ref={ref}
       className="relative py-24 px-6 overflow-hidden"
       style={{ backgroundColor: "#0b0d1a" }}
@@ -1394,6 +1535,7 @@ export default function Home() {
       className="relative hide-scrollbar"
       style={{ backgroundColor: "#0d0b17" }}
     >
+      <Navbar />
       <DriftingGlow />
       <HeroSection />
       <ProblemSection />
