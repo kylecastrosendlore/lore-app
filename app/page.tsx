@@ -1034,7 +1034,7 @@ function SampleBriefSection() {
               </div>
             </div>
 
-            {/* ─── Card 5: Content Mix — The opportunity Marcus sees ─── */}
+            {/* ─── Card 5: The Opportunity — why 6% is a problem ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center text-center"
               style={{ backgroundColor: "#0b0d1a" }}
@@ -1048,27 +1048,43 @@ function SampleBriefSection() {
               <div className="mb-2">
                 <span className="font-serif text-6xl md:text-8xl font-light" style={{ color: "#f28fb5" }}>6%</span>
               </div>
-              <p className="font-serif text-xl md:text-2xl mb-10" style={{ color: "#e8e4f4" }}>
+              <p className="font-serif text-xl md:text-2xl mb-6" style={{ color: "#e8e4f4" }}>
                 video. For a brand with{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>340K followers.</em>{" "}
-                That&apos;s my lane.
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>340K followers.</em>
               </p>
-              <MiniDoughnut />
-              <div className="flex gap-6 mt-6 justify-center flex-wrap">
-                {[
-                  { label: "Static (61%)", color: "#f28fb5" },
-                  { label: "Written (33%)", color: "#c9a96e" },
-                  { label: "Video (6%)", color: "#534AB7" },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>{item.label}</span>
-                  </div>
-                ))}
+
+              <div className="flex flex-col md:flex-row items-center gap-8 mb-8 w-full max-w-2xl">
+                <div className="shrink-0">
+                  <MiniDoughnut />
+                </div>
+                <div className="text-left space-y-3">
+                  {[
+                    { label: "Static (61%)", color: "#f28fb5", note: "High effort, low discoverability — algorithm deprioritizes static in 2026" },
+                    { label: "Written (33%)", color: "#c9a96e", note: "Strong for SEO and email, but doesn\u2019t drive social reach or shares" },
+                    { label: "Video (6%)", color: "#534AB7", note: "The algorithm\u2019s #1 format — and Bloom is barely using it" },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-start gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: item.color }} />
+                      <div>
+                        <span className="font-mono text-[9px] uppercase block" style={{ letterSpacing: "0.1em", color: item.color }}>{item.label}</span>
+                        <span className="font-sans text-xs font-light" style={{ color: "#6b6480" }}>{item.note}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="w-full max-w-2xl p-5 border rounded-lg text-left" style={{ borderColor: "#2a2340", backgroundColor: "rgba(30, 21, 53, 0.3)" }}>
+                <span className="font-mono text-[9px] uppercase block mb-2" style={{ letterSpacing: "0.1em", color: "#c9a96e" }}>Why this matters now</span>
+                <p className="font-sans text-sm font-light leading-relaxed" style={{ color: "#b8b4c8" }}>
+                  Bloom&apos;s job listing for Head of Video Strategy says{" "}
+                  <span style={{ color: "#f28fb5" }}>&ldquo;transform our content mix to video-first.&rdquo;</span>{" "}
+                  This tells me the team already knows 6% isn&apos;t enough. I&apos;ve done this exact transformation before — and I have the numbers to prove it.
+                </p>
               </div>
             </div>
 
-            {/* ─── Card 6: Marcus's Track Record ─── */}
+            {/* ─── Card 6: The Execution Plan — how Marcus would fix it ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
               style={{ backgroundColor: "#100b18" }}
@@ -1077,40 +1093,140 @@ function SampleBriefSection() {
                 className="font-mono text-[10px] uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
-                My Track Record
+                My Execution Plan
               </span>
               <h4
-                className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
+                className="font-serif text-2xl md:text-4xl font-light mb-4 text-center"
                 style={{ color: "#e8e4f4" }}
               >
-                What happened when I{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>led video</em> elsewhere.
+                6% → 40%.{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>Here&apos;s exactly how.</em>
               </h4>
-              <div className="w-full max-w-lg space-y-6">
+              <p className="font-sans text-sm font-light mb-10 text-center max-w-lg" style={{ color: "#6b6480" }}>
+                A phased 90-day rollout that turns Bloom&apos;s existing content library into a video-first engine — no new hires needed in Phase 1.
+              </p>
+              <div className="w-full max-w-2xl space-y-4">
                 {[
-                  { label: "Video Engagement Lift", value: 312, display: "312%", color: "#f28fb5" },
-                  { label: "Audience Growth (6 Months)", value: 89, display: "89%", color: "#c9a96e" },
-                  { label: "Content-to-Lead Conversion", value: 42, display: "4.2x", color: "#534AB7" },
-                ].map((bar) => (
-                  <div key={bar.label}>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>{bar.label}</span>
-                      <span className="font-serif text-xl font-light" style={{ color: bar.color }}>{bar.display}</span>
+                  {
+                    phase: "Days 1–30",
+                    title: "Audit + Quick Wins",
+                    actions: [
+                      "Audit Bloom\u2019s top 50 posts by engagement — identify 20 that convert to Reels with minimal production",
+                      "Launch 3x/week short-form posting cadence using repurposed assets",
+                      "Set up tracking: Instagram Insights + TikTok Analytics piped into a shared dashboard",
+                    ],
+                    outcome: "Target: 15 Reels live, baseline metrics established",
+                    color: "#c9a96e",
+                  },
+                  {
+                    phase: "Days 31–60",
+                    title: "Scale + Collaborate",
+                    actions: [
+                      "Identify 10 micro-creators already tagging Bloom organically — formalize co-creation partnerships",
+                      "Introduce 1x/week long-form video (behind-the-brand, founder stories) for YouTube and IGTV",
+                      "A/B test video-to-product shoppable links on top-performing Reels",
+                    ],
+                    outcome: "Target: 20% content mix is now video, first creator collabs live",
+                    color: "#f28fb5",
+                  },
+                  {
+                    phase: "Days 61–90",
+                    title: "Optimize + Prove ROI",
+                    actions: [
+                      "Analyze what\u2019s working: double down on top 3 formats, cut underperformers",
+                      "Launch shoppable video storefront connecting content directly to Bloom\u2019s catalog",
+                      "Present first Video ROI Report to leadership: reach, engagement, conversion, revenue attributed",
+                    ],
+                    outcome: "Target: 40% video mix, measurable revenue attribution, repeatable playbook",
+                    color: "#534AB7",
+                  },
+                ].map((phase) => (
+                  <div
+                    key={phase.phase}
+                    className="p-5 border rounded-lg text-left"
+                    style={{ borderColor: "#2a2340", backgroundColor: "rgba(30, 21, 53, 0.3)" }}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="font-mono text-[10px] uppercase px-2 py-1 rounded-full border" style={{ letterSpacing: "0.1em", color: phase.color, borderColor: phase.color }}>
+                        {phase.phase}
+                      </span>
+                      <h5 className="font-serif text-lg font-light" style={{ color: "#e8e4f4" }}>{phase.title}</h5>
                     </div>
-                    <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "#1e1535" }}>
-                      <motion.div
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: bar.color }}
-                        initial={{ width: 0 }}
-                        animate={{ width: `${Math.min(bar.value, 100)}%` }}
-                        transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
-                      />
+                    <ul className="space-y-2 mb-3">
+                      {phase.actions.map((action, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="w-1 h-1 rounded-full shrink-0 mt-2" style={{ backgroundColor: phase.color }} />
+                          <span className="font-sans text-xs font-light leading-relaxed" style={{ color: "#b8b4c8" }}>{action}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="pt-2 border-t" style={{ borderColor: "#2a2340" }}>
+                      <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.1em", color: phase.color }}>
+                        {phase.outcome}
+                      </span>
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="font-mono text-[8px] uppercase mt-6" style={{ letterSpacing: "0.1em", color: "#6b6480" }}>
-                Results from previous role at Meridian Media, 2023–2025
+            </div>
+
+            {/* ─── Card 7: Track Record — proof Marcus has done this before ─── */}
+            <div
+              className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
+              style={{ backgroundColor: "#0d0b17" }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase block mb-4"
+                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              >
+                Proof It Works
+              </span>
+              <h4
+                className="font-serif text-2xl md:text-4xl font-light mb-4 text-center"
+                style={{ color: "#e8e4f4" }}
+              >
+                I ran this exact playbook at{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>Meridian Media.</em>
+              </h4>
+              <p className="font-sans text-sm font-light mb-10 text-center max-w-lg" style={{ color: "#6b6480" }}>
+                Meridian was a wellness publisher with 180K followers and zero video. Sound familiar? Here&apos;s what happened in 6 months.
+              </p>
+
+              <div className="w-full max-w-lg space-y-6 mb-8">
+                {[
+                  { label: "Video Engagement Lift", display: "312%", value: 100, color: "#f28fb5", context: "From 1.2% to 4.9% avg engagement rate after launching 3x/week Reels" },
+                  { label: "Audience Growth (6 Months)", display: "89%", value: 89, color: "#c9a96e", context: "180K → 340K followers driven primarily by short-form video discovery" },
+                  { label: "Content-to-Lead Conversion", display: "4.2x", value: 84, color: "#534AB7", context: "Video CTAs converted 4.2x higher than static posts for email signups" },
+                ].map((bar) => (
+                  <div key={bar.label}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>{bar.label}</span>
+                      <span className="font-serif text-xl font-light" style={{ color: bar.color }}>{bar.display}</span>
+                    </div>
+                    <div className="h-2.5 rounded-full overflow-hidden mb-1.5" style={{ backgroundColor: "#1e1535" }}>
+                      <motion.div
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: bar.color }}
+                        initial={{ width: 0 }}
+                        animate={{ width: `${bar.value}%` }}
+                        transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+                      />
+                    </div>
+                    <p className="font-sans text-[11px] font-light" style={{ color: "#6b6480" }}>{bar.context}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="w-full max-w-lg p-4 border rounded-lg text-center" style={{ borderColor: "rgba(201, 169, 110, 0.3)", backgroundColor: "rgba(201, 169, 110, 0.05)" }}>
+                <p className="font-sans text-sm font-light" style={{ color: "#b8b4c8" }}>
+                  Meridian&apos;s video content now generates{" "}
+                  <span className="font-serif" style={{ color: "#c9a96e" }}>$52K/month</span>{" "}
+                  in attributable revenue. Bloom&apos;s audience is nearly identical in size and demo — the same playbook applies.
+                </p>
+              </div>
+
+              <p className="font-mono text-[8px] uppercase mt-4" style={{ letterSpacing: "0.1em", color: "#6b6480" }}>
+                Meridian Media, Head of Video Content, 2023–2025
               </p>
             </div>
 
