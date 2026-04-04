@@ -698,7 +698,7 @@ function HowItWorksSection() {
    SAMPLE BRIEF — mini version of Bloom brief
    ─────────────────────────────────────────── */
 
-/* Mini doughnut chart for sample brief */
+/* Mini doughnut chart for sample brief — Bloom content mix */
 function MiniDoughnut() {
   const segments = [
     { percent: 61, color: "#f28fb5", offset: 0 },
@@ -736,6 +736,7 @@ function SampleBriefSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
+  /* Bloom company stats — Marcus researched these */
   const stat1 = useSlotMachine(11, 800, inView);
   const stat2 = useSlotMachine(6, 800, inView);
   const stat3 = useSlotMachine(340, 800, inView);
@@ -773,8 +774,8 @@ function SampleBriefSection() {
           className="font-sans text-lg font-light max-w-xl mx-auto mb-16"
           style={{ color: "#b8b4c8" }}
         >
-          This is what your recipient sees &mdash; a cinematic page built
-          entirely around them. Scroll through it.
+          Marcus is applying for Head of Video Strategy at Bloom.
+          Instead of a resume, he sent this. Scroll through it.
         </motion.p>
 
         {/* Scrollable brief preview */}
@@ -795,7 +796,7 @@ function SampleBriefSection() {
               scrollbarColor: "#2a2340 #0d0b17",
             }}
           >
-            {/* ─── Card 1: Hero ─── */}
+            {/* ─── Card 1: Hero — Marcus's opening ─── */}
             <div
               className="p-8 md:p-16 text-center min-h-[70vh] flex flex-col items-center justify-center"
               style={{
@@ -811,16 +812,16 @@ function SampleBriefSection() {
                   className="font-mono text-[10px] uppercase"
                   style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
                 >
-                  Built exclusively for Jenna
+                  A brief for Jenna, from Marcus Chen
                 </span>
               </div>
               <h3
                 className="font-serif text-3xl md:text-5xl font-light leading-tight mb-4"
                 style={{ color: "#e8e4f4" }}
               >
-                Jenna &mdash; Bloom built a brand{" "}
+                Jenna &mdash; I didn&apos;t send a resume.{" "}
                 <em className="font-normal italic" style={{ color: "#f28fb5" }}>
-                  the world found on its own.
+                  I built this instead.
                 </em>
               </h3>
               <GoldDivider inView={inView} />
@@ -828,9 +829,10 @@ function SampleBriefSection() {
                 className="font-sans text-base font-light max-w-lg mx-auto"
                 style={{ color: "#b8b4c8" }}
               >
-                This is your cinematic intelligence brief &mdash; a look at
-                what you&apos;ve built, where the gaps live, and what comes
-                next.
+                This is my application for Head of Video Strategy at
+                Bloom &mdash; a look at what you&apos;ve built, where the
+                biggest opportunity lives, and what I&apos;d do in my first
+                90 days.
               </p>
               <div className="mt-12">
                 <motion.div
@@ -845,7 +847,7 @@ function SampleBriefSection() {
               </div>
             </div>
 
-            {/* ─── Card 2: Stats ─── */}
+            {/* ─── Card 2: Stats — Marcus did his homework ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
               style={{ backgroundColor: "#110d1f" }}
@@ -854,7 +856,7 @@ function SampleBriefSection() {
                 className="font-mono text-[10px] uppercase block mb-10"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
-                The Builder
+                I Did My Homework
               </span>
               <div className="grid grid-cols-2 gap-6 md:gap-8 w-full max-w-lg">
                 {[
@@ -885,7 +887,7 @@ function SampleBriefSection() {
               </div>
             </div>
 
-            {/* ─── Card 3: Growth ─── */}
+            {/* ─── Card 3: Growth — Bloom's trajectory ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
               style={{ backgroundColor: "#0f0b1a" }}
@@ -894,15 +896,15 @@ function SampleBriefSection() {
                 className="font-mono text-[10px] uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
-                Growth Trajectory
+                Your Growth Story
               </span>
               <h4
                 className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
                 style={{ color: "#e8e4f4" }}
               >
-                A brand that grew{" "}
+                Bloom grew without paid media.{" "}
                 <em className="font-normal italic" style={{ color: "#f28fb5" }}>
-                  without paid media.
+                  Imagine what video does.
                 </em>
               </h4>
               <div className="w-full max-w-lg">
@@ -939,7 +941,7 @@ function SampleBriefSection() {
               </div>
             </div>
 
-            {/* ─── Card 4: Gap Analysis ─── */}
+            {/* ─── Card 4: Gap Analysis — Where Marcus fits in ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
               style={{ backgroundColor: "#130d20" }}
@@ -948,14 +950,14 @@ function SampleBriefSection() {
                 className="font-mono text-[10px] uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
-                The Analysis
+                Where I Fit In
               </span>
               <h4
                 className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
                 style={{ color: "#e8e4f4" }}
               >
                 Strong foundation.{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>Room to run.</em>
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>This is where I come in.</em>
               </h4>
               <div className="grid md:grid-cols-2 gap-6 w-full max-w-2xl text-left">
                 <div className="p-6 border rounded-lg" style={{ borderColor: "#2a2340" }}>
@@ -973,10 +975,10 @@ function SampleBriefSection() {
                 </div>
                 <div className="p-6 border rounded-lg" style={{ borderColor: "rgba(242, 143, 181, 0.3)", backgroundColor: "rgba(242, 143, 181, 0.05)" }}>
                   <span className="font-mono text-[10px] uppercase block mb-4" style={{ letterSpacing: "0.2em", color: "#f28fb5" }}>
-                    Where the Gap Lives
+                    Where I Can Make Impact
                   </span>
                   <ul className="space-y-3">
-                    {["No video strategy", "Untapped paid channels", "Missing product line", "Zero B2B partnerships"].map((item) => (
+                    {["No video strategy yet", "Untapped short-form channels", "Missing creator collaboration pipeline", "Zero video-to-product conversion"].map((item) => (
                       <li key={item} className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#f28fb5" }} />
                         <span className="font-sans text-sm font-light" style={{ color: "#b8b4c8" }}>{item}</span>
@@ -987,7 +989,7 @@ function SampleBriefSection() {
               </div>
             </div>
 
-            {/* ─── Card 5: Content Mix ─── */}
+            {/* ─── Card 5: Content Mix — The opportunity Marcus sees ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center text-center"
               style={{ backgroundColor: "#0b0d1a" }}
@@ -996,14 +998,15 @@ function SampleBriefSection() {
                 className="font-mono text-[10px] uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
-                Content Analysis
+                The Opportunity
               </span>
               <div className="mb-2">
                 <span className="font-serif text-6xl md:text-8xl font-light" style={{ color: "#f28fb5" }}>6%</span>
               </div>
               <p className="font-serif text-xl md:text-2xl mb-10" style={{ color: "#e8e4f4" }}>
                 video. For a brand with{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>340K followers.</em>
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>340K followers.</em>{" "}
+                That&apos;s my lane.
               </p>
               <MiniDoughnut />
               <div className="flex gap-6 mt-6 justify-center flex-wrap">
@@ -1020,7 +1023,7 @@ function SampleBriefSection() {
               </div>
             </div>
 
-            {/* ─── Card 6: Market Position ─── */}
+            {/* ─── Card 6: Marcus's Track Record ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
               style={{ backgroundColor: "#100b18" }}
@@ -1029,32 +1032,32 @@ function SampleBriefSection() {
                 className="font-mono text-[10px] uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
-                Market Position
+                My Track Record
               </span>
               <h4
                 className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
                 style={{ color: "#e8e4f4" }}
               >
-                Positioned at the{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>intersection of growth.</em>
+                What happened when I{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>led video</em> elsewhere.
               </h4>
               <div className="w-full max-w-lg space-y-6">
                 {[
-                  { label: "Creator Economy", value: 78, color: "#f28fb5" },
-                  { label: "Wellness Market", value: 64, color: "#c9a96e" },
-                  { label: "D2C Beauty", value: 52, color: "#534AB7" },
+                  { label: "Video Engagement Lift", value: 312, display: "312%", color: "#f28fb5" },
+                  { label: "Audience Growth (6 Months)", value: 89, display: "89%", color: "#c9a96e" },
+                  { label: "Content-to-Lead Conversion", value: 42, display: "4.2x", color: "#534AB7" },
                 ].map((bar) => (
                   <div key={bar.label}>
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-mono text-[9px] uppercase" style={{ letterSpacing: "0.15em", color: "#b8b4c8" }}>{bar.label}</span>
-                      <span className="font-serif text-xl font-light" style={{ color: bar.color }}>{bar.value}%</span>
+                      <span className="font-serif text-xl font-light" style={{ color: bar.color }}>{bar.display}</span>
                     </div>
                     <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "#1e1535" }}>
                       <motion.div
                         className="h-full rounded-full"
                         style={{ backgroundColor: bar.color }}
                         initial={{ width: 0 }}
-                        animate={{ width: `${bar.value}%` }}
+                        animate={{ width: `${Math.min(bar.value, 100)}%` }}
                         transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
                       />
                     </div>
@@ -1062,11 +1065,11 @@ function SampleBriefSection() {
                 ))}
               </div>
               <p className="font-mono text-[8px] uppercase mt-6" style={{ letterSpacing: "0.1em", color: "#6b6480" }}>
-                Source: Market Analysis 2026
+                Results from previous role at Meridian Media, 2023–2025
               </p>
             </div>
 
-            {/* ─── Card 7: Three Plays ─── */}
+            {/* ─── Card 7: First 90 Days ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center"
               style={{ backgroundColor: "#0d0f1a" }}
@@ -1075,20 +1078,20 @@ function SampleBriefSection() {
                 className="font-mono text-[10px] uppercase block mb-4"
                 style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
               >
-                The Playbook
+                My First 90 Days
               </span>
               <h4
                 className="font-serif text-2xl md:text-4xl font-light mb-10 text-center"
                 style={{ color: "#e8e4f4" }}
               >
-                Three moves that{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>change everything.</em>
+                Three moves I&apos;d make{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>starting day one.</em>
               </h4>
               <div className="w-full max-w-lg space-y-8 text-left">
                 {[
-                  { num: "01", title: "Launch a video-first content arm", desc: "Transform the 6% into 40%. Short-form for discovery, long-form for depth. The algorithm rewards video \u2014 Bloom should too." },
-                  { num: "02", title: "Build the product constellation", desc: "340K followers waiting to buy. Digital products first, physical goods second. Capture the intent that's already there." },
-                  { num: "03", title: "Open the partnership layer", desc: "B2B is the unlock. Brands want access to Bloom's audience. Create the infrastructure to say yes." },
+                  { num: "01", title: "Audit & launch a short-form series", desc: "I'd map Bloom's top 20 performing posts, reverse-engineer what resonates, and launch a weekly short-form series within 30 days. Transform that 6% into 40%." },
+                  { num: "02", title: "Build the creator collaboration pipeline", desc: "Bloom's audience trusts editorial voices. I'd create an inbound system for creator partnerships that turns Bloom into a platform, not just a brand." },
+                  { num: "03", title: "Stand up a video analytics dashboard", desc: "What gets measured gets managed. I'd build a real-time dashboard tracking video engagement, conversion, and audience growth so every decision is data-backed." },
                 ].map((play) => (
                   <div key={play.num} className="relative pl-6 border-l-2" style={{ borderColor: "#c9a96e" }}>
                     <span className="font-mono text-[10px] uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>{play.num}</span>
@@ -1099,7 +1102,7 @@ function SampleBriefSection() {
               </div>
             </div>
 
-            {/* ─── Card 8: Brief CTA ─── */}
+            {/* ─── Card 8: Marcus's CTA ─── */}
             <div
               className="p-8 md:p-16 min-h-[70vh] flex flex-col items-center justify-center text-center"
               style={{
@@ -1110,17 +1113,17 @@ function SampleBriefSection() {
                 className="font-serif text-3xl md:text-5xl font-light leading-tight mb-4"
                 style={{ color: "#e8e4f4" }}
               >
-                Ready to turn insight{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>into action?</em>
+                I didn&apos;t want to be another resume{" "}
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>in the pile.</em>
               </h4>
               <GoldDivider inView={inView} />
               <p
                 className="font-sans text-base font-light max-w-lg mx-auto mb-10"
                 style={{ color: "#b8b4c8" }}
               >
-                This brief is just the beginning. Let&apos;s build the
-                strategy that takes Bloom from where it is to where it should
-                be.
+                I built this because Bloom deserves better than a cold
+                application. Let&apos;s talk about what video-first looks
+                like for a brand that&apos;s already winning.
               </p>
               <motion.button
                 className="px-8 py-4 rounded-full font-mono text-xs uppercase"
@@ -1133,17 +1136,17 @@ function SampleBriefSection() {
                 transition={{ scale: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
                 whileHover={{ scale: 1.06 }}
               >
-                <span className="font-bold">Let&apos;s Talk Strategy</span>
+                <span className="font-bold">Let&apos;s Talk, Jenna</span>
               </motion.button>
               <div className="mt-12">
                 <span className="font-mono text-[10px] uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
-                  LORE Intelligence Brief
+                  LORE Intelligence Brief &mdash; Built by Marcus Chen
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Top + bottom fade overlays for the scroll container */}
+          {/* Top + bottom fade overlays */}
           <div
             className="absolute top-0 left-0 right-0 h-8 pointer-events-none rounded-t-2xl z-20"
             style={{ background: "linear-gradient(to bottom, #0d0b17, transparent)" }}
