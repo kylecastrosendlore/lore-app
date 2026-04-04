@@ -959,32 +959,77 @@ function SampleBriefSection() {
                 Strong foundation.{" "}
                 <em className="font-normal italic" style={{ color: "#f28fb5" }}>This is where I come in.</em>
               </h4>
-              <div className="grid md:grid-cols-2 gap-6 w-full max-w-2xl text-left">
-                <div className="p-6 border rounded-lg" style={{ borderColor: "#2a2340" }}>
-                  <span className="font-mono text-[10px] uppercase block mb-4" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
+
+              {/* What Bloom has built — compact */}
+              <div className="w-full max-w-2xl mb-8">
+                <div className="p-5 border rounded-lg" style={{ borderColor: "#2a2340" }}>
+                  <span className="font-mono text-[10px] uppercase block mb-3" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
                     What Bloom Has Built
                   </span>
-                  <ul className="space-y-3">
+                  <div className="flex flex-wrap gap-3">
                     {["340K organic followers", "Trusted editorial voice", "Engaged community", "Email list of superfans"].map((item) => (
-                      <li key={item} className="flex items-center gap-2">
+                      <span key={item} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-sans font-light" style={{ borderColor: "#2a2340", color: "#b8b4c8" }}>
                         <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#c9a96e" }} />
-                        <span className="font-sans text-sm font-light" style={{ color: "#b8b4c8" }}>{item}</span>
-                      </li>
+                        {item}
+                      </span>
                     ))}
-                  </ul>
+                  </div>
                 </div>
-                <div className="p-6 border rounded-lg" style={{ borderColor: "rgba(242, 143, 181, 0.3)", backgroundColor: "rgba(242, 143, 181, 0.05)" }}>
-                  <span className="font-mono text-[10px] uppercase block mb-4" style={{ letterSpacing: "0.2em", color: "#f28fb5" }}>
-                    Where I Can Make Impact
-                  </span>
-                  <ul className="space-y-3">
-                    {["No video strategy yet", "Untapped short-form channels", "Missing creator collaboration pipeline", "Zero video-to-product conversion"].map((item) => (
-                      <li key={item} className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#f28fb5" }} />
-                        <span className="font-sans text-sm font-light" style={{ color: "#b8b4c8" }}>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+              </div>
+
+              {/* Where Marcus makes impact — detailed strategy cards */}
+              <div className="w-full max-w-2xl">
+                <span className="font-mono text-[10px] uppercase block mb-5 text-center" style={{ letterSpacing: "0.2em", color: "#f28fb5" }}>
+                  Where I Can Make Impact
+                </span>
+                <div className="space-y-4">
+                  {[
+                    {
+                      action: "Launch a short-form video engine",
+                      how: "Repurpose Bloom\u2019s top 50 static posts into Reels and TikToks using existing brand assets \u2014 no new photoshoots needed.",
+                      metric: "+35% projected reach",
+                      why: "Brands that add short-form video see 35\u201348% higher reach within 90 days (Meta Business Suite, 2025).",
+                    },
+                    {
+                      action: "Build a creator collaboration pipeline",
+                      how: "Identify 20 micro-creators in the wellness space already tagging Bloom organically and formalize co-creation partnerships.",
+                      metric: "2\u20133x engagement lift",
+                      why: "Creator collaborations drive 2\u20133x higher engagement than branded content alone \u2014 and Bloom\u2019s community is already doing it for free.",
+                    },
+                    {
+                      action: "Stand up video-to-product conversion",
+                      how: "Integrate shoppable video links into every Reel and Story, connecting content directly to Bloom\u2019s product catalog.",
+                      metric: "$40K+ projected monthly revenue",
+                      why: "At 340K followers with a 2.8% conversion rate and $42 AOV, even a modest video-to-cart funnel unlocks $40K+/mo.",
+                    },
+                    {
+                      action: "Implement a video analytics dashboard",
+                      how: "Connect Instagram Insights, TikTok Analytics, and Shopify into a single real-time dashboard to track video ROI weekly.",
+                      metric: "100% attribution clarity",
+                      why: "Bloom\u2019s job listing cites \u2018data-driven decision making\u2019 as a core value \u2014 this makes video accountable from day one.",
+                    },
+                  ].map((item, i) => (
+                    <div
+                      key={item.action}
+                      className="p-5 border rounded-lg text-left"
+                      style={{ borderColor: "rgba(242, 143, 181, 0.2)", backgroundColor: "rgba(242, 143, 181, 0.03)" }}
+                    >
+                      <div className="flex items-start justify-between gap-4 mb-2">
+                        <h5 className="font-serif text-lg font-light" style={{ color: "#e8e4f4" }}>
+                          {item.action}
+                        </h5>
+                        <span className="font-mono text-[10px] uppercase shrink-0 px-2 py-1 rounded-full border" style={{ letterSpacing: "0.1em", color: "#f28fb5", borderColor: "rgba(242, 143, 181, 0.3)" }}>
+                          {item.metric}
+                        </span>
+                      </div>
+                      <p className="font-sans text-sm font-light leading-relaxed mb-2" style={{ color: "#b8b4c8" }}>
+                        <span style={{ color: "#c9a96e" }}>How:</span> {item.how}
+                      </p>
+                      <p className="font-sans text-xs font-light leading-relaxed" style={{ color: "#6b6480" }}>
+                        <span style={{ color: "#534AB7" }}>Why it works:</span> {item.why}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
