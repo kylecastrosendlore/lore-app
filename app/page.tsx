@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import Link from "next/link";
 
 /* ───────────────────────────────────────────
    ANIMATION HELPERS — same DNA as the briefs
@@ -108,7 +107,7 @@ function GoldDivider({ inView }: { inView: boolean }) {
   );
 }
 
-/* Eyebrow label — mono, uppercase, gold, animated tracking */
+/* Eyebrow label */
 function Eyebrow({
   text,
   inView,
@@ -135,7 +134,7 @@ function Eyebrow({
   );
 }
 
-/* Scroll cue at the bottom of hero */
+/* Scroll cue */
 function ScrollCue() {
   return (
     <motion.div
@@ -153,8 +152,7 @@ function ScrollCue() {
       <motion.div
         className="w-px h-8"
         style={{
-          background:
-            "linear-gradient(to bottom, #c9a96e, transparent)",
+          background: "linear-gradient(to bottom, #c9a96e, transparent)",
         }}
         animate={{ scaleY: [1, 0.5, 1] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
@@ -222,7 +220,7 @@ function CardShimmer({ inView }: { inView: boolean }) {
   );
 }
 
-/* Magnetic CTA button — same as the briefs */
+/* Magnetic CTA button */
 function MagneticButton({
   children,
   href,
@@ -270,6 +268,40 @@ function MagneticButton({
   );
 }
 
+/* Slot machine number hook */
+function useSlotMachine(target: number, duration: number = 800, inView: boolean) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const [scale, setScale] = useState(1);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!inView || hasAnimated.current) return;
+    hasAnimated.current = true;
+
+    const startTime = performance.now();
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      if (progress < 0.8) {
+        setDisplayValue(Math.floor(Math.random() * target * 2));
+      } else {
+        setDisplayValue(target);
+        const bounceProgress = (progress - 0.8) / 0.2;
+        const bounce = Math.sin(bounceProgress * Math.PI) * 0.1;
+        setScale(1 + bounce);
+      }
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setScale(1);
+      }
+    };
+    requestAnimationFrame(animate);
+  }, [target, duration, inView]);
+
+  return { displayValue, scale };
+}
+
 /* ───────────────────────────────────────────
    SECTION COMPONENTS
    ─────────────────────────────────────────── */
@@ -298,7 +330,6 @@ function HeroSection() {
         initial="initial"
         animate={inView ? "animate" : "initial"}
       >
-        {/* Logo / Brand */}
         <motion.div variants={fadeUp} className="mb-12">
           <Eyebrow text="Intelligence Briefs" inView={inView} />
           <h2
@@ -309,7 +340,6 @@ function HeroSection() {
           </h2>
         </motion.div>
 
-        {/* Hero headline — typewriter */}
         <motion.h1
           variants={fadeUp}
           className="font-serif text-5xl md:text-7xl font-light leading-tight mb-8"
@@ -333,9 +363,10 @@ function HeroSection() {
           className="font-sans text-lg md:text-xl font-light max-w-xl mx-auto mb-12"
           style={{ color: "#b8b4c8" }}
         >
-          LORE replaces forgettable cold outreach with cinematic,
-          hyper-researched intelligence briefs your prospects actually want to
-          read.
+          Whether you&apos;re a job seeker trying to land the interview or a
+          hiring manager sourcing top talent &mdash; LORE replaces forgettable
+          outreach with cinematic intelligence briefs that get opened, read,
+          and remembered.
         </motion.p>
 
         <motion.div variants={fadeUp}>
@@ -355,9 +386,9 @@ function ProblemSection() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   const stats = [
-    { value: "97%", label: "of cold emails are never opened" },
-    { value: "3 sec", label: "before a prospect decides to delete" },
-    { value: "$0", label: "ROI on outreach that gets ignored" },
+    { value: "97%", label: "of cold outreach is never opened" },
+    { value: "3 sec", label: "before your message gets deleted" },
+    { value: "142%", label: "more replies with tailored outreach vs. mass blasts", source: true },
   ];
 
   return (
@@ -391,9 +422,9 @@ function ProblemSection() {
           className="font-sans text-lg font-light max-w-2xl mx-auto mb-16"
           style={{ color: "#b8b4c8" }}
         >
-          Everyone sends the same templated emails. The same LinkedIn
-          messages. The same pitch decks. Your prospects are drowning in
-          noise, and you look exactly like everyone else.
+          Job seekers send the same resume to 200 companies. Hiring managers
+          blast the same InMail to 200 candidates. Everyone sounds the same.
+          Everyone gets ignored.
         </motion.p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -431,6 +462,14 @@ function ProblemSection() {
               >
                 {stat.label}
               </div>
+              {stat.source && (
+                <div
+                  className="font-mono text-[8px] uppercase mt-2"
+                  style={{ color: "#534AB7" }}
+                >
+                  Woodpecker.co 20M email study
+                </div>
+              )}
             </motion.div>
           ))}
         </div>
@@ -465,7 +504,7 @@ function SolutionSection() {
           className="font-serif text-4xl md:text-6xl font-light mt-6 mb-6"
           style={{ color: "#e8e4f4" }}
         >
-          Not an email.{" "}
+          Not a message.{" "}
           <span style={{ color: "#c9a96e" }}>An experience.</span>
         </motion.h2>
 
@@ -475,32 +514,42 @@ function SolutionSection() {
           style={{ color: "#b8b4c8" }}
         >
           A LORE brief is a cinematic, scroll-driven intelligence page built
-          around a single person. Data-rich. Beautifully designed.
-          Impossible to ignore.
+          for one person. Whether it&apos;s a hiring manager you want to
+          impress or a candidate you need to land &mdash; this is how you
+          stand out.
         </motion.p>
 
-        {/* Feature cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
           {[
             {
               icon: "01",
               title: "Hyper-Researched",
-              desc: "We pull real data \u2014 company metrics, market position, growth signals, content gaps \u2014 and weave it into a narrative built for one person.",
+              desc: "Real data on the person, their company, market position, and growth signals \u2014 woven into a narrative that shows you did the work. Not a template. Not a mass blast.",
             },
             {
               icon: "02",
               title: "Cinematic Design",
-              desc: "Full-screen cards with scroll-driven animations, charts that draw themselves, and a visual language that commands attention.",
+              desc: "Full-screen cards with scroll-driven animations, charts that draw themselves, and a visual language that commands attention. Spotify Wrapped meets executive intelligence.",
             },
             {
               icon: "03",
               title: "AI-Powered Intelligence",
-              desc: "Claude analyzes your prospect\u2019s digital footprint and generates insights no template could ever produce.",
+              desc: "Our proprietary AI engine analyzes digital footprints, enriches public data, and generates insights no template could ever produce. All in minutes.",
             },
             {
               icon: "04",
               title: "Delivered as a Link",
-              desc: "One URL. No attachments. No spam filters. A living, breathing page your prospect opens and actually reads.",
+              desc: "One URL. No attachments. No spam filters. A living, breathing page that opens instantly and makes the recipient feel like the only person in the room.",
+            },
+            {
+              icon: "05",
+              title: "Email & Subject Lines That Convert",
+              desc: "Every brief comes with AI-generated outreach copy \u2014 subject lines and email drafts engineered to maximize open rates. Personalized outreach gets 80% more link clicks than generic sends.",
+            },
+            {
+              icon: "06",
+              title: "Tailored, Not Templated",
+              desc: "Studies show personalized outreach generates 142% more replies than mass emails. LORE briefs are built one-to-one, researched individually, and impossible to mistake for a blast.",
             },
           ].map((feature, i) => (
             <motion.div
@@ -517,7 +566,7 @@ function SolutionSection() {
                   : { opacity: 0, x: i % 2 === 0 ? -30 : 30 }
               }
               transition={{
-                delay: 0.2 + i * 0.15,
+                delay: 0.2 + i * 0.12,
                 type: "spring",
                 stiffness: 60,
                 damping: 18,
@@ -557,22 +606,22 @@ function HowItWorksSection() {
     {
       num: "01",
       title: "Tell us who",
-      desc: "Fill out a quick intake form with your prospect\u2019s name, company, and what you\u2019re offering.",
+      desc: "Fill out a quick intake form \u2014 whether it\u2019s the hiring manager at your dream company or a candidate you\u2019re recruiting. Name, company, and what you\u2019re after.",
     },
     {
       num: "02",
-      title: "We research",
-      desc: "Apollo enrichment + AI analysis digs into their company data, market position, and digital footprint.",
+      title: "We research everything",
+      desc: "Our AI engine enriches public data, analyzes their company, market position, and digital footprint \u2014 building a complete intelligence profile in minutes.",
     },
     {
       num: "03",
-      title: "Brief generated",
-      desc: "Claude crafts a cinematic intelligence brief with real data, visualizations, and a personalized narrative.",
+      title: "Brief + outreach generated",
+      desc: "You get a cinematic intelligence brief with real data and visualizations, plus AI-written email copy and subject lines designed to maximize opens and clicks.",
     },
     {
       num: "04",
       title: "Send & stand out",
-      desc: "You get a unique URL and email copy package. Drop it in a LinkedIn DM or email. Watch them open it.",
+      desc: "Drop your brief link in a LinkedIn DM or use the generated email. Your recipient opens a page built just for them \u2014 and you\u2019re instantly unforgettable.",
     },
   ];
 
@@ -645,6 +694,229 @@ function HowItWorksSection() {
   );
 }
 
+/* ───────────────────────────────────────────
+   SAMPLE BRIEF — mini version of Bloom brief
+   ─────────────────────────────────────────── */
+
+function SampleBriefSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  /* Slot machine stats for the mini brief */
+  const stat1 = useSlotMachine(11, 800, inView);
+  const stat2 = useSlotMachine(6, 800, inView);
+  const stat3 = useSlotMachine(340, 800, inView);
+
+  const gaps = [
+    "No video strategy in place",
+    "Untapped paid channels",
+    "Missing direct-to-consumer product line",
+    "Zero B2B partnerships",
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className="relative py-24 px-6 overflow-hidden"
+      style={{ backgroundColor: "#0b0d1a" }}
+    >
+      <CardShimmer inView={inView} />
+
+      <motion.div
+        className="relative z-10 max-w-5xl mx-auto text-center"
+        variants={stagger}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+      >
+        <motion.div variants={fadeUp}>
+          <Eyebrow text="See It In Action" inView={inView} />
+        </motion.div>
+
+        <motion.h2
+          variants={fadeUp}
+          className="font-serif text-4xl md:text-6xl font-light mt-6 mb-4"
+          style={{ color: "#e8e4f4" }}
+        >
+          A real LORE brief.{" "}
+          <span style={{ color: "#f28fb5" }}>Live.</span>
+        </motion.h2>
+
+        <motion.p
+          variants={fadeUp}
+          className="font-sans text-lg font-light max-w-xl mx-auto mb-16"
+          style={{ color: "#b8b4c8" }}
+        >
+          This is what your recipient sees &mdash; a cinematic page built
+          entirely around them.
+        </motion.p>
+
+        {/* Mini brief preview card */}
+        <motion.div
+          variants={fadeUp}
+          className="rounded-2xl border overflow-hidden max-w-4xl mx-auto"
+          style={{
+            borderColor: "#2a2340",
+            backgroundColor: "#0d0b17",
+          }}
+        >
+          {/* Brief hero */}
+          <div
+            className="p-8 md:p-12 text-center"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, #1e1535 0%, #0d0b17 70%)",
+            }}
+          >
+            <div
+              className="inline-block mb-4 px-4 py-2 border rounded-full"
+              style={{ borderColor: "#c9a96e" }}
+            >
+              <span
+                className="font-mono text-[10px] uppercase"
+                style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+              >
+                Built exclusively for Jenna
+              </span>
+            </div>
+            <h3
+              className="font-serif text-3xl md:text-5xl font-light leading-tight mb-4"
+              style={{ color: "#e8e4f4" }}
+            >
+              Jenna &mdash; Bloom built a brand{" "}
+              <em
+                className="font-normal italic"
+                style={{ color: "#f28fb5" }}
+              >
+                the world found on its own.
+              </em>
+            </h3>
+            <GoldDivider inView={inView} />
+            <p
+              className="font-sans text-base font-light max-w-lg mx-auto"
+              style={{ color: "#b8b4c8" }}
+            >
+              This is your cinematic intelligence brief &mdash; a look at what
+              you&apos;ve built, where the gaps live, and what comes next.
+            </p>
+          </div>
+
+          {/* Stats row */}
+          <div
+            className="grid grid-cols-3 gap-4 p-6 md:p-8 border-t"
+            style={{ borderColor: "#2a2340" }}
+          >
+            {[
+              { val: stat1, suffix: "", label: "Years Building" },
+              { val: stat2, suffix: "", label: "Brands Launched" },
+              { val: stat3, suffix: "K", label: "Avg Followers" },
+            ].map((s) => (
+              <div key={s.label} className="text-center">
+                <motion.div
+                  className="font-serif text-3xl md:text-4xl font-light"
+                  style={{
+                    color: "#f28fb5",
+                    transform: `scale(${s.val.scale})`,
+                  }}
+                >
+                  {s.val.displayValue}
+                  {s.suffix}
+                </motion.div>
+                <div
+                  className="font-mono text-[9px] uppercase mt-1"
+                  style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+                >
+                  {s.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Gap analysis preview */}
+          <div
+            className="p-6 md:p-8 border-t"
+            style={{ borderColor: "#2a2340" }}
+          >
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <span
+                  className="font-mono text-[10px] uppercase block mb-4"
+                  style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
+                >
+                  The Analysis
+                </span>
+                <h4
+                  className="font-serif text-xl font-light mb-1"
+                  style={{ color: "#e8e4f4" }}
+                >
+                  Strong foundation.{" "}
+                  <em
+                    className="font-normal italic"
+                    style={{ color: "#f28fb5" }}
+                  >
+                    Room to run.
+                  </em>
+                </h4>
+              </div>
+              <div>
+                <span
+                  className="font-mono text-[10px] uppercase block mb-4"
+                  style={{ letterSpacing: "0.2em", color: "#6b6480" }}
+                >
+                  Identified Gaps
+                </span>
+                <ul className="space-y-2">
+                  {gaps.map((gap, i) => (
+                    <motion.li
+                      key={gap}
+                      className="flex items-center gap-2"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={
+                        inView
+                          ? { opacity: 1, x: 0 }
+                          : { opacity: 0, x: 20 }
+                      }
+                      transition={{ delay: 0.8 + i * 0.15 }}
+                    >
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: "#f28fb5" }}
+                      />
+                      <span
+                        className="font-sans text-sm font-light"
+                        style={{ color: "#b8b4c8" }}
+                      >
+                        {gap}
+                      </span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Fade overlay at bottom to indicate "there's more" */}
+          <div
+            className="h-16 relative"
+            style={{
+              background:
+                "linear-gradient(to bottom, transparent, #0d0b17)",
+            }}
+          >
+            <div className="absolute inset-x-0 bottom-4 text-center">
+              <span
+                className="font-mono text-[10px] uppercase"
+                style={{ letterSpacing: "0.2em", color: "#6b6480" }}
+              >
+                ↓ Brief continues with plays, charts & CTA
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
+
 function CTASection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
@@ -684,8 +956,9 @@ function CTASection() {
           className="font-sans text-lg font-light max-w-xl mx-auto mb-12"
           style={{ color: "#b8b4c8" }}
         >
-          Build your first LORE intelligence brief in minutes. Give your
-          prospect something they&apos;ve never seen before.
+          Whether you&apos;re chasing your dream job or recruiting the perfect
+          candidate &mdash; build your first LORE intelligence brief in
+          minutes and give them something they&apos;ve never seen before.
         </motion.p>
 
         <motion.div variants={fadeUp}>
@@ -699,7 +972,7 @@ function CTASection() {
           className="font-mono text-[10px] uppercase mt-8"
           style={{ letterSpacing: "0.15em", color: "#6b6480" }}
         >
-          No subscription required
+          No subscription required &bull; Brief + email copy included
         </motion.p>
       </motion.div>
     </section>
@@ -712,12 +985,16 @@ function CTASection() {
 
 export default function Home() {
   return (
-    <main className="relative hide-scrollbar" style={{ backgroundColor: "#0d0b17" }}>
+    <main
+      className="relative hide-scrollbar"
+      style={{ backgroundColor: "#0d0b17" }}
+    >
       <DriftingGlow />
       <HeroSection />
       <ProblemSection />
       <SolutionSection />
       <HowItWorksSection />
+      <SampleBriefSection />
       <CTASection />
 
       {/* Footer */}
