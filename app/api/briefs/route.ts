@@ -96,9 +96,9 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      console.error("Supabase insert error:", error.message);
+      console.error("Supabase insert error:", error.message, error.details, error.hint);
       return NextResponse.json(
-        { error: "Failed to save brief" },
+        { error: `Failed to save brief: ${error.message}` },
         { status: 500 }
       );
     }
