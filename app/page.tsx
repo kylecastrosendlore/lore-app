@@ -320,6 +320,7 @@ function Navbar() {
     { label: "Problem", href: "#problem" },
     { label: "How It Works", href: "#how-it-works" },
     { label: "Sample Brief", href: "#sample-brief" },
+    { label: "Pricing", href: "#pricing" },
     { label: "Contact", href: "mailto:kyle@sendlore.com" },
   ];
 
@@ -682,8 +683,8 @@ function SolutionSection() {
             },
             {
               icon: "06",
-              title: "Tailored, Not Templated",
-              desc: "Built one-to-one. 142% more replies than mass outreach.",
+              title: "Find Their Contact Info",
+              desc: "Don\u2019t have their email? Our Contact ID engine finds verified emails and phone numbers so your brief actually lands.",
             },
           ].map((feature, i) => (
             <motion.div
@@ -1421,6 +1422,231 @@ function SampleBriefSection() {
   );
 }
 
+function PricingSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  const plans = [
+    {
+      name: "Single Brief",
+      price: "$29",
+      period: "one-time",
+      desc: "Perfect for a high-stakes outreach to one person.",
+      features: [
+        "One cinematic intelligence brief",
+        "AI-generated email + subject line",
+        "Shareable link, no attachments",
+        "Contact ID available as add-on ($1.99)",
+      ],
+      accent: "#c9a96e",
+      highlight: false,
+    },
+    {
+      name: "Unlimited",
+      price: "$99",
+      period: "/month",
+      desc: "For serious job seekers and sales pros who outreach weekly.",
+      features: [
+        "Unlimited intelligence briefs",
+        "AI-generated email + subject lines",
+        "Contact ID included free",
+        "Priority generation speed",
+        "Cancel anytime",
+      ],
+      accent: "#f28fb5",
+      highlight: true,
+    },
+    {
+      name: "5-Pack",
+      price: "$99",
+      period: "one-time",
+      desc: "Five briefs at a discount. Ideal for a targeted campaign.",
+      features: [
+        "Five cinematic intelligence briefs",
+        "AI-generated emails + subject lines",
+        "Shareable links, no attachments",
+        "Contact ID available as add-on ($1.99)",
+      ],
+      accent: "#7B6FD4",
+      highlight: false,
+    },
+  ];
+
+  return (
+    <section
+      id="pricing"
+      ref={ref}
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 py-24"
+      style={{ backgroundColor: "#0f0b1a" }}
+    >
+      <CardShimmer inView={inView} />
+      <motion.div
+        className="relative z-10 max-w-5xl mx-auto text-center"
+        variants={stagger}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+      >
+        <motion.div variants={fadeUp}>
+          <Eyebrow text="Pricing" inView={inView} />
+        </motion.div>
+
+        <motion.h2
+          variants={fadeUp}
+          className="font-serif text-4xl md:text-6xl font-light mt-6 mb-6"
+          style={{ color: "#e8e4f4" }}
+        >
+          Invest in being{" "}
+          <span style={{ color: "#c9a96e" }}>unforgettable.</span>
+        </motion.h2>
+
+        <motion.p
+          variants={fadeUp}
+          className="font-sans text-xl font-light max-w-2xl mx-auto mb-16"
+          style={{ color: "#d2cfe0" }}
+        >
+          Every plan includes a cinematic brief, AI-written email copy, and a shareable link. No templates. No fluff.
+        </motion.p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {plans.map((plan, i) => (
+            <motion.div
+              key={plan.name}
+              className="relative p-8 rounded-2xl border text-left flex flex-col"
+              style={{
+                borderColor: plan.highlight
+                  ? "rgba(242, 143, 181, 0.4)"
+                  : "#2a2340",
+                backgroundColor: plan.highlight
+                  ? "rgba(242, 143, 181, 0.05)"
+                  : "rgba(30, 21, 53, 0.3)",
+              }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={
+                inView
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 30 }
+              }
+              transition={{
+                delay: 0.3 + i * 0.15,
+                type: "spring",
+                stiffness: 60,
+                damping: 18,
+              }}
+            >
+              {plan.highlight && (
+                <div
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full font-mono text-xs uppercase"
+                  style={{
+                    letterSpacing: "0.15em",
+                    backgroundColor: "#f28fb5",
+                    color: "#0d0b17",
+                    fontWeight: 700,
+                  }}
+                >
+                  Most Popular
+                </div>
+              )}
+
+              <div className="mb-6">
+                <h3
+                  className="font-serif text-2xl font-light mb-1"
+                  style={{ color: "#e8e4f4" }}
+                >
+                  {plan.name}
+                </h3>
+                <p
+                  className="font-sans text-sm font-light"
+                  style={{ color: "#9890ab" }}
+                >
+                  {plan.desc}
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <span
+                  className="font-serif text-5xl font-light"
+                  style={{ color: plan.accent }}
+                >
+                  {plan.price}
+                </span>
+                <span
+                  className="font-mono text-sm ml-2"
+                  style={{ color: "#9890ab" }}
+                >
+                  {plan.period}
+                </span>
+              </div>
+
+              <div className="space-y-3 mb-8 flex-grow">
+                {plan.features.map((feature) => (
+                  <div
+                    key={feature}
+                    className="flex items-start gap-3"
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full shrink-0 mt-2"
+                      style={{ backgroundColor: plan.accent }}
+                    />
+                    <span
+                      className="font-sans text-base font-light"
+                      style={{ color: "#d2cfe0" }}
+                    >
+                      {feature}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <a
+                href="/intake"
+                className="block text-center px-6 py-4 rounded-full font-mono text-sm uppercase transition-all duration-200"
+                style={{
+                  letterSpacing: "0.15em",
+                  backgroundColor: plan.highlight
+                    ? plan.accent
+                    : "transparent",
+                  color: plan.highlight ? "#0d0b17" : plan.accent,
+                  border: plan.highlight
+                    ? "none"
+                    : `1px solid ${plan.accent}`,
+                  fontWeight: plan.highlight ? 700 : 400,
+                }}
+              >
+                Get Started
+              </a>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          variants={fadeUp}
+          className="mt-12 p-6 rounded-xl border text-center max-w-2xl mx-auto"
+          style={{
+            borderColor: "rgba(201, 169, 110, 0.2)",
+            backgroundColor: "rgba(201, 169, 110, 0.03)",
+          }}
+        >
+          <h4
+            className="font-serif text-xl font-light mb-2"
+            style={{ color: "#c9a96e" }}
+          >
+            Need their contact info?
+          </h4>
+          <p
+            className="font-sans text-base font-light"
+            style={{ color: "#d2cfe0" }}
+          >
+            Our Contact ID engine finds verified emails and phone numbers.
+            Just <span style={{ color: "#c9a96e" }}>$1.99</span> per lookup
+            — or <span style={{ color: "#f28fb5" }}>free with Unlimited</span>.
+            Only charged if we find a match.
+          </p>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
+
 function CTASection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
@@ -1498,6 +1724,7 @@ export default function Home() {
       <SolutionSection />
       <HowItWorksSection />
       <SampleBriefSection />
+      <PricingSection />
       <CTASection />
 
       {/* Footer */}
