@@ -683,8 +683,8 @@ function SolutionSection() {
             },
             {
               icon: "06",
-              title: "Find Their Contact Info",
-              desc: "Don\u2019t have their email? Our Contact ID engine finds verified emails and phone numbers so your brief actually lands.",
+              title: "Find Their Email &amp; Phone",
+              desc: "Don\u2019t have their email address? We find verified emails and phone numbers so your brief actually lands.",
             },
           ].map((feature, i) => (
             <motion.div
@@ -1436,7 +1436,7 @@ function PricingSection() {
         "One cinematic intelligence brief",
         "AI-generated email + subject line",
         "Shareable link, no attachments",
-        "Contact ID available as add-on ($1.99)",
+        "Find their email &amp; phone ($1.99 add-on)",
       ],
       accent: "#c9a96e",
       highlight: false,
@@ -1449,7 +1449,7 @@ function PricingSection() {
       features: [
         "Unlimited intelligence briefs",
         "AI-generated email + subject lines",
-        "Contact ID included free",
+        "Email &amp; phone lookups included free",
         "Unlimited contact fetches",
         "Priority generation speed",
         "Cancel anytime",
@@ -1466,7 +1466,7 @@ function PricingSection() {
         "Five briefs + one bonus free",
         "AI-generated emails + subject lines",
         "Shareable links, no attachments",
-        "Contact ID available as add-on ($1.99)",
+        "Find their email &amp; phone ($1.99 add-on)",
       ],
       accent: "#7B6FD4",
       highlight: false,
@@ -1637,7 +1637,7 @@ function PricingSection() {
             className="font-sans text-base font-light"
             style={{ color: "#d2cfe0" }}
           >
-            Our Contact ID engine finds verified emails and phone numbers.
+            Don&apos;t have their email? We find verified email addresses and phone numbers.
             Just <span style={{ color: "#c9a96e" }}>$1.99</span> per lookup
             — or <span style={{ color: "#f28fb5" }}>free with Unlimited</span>.
             Only charged if we find a match.
