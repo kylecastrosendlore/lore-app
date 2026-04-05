@@ -52,10 +52,14 @@ export async function POST(request: Request) {
       );
     }
 
-    /* ── Sanitize: strip any HTML from text fields ── */
+    /* ── Sanitize: strip HTML and problematic characters ── */
     const sanitize = (val: unknown): string | null => {
       if (typeof val !== "string") return null;
-      return val.replace(/<[^>]*>/g, "").trim() || null;
+      return val
+        .replace(/<[^>]*>/g, "")       // strip HTML tags
+        .replace(/\x00/g, "")           // remove null bytes
+        .replace(/\\u0000/g, "")        // remove escaped null bytes
+        .trim() || null;
     };
 
     /* ── Build row ── */
