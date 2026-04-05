@@ -1429,7 +1429,7 @@ function PricingSection() {
   const plans = [
     {
       name: "Single Brief",
-      price: "$29",
+      price: "$14.99",
       period: "one-time",
       desc: "Perfect for a high-stakes outreach to one person.",
       features: [
@@ -1443,7 +1443,7 @@ function PricingSection() {
     },
     {
       name: "Unlimited",
-      price: "$99",
+      price: "$49",
       period: "/month",
       desc: "For serious job seekers and sales pros who outreach weekly.",
       features: [
@@ -1457,12 +1457,12 @@ function PricingSection() {
       highlight: true,
     },
     {
-      name: "5-Pack",
-      price: "$99",
+      name: "5-Pack + 1 Free",
+      price: "$59",
       period: "one-time",
-      desc: "Five briefs at a discount. Ideal for a targeted campaign.",
+      desc: "Six briefs for the price of five. Ideal for a targeted campaign.",
       features: [
-        "Five cinematic intelligence briefs",
+        "Five briefs + one bonus free",
         "AI-generated emails + subject lines",
         "Shareable links, no attachments",
         "Contact ID available as add-on ($1.99)",
