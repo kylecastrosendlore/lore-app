@@ -1450,6 +1450,7 @@ function PricingSection() {
         "Unlimited intelligence briefs",
         "AI-generated email + subject lines",
         "Contact ID included free",
+        "Unlimited contact fetches",
         "Priority generation speed",
         "Cancel anytime",
       ],
