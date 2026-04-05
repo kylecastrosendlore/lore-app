@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { generateBrief } from "@/lib/ai";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
+/* Allow up to 60s for AI generation (Vercel Pro) or 10s (free) */
+export const maxDuration = 60;
+
 /* ───────────────────────────────────────────
    POST /api/generate
    Generates an AI intelligence brief for a paid brief.

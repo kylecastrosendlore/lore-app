@@ -39,6 +39,23 @@ export default function BriefViewer() {
     return () => clearInterval(interval);
   }, []);
 
+  const [generationTriggered, setGenerationTriggered] = useState(false);
+
+  /* Trigger generation if the brief is paid but not yet generating */
+  const triggerGeneration = useCallback(async () => {
+    if (generationTriggered) return;
+    setGenerationTriggered(true);
+    try {
+      await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ briefId }),
+      });
+    } catch {
+      console.error("Failed to trigger generation");
+    }
+  }, [briefId, generationTriggered]);
+
   /* Poll for brief status */
   const fetchBrief = useCallback(async () => {
     try {
@@ -46,15 +63,25 @@ export default function BriefViewer() {
       const data = await res.json();
 
       if (!res.ok) {
+        /* 403 = payment not yet confirmed by webhook — keep polling */
+        if (res.status === 403) return;
         setError(data.error || "Failed to load brief");
         return;
       }
 
       setBrief(data);
+
+      /* If brief is paid but hasn't started generating, trigger it */
+      if (
+        data.status === "draft" &&
+        !generationTriggered
+      ) {
+        triggerGeneration();
+      }
     } catch {
       setError("Network error loading brief");
     }
-  }, [briefId]);
+  }, [briefId, generationTriggered, triggerGeneration]);
 
   useEffect(() => {
     if (!briefId) return;
@@ -62,18 +89,12 @@ export default function BriefViewer() {
 
     /* Poll every 5 seconds if brief is still generating */
     const interval = setInterval(() => {
+      if (brief?.status === "ready" || brief?.status === "error") return;
       fetchBrief();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [briefId, fetchBrief]);
-
-  /* Stop polling once brief is ready or errored */
-  useEffect(() => {
-    if (brief?.status === "ready" || brief?.status === "error") {
-      /* No need to poll anymore */
-    }
-  }, [brief?.status]);
+  }, [briefId, fetchBrief, brief?.status]);
 
   /* Copy to clipboard */
   const copyToClipboard = (text: string, label: string) => {
