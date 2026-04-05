@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { enrichPerson, parseName } from "@/lib/apollo";
 
 /* ───────────────────────────────────────────
    POST /api/webhooks/stripe
@@ -95,6 +96,41 @@ export async function POST(request: Request) {
             total_credits: 6, // 5 + 1 free
             used_credits: 0,
           });
+        }
+
+        /* ── Trigger Apollo enrichment (non-blocking) ── */
+        try {
+          const { data: briefData } = await supabase
+            .from("briefs")
+            .select("target_name, target_company, target_linkedin")
+            .eq("id", briefId)
+            .single();
+
+          if (briefData?.target_name) {
+            const { firstName, lastName } = parseName(briefData.target_name);
+            const enrichResult = await enrichPerson({
+              firstName,
+              lastName,
+              company: briefData.target_company || undefined,
+              linkedinUrl: briefData.target_linkedin || undefined,
+            });
+
+            await supabase
+              .from("briefs")
+              .update({
+                contact_id_status: enrichResult.found ? "found" : "not_found",
+                contact_id_data: enrichResult.found
+                  ? JSON.stringify(enrichResult.person)
+                  : null,
+              })
+              .eq("id", briefId);
+
+            console.log(
+              `🔍 Apollo enrichment: ${enrichResult.found ? "found" : "not found"} for ${briefData.target_name}`
+            );
+          }
+        } catch (enrichErr) {
+          console.error("Apollo enrichment error (non-fatal):", enrichErr);
         }
 
         console.log(`✅ Brief ${briefId} marked as paid (${plan})`);
