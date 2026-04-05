@@ -91,10 +91,11 @@ export async function POST(request: Request) {
       .eq("id", briefId);
 
     return NextResponse.json({ url: session.url }, { status: 200 });
-  } catch (err) {
-    console.error("Checkout API error:", err);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("Checkout API error:", message);
     return NextResponse.json(
-      { error: "Failed to create checkout session" },
+      { error: `Failed to create checkout session: ${message}` },
       { status: 500 }
     );
   }
