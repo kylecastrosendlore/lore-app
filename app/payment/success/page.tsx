@@ -1,25 +1,38 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 /* ───────────────────────────────────────────
    /payment/success
    Shown after a successful Stripe checkout.
+   Shows a brief confirmation then redirects
+   to /brief/[id] where polling + viewing happens.
    ─────────────────────────────────────────── */
 
 function SuccessContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const briefId = searchParams.get("brief_id");
   const [dots, setDots] = useState("");
 
+  /* Animated dots */
   useEffect(() => {
     const interval = setInterval(() => {
       setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
     }, 500);
     return () => clearInterval(interval);
   }, []);
+
+  /* Auto-redirect to the brief viewer after a short delay */
+  useEffect(() => {
+    if (!briefId) return;
+    const timer = setTimeout(() => {
+      router.push(`/brief/${briefId}`);
+    }, 3000); // 3 seconds — enough time to see the confirmation
+    return () => clearTimeout(timer);
+  }, [briefId, router]);
 
   return (
     <div
@@ -72,8 +85,7 @@ function SuccessContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        Your intelligence brief is being crafted. This usually takes 2–3
-        minutes. We&apos;ll have something extraordinary for you.
+        Your intelligence brief is being crafted. Redirecting you now{dots}
       </motion.p>
 
       <motion.div
@@ -88,31 +100,21 @@ function SuccessContent() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        Generating your brief{dots}
+        Preparing your brief{dots}
       </motion.div>
 
       {briefId && (
-        <motion.p
-          className="font-mono text-xs"
-          style={{ color: "#9890ab" }}
+        <motion.a
+          href={`/brief/${briefId}`}
+          className="font-mono text-xs uppercase transition-colors hover:text-[#f28fb5]"
+          style={{ letterSpacing: "0.15em", color: "#9890ab" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
         >
-          Brief ID: {briefId.slice(0, 8)}...
-        </motion.p>
+          Click here if not redirected automatically &rarr;
+        </motion.a>
       )}
-
-      <motion.a
-        href="/"
-        className="mt-12 font-mono text-xs uppercase transition-colors hover:text-[#f28fb5]"
-        style={{ letterSpacing: "0.15em", color: "#9890ab" }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-      >
-        &larr; Back to home
-      </motion.a>
     </div>
   );
 }

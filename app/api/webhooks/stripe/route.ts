@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { enrichPerson, parseName } from "@/lib/apollo";
+import { generateBrief } from "@/lib/ai";
 
 /* ───────────────────────────────────────────
    POST /api/webhooks/stripe
@@ -131,6 +132,72 @@ export async function POST(request: Request) {
           }
         } catch (enrichErr) {
           console.error("Apollo enrichment error (non-fatal):", enrichErr);
+        }
+
+        /* ── Trigger AI brief generation (non-blocking) ── */
+        try {
+          /* Fetch the full brief data (now includes enrichment) */
+          const { data: fullBrief } = await supabase
+            .from("briefs")
+            .select("*")
+            .eq("id", briefId)
+            .single();
+
+          if (fullBrief) {
+            await supabase
+              .from("briefs")
+              .update({ brief_status: "generating" })
+              .eq("id", briefId);
+
+            let enrichmentData = null;
+            if (fullBrief.contact_id_data) {
+              try {
+                enrichmentData = JSON.parse(fullBrief.contact_id_data);
+              } catch { /* ignore parse errors */ }
+            }
+
+            const result = await generateBrief({
+              userType: fullBrief.user_type,
+              senderName: fullBrief.sender_name,
+              senderRole: fullBrief.sender_role || undefined,
+              senderBackground: fullBrief.sender_background || undefined,
+              senderCompany: fullBrief.sender_company || undefined,
+              senderCompanyDesc: fullBrief.sender_company_desc || undefined,
+              resumeText: fullBrief.resume_text || undefined,
+              targetName: fullBrief.target_name,
+              targetTitle: fullBrief.target_title || undefined,
+              targetCompany: fullBrief.target_company || undefined,
+              targetLinkedIn: fullBrief.target_linkedin || undefined,
+              outreachType: fullBrief.outreach_type || undefined,
+              goal: fullBrief.goal || undefined,
+              notes: fullBrief.notes || undefined,
+              roleHiringFor: fullBrief.role_hiring_for || undefined,
+              roleCompelling: fullBrief.role_compelling || undefined,
+              specificAngle: fullBrief.specific_angle || undefined,
+              prospectIndustry: fullBrief.prospect_industry || undefined,
+              painPoints: fullBrief.pain_points || undefined,
+              yourProduct: fullBrief.your_product || undefined,
+              enrichmentData,
+            });
+
+            await supabase
+              .from("briefs")
+              .update({
+                brief_html: result.briefHtml,
+                email_subject: result.emailSubject,
+                email_body: result.emailBody,
+                brief_status: "ready",
+              })
+              .eq("id", briefId);
+
+            console.log(`🎨 Brief ${briefId} generated successfully`);
+          }
+        } catch (genErr) {
+          console.error("Brief generation error (non-fatal):", genErr);
+          await supabase
+            .from("briefs")
+            .update({ brief_status: "error" })
+            .eq("id", briefId);
         }
 
         console.log(`✅ Brief ${briefId} marked as paid (${plan})`);
