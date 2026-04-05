@@ -1,22 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 /* ───────────────────────────────────────────
    /payment/success
    Shown after a successful Stripe checkout.
-   Displays a confirmation and links to view
-   the brief once it's generated.
    ─────────────────────────────────────────── */
 
-export default function PaymentSuccess() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const briefId = searchParams.get("brief_id");
   const [dots, setDots] = useState("");
 
-  /* Animated dots for the "generating" message */
   useEffect(() => {
     const interval = setInterval(() => {
       setDots((prev) => (prev.length >= 3 ? "" : prev + "."));
@@ -29,7 +26,6 @@ export default function PaymentSuccess() {
       className="min-h-screen flex flex-col items-center justify-center px-6 text-center"
       style={{ backgroundColor: "#0d0b17" }}
     >
-      {/* Success checkmark */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -118,5 +114,24 @@ export default function PaymentSuccess() {
         &larr; Back to home
       </motion.a>
     </div>
+  );
+}
+
+export default function PaymentSuccess() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ backgroundColor: "#0d0b17" }}
+        >
+          <p className="font-mono text-sm" style={{ color: "#9890ab" }}>
+            Loading...
+          </p>
+        </div>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
   );
 }
