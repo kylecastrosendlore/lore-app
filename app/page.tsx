@@ -320,6 +320,7 @@ function Navbar() {
     { label: "Problem", href: "#problem" },
     { label: "How It Works", href: "#how-it-works" },
     { label: "Sample Brief", href: "#sample-brief" },
+    { label: "Contact", href: "mailto:kyle@sendlore.com" },
   ];
 
   return (
@@ -1511,6 +1512,13 @@ export default function Home() {
           &copy; {new Date().getFullYear()} LORE &mdash; Intelligence
           Briefs
         </p>
+        <a
+          href="mailto:kyle@sendlore.com"
+          className="inline-block mt-4 font-mono text-xs uppercase transition-colors duration-200 hover:text-[#f28fb5]"
+          style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+        >
+          kyle@sendlore.com
+        </a>
       </footer>
     </main>
   );
