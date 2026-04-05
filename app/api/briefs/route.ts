@@ -62,6 +62,7 @@ export async function POST(request: Request) {
     const row = {
       user_type: body.userType,
       sender_name: sanitize(body.senderName),
+      sender_email: sanitize(body.senderEmail),
       sender_role: sanitize(body.senderRole),
       sender_background: sanitize(body.senderBackground),
       sender_company: sanitize(body.senderCompany),

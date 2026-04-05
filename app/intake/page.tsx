@@ -13,6 +13,7 @@ type UserType = "job_seeker" | "hiring_manager" | "salesperson" | null;
 interface FormData {
   /* Shared — sender info */
   senderName: string;
+  senderEmail: string;
   senderRole: string;
   senderBackground: string;
   senderCompany: string;
@@ -41,6 +42,7 @@ interface FormData {
 
 const emptyForm: FormData = {
   senderName: "",
+  senderEmail: "",
   senderRole: "",
   senderBackground: "",
   senderCompany: "",
@@ -1571,12 +1573,16 @@ function StepReview({
   onEdit,
   selectedPlan,
   onPlanChange,
+  onEmailChange,
+  emailError,
 }: {
   userType: Exclude<UserType, null>;
   formData: FormData;
   onEdit: (step: number) => void;
   selectedPlan: string;
   onPlanChange: (plan: string) => void;
+  onEmailChange: (email: string) => void;
+  emailError?: string;
 }) {
   const buildSections = () => {
     if (userType === "job_seeker") {
@@ -1775,6 +1781,45 @@ function StepReview({
         ))}
       </div>
 
+      {/* Email for receipt + brief delivery */}
+      <div
+        className="mt-8 p-6 rounded-xl border"
+        style={{
+          borderColor: emailError ? "#f28fb5" : "#2a2340",
+          backgroundColor: "rgba(30, 21, 53, 0.3)",
+        }}
+      >
+        <label
+          className="font-mono text-xs uppercase block mb-3"
+          style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+        >
+          Email for delivery
+        </label>
+        <p
+          className="font-sans text-sm mb-4"
+          style={{ color: "#9890ab" }}
+        >
+          We&apos;ll send your brief and receipt here.
+        </p>
+        <input
+          type="email"
+          value={formData.senderEmail}
+          onChange={(e) => onEmailChange(e.target.value)}
+          placeholder="you@email.com"
+          className="w-full px-4 py-3 rounded-lg text-base font-sans outline-none transition-all duration-200 focus:ring-2 focus:ring-[#c9a96e]"
+          style={{
+            backgroundColor: "rgba(13, 11, 23, 0.6)",
+            color: "#e8e4f4",
+            border: `1px solid ${emailError ? "#f28fb5" : "#2a2340"}`,
+          }}
+        />
+        {emailError && (
+          <p className="mt-2 text-sm" style={{ color: "#f28fb5" }}>
+            {emailError}
+          </p>
+        )}
+      </div>
+
       {/* Pricing tiers */}
       <PricingSelector selected={selectedPlan} onChange={onPlanChange} />
     </div>
@@ -1901,10 +1946,18 @@ export default function IntakePage() {
 
   const handleProceedToPayment = async () => {
     if (isSubmitting) return;
+
+    /* Validate email before proceeding */
+    if (!formData.senderEmail.trim() || !formData.senderEmail.includes("@")) {
+      setErrors((prev) => ({ ...prev, senderEmail: "Valid email is required" }));
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/briefs", {
+      /* Step 1: Save brief to Supabase */
+      const briefRes = await fetch("/api/briefs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1933,20 +1986,35 @@ export default function IntakePage() {
         }),
       });
 
-      const data = await res.json();
+      const briefData = await briefRes.json();
 
-      if (!res.ok) {
-        alert(data.error || "Something went wrong. Please try again.");
+      if (!briefRes.ok) {
+        alert(briefData.error || "Something went wrong saving your brief.");
         setIsSubmitting(false);
         return;
       }
 
-      /* Brief saved — redirect to payment in Phase 5.
-         For now, show success with the brief ID. */
-      alert(
-        `Brief saved! ID: ${data.briefId}\n\nStripe checkout coming in Phase 5.`
-      );
-      setIsSubmitting(false);
+      /* Step 2: Create Stripe Checkout session and redirect */
+      const checkoutRes = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          briefId: briefData.briefId,
+          plan: selectedPlan,
+          email: formData.senderEmail,
+        }),
+      });
+
+      const checkoutData = await checkoutRes.json();
+
+      if (!checkoutRes.ok) {
+        alert(checkoutData.error || "Failed to start checkout. Please try again.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      /* Redirect to Stripe Checkout */
+      window.location.href = checkoutData.url;
     } catch {
       alert("Network error. Please check your connection and try again.");
       setIsSubmitting(false);
@@ -1970,7 +2038,7 @@ export default function IntakePage() {
       if (step === 4)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 5)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} />;
     }
 
     /* Hiring Manager: Resume(0) → About(1) → Role(2) → Preview(3) → Review(4) */
@@ -1984,7 +2052,7 @@ export default function IntakePage() {
       if (step === 3)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 4)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} />;
     }
 
     /* Salesperson: About(0) → Prospect(1) → Context(2) → Preview(3) → Review(4) */
@@ -1998,7 +2066,7 @@ export default function IntakePage() {
       if (step === 3)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 4)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} />;
     }
 
     return null;
