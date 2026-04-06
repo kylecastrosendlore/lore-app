@@ -221,7 +221,7 @@ function Navbar() {
   const links = [
     { label: "Problem", href: "/#problem" },
     { label: "How It Works", href: "/#how-it-works" },
-    { label: "Live Demo", href: "/demo" },
+    { label: "Sample Brief", href: "/#sample-brief" },
     { label: "Case Studies", href: "/case-studies" },
     { label: "Pricing", href: "/#pricing" },
     { label: "About", href: "/about" },
