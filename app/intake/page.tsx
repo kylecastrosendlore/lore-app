@@ -155,6 +155,59 @@ function HelperTip({ text }: { text: string }) {
   );
 }
 
+/* Compact 3-tip card. Used to coach users on what makes a great brief
+   without overwhelming the form with prose. */
+function ProTipsBox({
+  title = "Tips for the strongest brief",
+  tips,
+}: {
+  title?: string;
+  tips: { headline: string; detail: string }[];
+}) {
+  return (
+    <div
+      className="mt-4 mb-2 p-5 rounded-lg"
+      style={{
+        backgroundColor: "rgba(201, 169, 110, 0.05)",
+        border: "1px solid rgba(201, 169, 110, 0.25)",
+      }}
+    >
+      <div
+        className="font-mono text-[10px] uppercase mb-3"
+        style={{ letterSpacing: "0.18em", color: "#c9a96e" }}
+      >
+        {title}
+      </div>
+      <ul className="space-y-2.5">
+        {tips.map((tip, i) => (
+          <li key={i} className="flex gap-3">
+            <span
+              className="font-mono text-[10px] mt-1 flex-shrink-0"
+              style={{ color: "#c9a96e", letterSpacing: "0.1em" }}
+            >
+              0{i + 1}
+            </span>
+            <div>
+              <div
+                className="font-sans text-sm font-medium"
+                style={{ color: "#e8e4f4" }}
+              >
+                {tip.headline}
+              </div>
+              <div
+                className="font-sans text-xs mt-0.5 leading-relaxed"
+                style={{ color: "#9890ab" }}
+              >
+                {tip.detail}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function TextInput({
   label,
   value,
@@ -742,6 +795,23 @@ function JS_StepResume({
         error={errors.resumeText}
         ownerLabel="Your"
       />
+      <ProTipsBox
+        title="Make your resume work harder"
+        tips={[
+          {
+            headline: "Use the X / Y / Z formula",
+            detail: 'Did "X" to accomplish "Y" measured by "Z." Specifics beat adjectives every time.',
+          },
+          {
+            headline: "Quantify everything you can",
+            detail: "Numbers, percentages, dollars, time saved, audience size. Concrete > vague.",
+          },
+          {
+            headline: 'Own it — say "I," not "we"',
+            detail: "Take credit for what you actually drove. Hiring managers can't pitch a team.",
+          },
+        ]}
+      />
     </div>
   );
 }
@@ -789,15 +859,26 @@ function JS_StepAboutYou({
         label="What should they know about you that's NOT on your resume?"
         value={formData.senderBackground}
         onChange={(v) => setField("senderBackground", v)}
-        placeholder="Your secret weapon, passion projects, why you're uniquely suited for this..."
-        rows={3}
+        placeholder="A specific moment you owned an outcome. A passion project. The thing you'd lead with if you had 30 seconds in an elevator."
+        rows={4}
       />
-      <p
-        className="font-sans text-xs mt-2"
-        style={{ color: "#9890ab" }}
-      >
-        This gives the AI much better material to work with.
-      </p>
+      <ProTipsBox
+        title="What makes this section land"
+        tips={[
+          {
+            headline: "Lead with one specific story",
+            detail: "Not a list. One moment where you owned an outcome from start to finish.",
+          },
+          {
+            headline: "Quantify the result",
+            detail: "Even rough numbers — 'cut load time in half,' 'shipped in 6 weeks instead of 6 months.'",
+          },
+          {
+            headline: "Tell us the why, not the what",
+            detail: "Why you took the swing, why it mattered, why you're uniquely suited to this role.",
+          },
+        ]}
+      />
     </div>
   );
 }
@@ -964,6 +1045,23 @@ function HM_StepResume({
         error={errors.resumeText}
         ownerLabel="Candidate's"
       />
+      <ProTipsBox
+        title="Get the most out of their resume"
+        tips={[
+          {
+            headline: "Use their full, latest version",
+            detail: "More signal = better brief. A one-pager hides the texture we need.",
+          },
+          {
+            headline: "Don't pre-edit it",
+            detail: "Even the messy bits help us find the angle. We'll surface what matters.",
+          },
+          {
+            headline: "Add their LinkedIn if you have it",
+            detail: "It catches things resumes miss — recent projects, mutual connections, recs.",
+          },
+        ]}
+      />
       <TextInput
         label="Candidate's full name"
         value={formData.targetName}
@@ -1069,8 +1167,25 @@ function HM_StepRole({
         label="What makes this role compelling?"
         value={formData.roleCompelling}
         onChange={(v) => setField("roleCompelling", v)}
-        placeholder="Why would someone want this role? Growth opportunity, team, mission..."
-        rows={3}
+        placeholder="The actual reason a top candidate would say yes — not the job description boilerplate."
+        rows={4}
+      />
+      <ProTipsBox
+        title="Sell the role, not the listing"
+        tips={[
+          {
+            headline: "Lead with the unfair opportunity",
+            detail: "Budget, autonomy, scope, the team they'd build. What can they only get here?",
+          },
+          {
+            headline: "Name the impact, not the duties",
+            detail: '"Own the entire video org" beats "manage a team of 5 and report to the CMO."',
+          },
+          {
+            headline: "Be honest about the hard parts",
+            detail: "Top candidates trust honesty. Naming the challenge makes the upside believable.",
+          },
+        ]}
       />
       <RadioGroup
         label="Outreach type"
@@ -1281,10 +1396,26 @@ function SP_StepContext({
         label="Known pain points or triggers? (optional)"
         value={formData.painPoints}
         onChange={(v) => setField("painPoints", v)}
-        placeholder="Recent funding round, hiring spree, tech migration, competitor switch..."
-        rows={3}
+        placeholder="A specific signal you've spotted — funding round, leadership change, product launch, public quote, tech migration."
+        rows={4}
       />
-      <HelperTip text="This helps us craft relevant angles that resonate with the prospect." />
+      <ProTipsBox
+        title="What turns a guess into a brief"
+        tips={[
+          {
+            headline: "Cite a real signal, not a hunch",
+            detail: 'A linked tweet, a press release, a podcast quote. Specifics let us reference the source.',
+          },
+          {
+            headline: "Tie the pain to a date",
+            detail: '"Just raised Series B" gives us a why-now. "They need a CRM" doesn\'t.',
+          },
+          {
+            headline: "One sharp pain beats five soft ones",
+            detail: "We'd rather build the brief around one undeniable observation than a checklist.",
+          },
+        ]}
+      />
       <TextArea
         label="Specific angle or hook? (optional)"
         value={formData.specificAngle}
@@ -1391,12 +1522,28 @@ function IB_StepPartnership({
         label="What makes this partnership a fit?"
         value={formData.partnershipFit}
         onChange={(v) => setField("partnershipFit", v)}
-        placeholder="Why your brand + their product/service align..."
+        placeholder="The specific reason this isn't a generic pitch — shared values, audience overlap, a moment in the brand's arc you can speak to."
         required
         error={errors.partnershipFit}
-        rows={3}
+        rows={4}
       />
-      <HelperTip text="Focus on mutual value — why is this good for both sides?" />
+      <ProTipsBox
+        title="What makes a partnership pitch land"
+        tips={[
+          {
+            headline: "Prove you actually use it",
+            detail: "One real moment with the product beats any audience deck.",
+          },
+          {
+            headline: "Quantify what you bring",
+            detail: "Audience size, engagement rate, average view, conversion on past collabs. Concrete > vibes.",
+          },
+          {
+            headline: "Lead with their goal, not yours",
+            detail: "Brands fund partnerships that solve a problem they already had. Name that problem.",
+          },
+        ]}
+      />
 
       <TextArea
         label="Audience overlap notes (optional)"
