@@ -230,8 +230,25 @@ function MagneticButton({
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  // Detect touch device on mount
+  useEffect(() => {
+    const hasTouchSupport = () => {
+      return (
+        typeof window !== "undefined" &&
+        (navigator.maxTouchPoints > 0 ||
+          (navigator as any).msMaxTouchPoints > 0 ||
+          window.matchMedia("(pointer:coarse)").matches)
+      );
+    };
+    setIsTouchDevice(hasTouchSupport());
+  }, []);
 
   const handleMouse = (e: React.MouseEvent) => {
+    // Skip magnetic effect on touch devices
+    if (isTouchDevice) return;
+
     if (!ref.current) return;
     const rect = ref.current.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -242,25 +259,31 @@ function MagneticButton({
     setPosition({ x, y });
   };
 
+  const handleMouseLeave = () => {
+    setPosition({ x: 0, y: 0 });
+  };
+
   return (
     <motion.a
       ref={ref}
       href={href}
-      className="relative inline-flex items-center justify-center px-12 py-5 rounded-full font-mono text-sm uppercase overflow-hidden"
+      className="relative inline-flex items-center justify-center px-12 py-5 rounded-full font-mono text-sm uppercase overflow-hidden cursor-pointer"
       style={{
         letterSpacing: "0.2em",
         backgroundColor: "#f28fb5",
         color: "#0d0b17",
         x: position.x,
         y: position.y,
+        WebkitTapHighlightColor: "transparent",
       }}
       onMouseMove={handleMouse}
-      onMouseLeave={() => setPosition({ x: 0, y: 0 })}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={() => setPosition({ x: 0, y: 0 })}
       animate={{ scale: [1, 1.04, 1] }}
       transition={{
         scale: { duration: 2, repeat: Infinity, ease: "easeInOut" },
       }}
-      whileHover={{ scale: 1.06 }}
+      whileHover={isTouchDevice ? {} : { scale: 1.06 }}
       whileTap={{ scale: 0.98 }}
     >
       <span className="relative z-10 font-bold">{children}</span>
@@ -320,7 +343,9 @@ function Navbar() {
     { label: "Problem", href: "#problem" },
     { label: "How It Works", href: "#how-it-works" },
     { label: "Sample Brief", href: "#sample-brief" },
+    { label: "Case Studies", href: "/case-studies" },
     { label: "Pricing", href: "#pricing" },
+    { label: "About", href: "/about" },
     { label: "Contact", href: "mailto:kyle@sendlore.com" },
   ];
 
@@ -356,7 +381,7 @@ function Navbar() {
             <a
               key={link.label}
               href={link.href}
-              className="font-mono text-xs uppercase transition-colors duration-200 hover:text-[#f28fb5]"
+              className="font-mono text-xs uppercase transition-colors duration-200 hover:text-[#f28fb5] cursor-pointer"
               style={{ letterSpacing: "0.15em", color: "#9890ab" }}
             >
               {link.label}
@@ -364,11 +389,12 @@ function Navbar() {
           ))}
           <a
             href="/intake"
-            className="font-mono text-xs font-bold uppercase px-6 py-2.5 rounded-full transition-all duration-200 hover:scale-105"
+            className="font-mono text-xs font-bold uppercase px-6 py-2.5 rounded-full transition-all duration-200 hover:scale-105 cursor-pointer"
             style={{
               letterSpacing: "0.15em",
               backgroundColor: "#f28fb5",
               color: "#0d0b17",
+              WebkitTapHighlightColor: "transparent",
             }}
           >
             Build Your Brief
@@ -377,8 +403,11 @@ function Navbar() {
 
         {/* Mobile menu button */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="md:hidden flex flex-col gap-1.5 p-2 cursor-pointer touch-none"
           onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle mobile menu"
+          aria-expanded={mobileOpen}
+          type="button"
         >
           <motion.span
             className="w-5 h-px block"
@@ -406,7 +435,7 @@ function Navbar() {
               key={link.label}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="font-mono text-sm uppercase py-2 transition-colors hover:text-[#f28fb5]"
+              className="font-mono text-sm uppercase py-2 transition-colors hover:text-[#f28fb5] cursor-pointer"
               style={{ letterSpacing: "0.15em", color: "#9890ab" }}
             >
               {link.label}
@@ -415,11 +444,12 @@ function Navbar() {
           <a
             href="/intake"
             onClick={() => setMobileOpen(false)}
-            className="font-mono text-sm font-bold uppercase px-5 py-3 rounded-full text-center"
+            className="font-mono text-sm font-bold uppercase px-5 py-3 rounded-full text-center cursor-pointer"
             style={{
               letterSpacing: "0.15em",
               backgroundColor: "#f28fb5",
               color: "#0d0b17",
+              WebkitTapHighlightColor: "transparent",
             }}
           >
             Build Your Brief
@@ -1600,7 +1630,7 @@ function PricingSection() {
 
               <a
                 href="/intake"
-                className="block text-center px-6 py-4 rounded-full font-mono text-sm uppercase transition-all duration-200"
+                className="block text-center px-6 py-4 rounded-full font-mono text-sm uppercase transition-all duration-200 cursor-pointer"
                 style={{
                   letterSpacing: "0.15em",
                   backgroundColor: plan.highlight
@@ -1611,6 +1641,7 @@ function PricingSection() {
                     ? "none"
                     : `1px solid ${plan.accent}`,
                   fontWeight: plan.highlight ? 700 : 400,
+                  WebkitTapHighlightColor: "transparent",
                 }}
               >
                 Get Started

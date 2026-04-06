@@ -8,7 +8,7 @@ import Link from "next/link";
    TYPES
    ─────────────────────────────────────────── */
 
-type UserType = "job_seeker" | "hiring_manager" | "salesperson" | null;
+type UserType = "job_seeker" | "hiring_manager" | "salesperson" | "influencer_brand" | null;
 
 interface FormData {
   /* Shared — sender info */
@@ -38,6 +38,12 @@ interface FormData {
   prospectIndustry: string;
   painPoints: string;
   yourProduct: string;
+  /* Influencer/Brand specific */
+  brandCreatorName: string;
+  partnershipType: string;
+  partnershipFit: string;
+  audienceOverlapNotes: string;
+  uniqueAngle: string;
 }
 
 const emptyForm: FormData = {
@@ -62,6 +68,11 @@ const emptyForm: FormData = {
   prospectIndustry: "",
   painPoints: "",
   yourProduct: "",
+  brandCreatorName: "",
+  partnershipType: "",
+  partnershipFit: "",
+  audienceOverlapNotes: "",
+  uniqueAngle: "",
 };
 
 /* Step configs per user type */
@@ -79,6 +90,10 @@ const STEP_CONFIG: Record<
   },
   salesperson: {
     titles: ["About You", "Prospect", "Context", "Preview", "Review"],
+    total: 5,
+  },
+  influencer_brand: {
+    titles: ["About You", "Partnership", "Target", "Preview", "Review"],
     total: 5,
   },
 };
@@ -123,6 +138,17 @@ function ProgressBar({
         />
       </div>
     </div>
+  );
+}
+
+function HelperTip({ text }: { text: string }) {
+  return (
+    <p
+      className="font-sans text-xs mt-2"
+      style={{ color: "#9890ab" }}
+    >
+      {text}
+    </p>
   );
 }
 
@@ -580,6 +606,12 @@ function UserTypeSelection({
       desc: "Research any prospect and generate a personalized pitch brief + outreach email.",
       icon: "03",
     },
+    {
+      type: "influencer_brand" as UserType,
+      title: "Influencer/Brand",
+      desc: "Pitch partnerships and collaborations with data-driven intel on audience fit and opportunities.",
+      icon: "04",
+    },
   ];
 
   return (
@@ -751,12 +783,18 @@ function JS_StepAboutYou({
         error={errors.senderRole}
       />
       <TextArea
-        label="Professional background"
+        label="What should they know about you that's NOT on your resume?"
         value={formData.senderBackground}
         onChange={(v) => setField("senderBackground", v)}
-        placeholder="2-3 sentences about your experience and what makes you stand out..."
+        placeholder="Your secret weapon, passion projects, why you're uniquely suited for this..."
         rows={3}
       />
+      <p
+        className="font-sans text-xs mt-2"
+        style={{ color: "#9890ab" }}
+      >
+        This gives the AI much better material to work with.
+      </p>
     </div>
   );
 }
@@ -792,6 +830,8 @@ function JS_StepTarget({
         required
         error={errors.targetName}
       />
+      <HelperTip text="The more specific, the better. Full name + title helps us research them." />
+
       <TextInput
         label="Their job title"
         value={formData.targetTitle}
@@ -800,6 +840,7 @@ function JS_StepTarget({
         required
         error={errors.targetTitle}
       />
+
       <TextInput
         label="Their company"
         value={formData.targetCompany}
@@ -808,6 +849,7 @@ function JS_StepTarget({
         required
         error={errors.targetCompany}
       />
+
       <TextInput
         label="LinkedIn URL (optional)"
         value={formData.targetLinkedIn}
@@ -815,6 +857,7 @@ function JS_StepTarget({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
+      <HelperTip text="This helps us gather intel on their background and interests." />
     </div>
   );
 }
@@ -866,6 +909,8 @@ function JS_StepContext({
         onChange={(v) => setField("goal", v)}
         error={errors.goal}
       />
+      <HelperTip text="Be specific — 'Get a 15-min call' is better than 'network'." />
+
       <TextArea
         label="Anything specific to mention? (optional)"
         value={formData.notes}
@@ -873,6 +918,7 @@ function JS_StepContext({
         placeholder="A shared connection, a project you admire, a recent milestone..."
         rows={3}
       />
+      <HelperTip text="Anything else that makes this outreach unique? Inside connections, shared interests, recent news?" />
     </div>
   );
 }
@@ -1104,6 +1150,7 @@ function SP_StepAboutYou({
         error={errors.yourProduct}
         rows={3}
       />
+      <HelperTip text="Focus on the outcome or transformation your product delivers." />
     </div>
   );
 }
@@ -1140,6 +1187,8 @@ function SP_StepProspect({
         required
         error={errors.targetName}
       />
+      <HelperTip text="The more specific, the better. Full name + title helps us research them." />
+
       <TextInput
         label="Their title"
         value={formData.targetTitle}
@@ -1148,6 +1197,7 @@ function SP_StepProspect({
         required
         error={errors.targetTitle}
       />
+
       <TextInput
         label="Their company"
         value={formData.targetCompany}
@@ -1156,6 +1206,7 @@ function SP_StepProspect({
         required
         error={errors.targetCompany}
       />
+
       <TextInput
         label="LinkedIn URL (optional)"
         value={formData.targetLinkedIn}
@@ -1163,6 +1214,7 @@ function SP_StepProspect({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
+      <HelperTip text="This helps us gather intel on their background and interests." />
       <TextInput
         label="Industry (optional)"
         value={formData.prospectIndustry}
@@ -1220,6 +1272,8 @@ function SP_StepContext({
         onChange={(v) => setField("goal", v)}
         error={errors.goal}
       />
+      <HelperTip text="Be specific — 'Book a 30-min demo' is better than 'build relationship'." />
+
       <TextArea
         label="Known pain points or triggers? (optional)"
         value={formData.painPoints}
@@ -1227,6 +1281,7 @@ function SP_StepContext({
         placeholder="Recent funding round, hiring spree, tech migration, competitor switch..."
         rows={3}
       />
+      <HelperTip text="This helps us craft relevant angles that resonate with the prospect." />
       <TextArea
         label="Specific angle or hook? (optional)"
         value={formData.specificAngle}
@@ -1234,6 +1289,183 @@ function SP_StepContext({
         placeholder="Mutual connection, recent announcement, shared interest..."
         rows={2}
       />
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────────
+   STEP COMPONENTS — INFLUENCER/BRAND
+   ─────────────────────────────────────────── */
+
+function IB_StepAboutYou({
+  formData,
+  setField,
+  errors,
+}: {
+  formData: FormData;
+  setField: (key: keyof FormData, val: string) => void;
+  errors: Record<string, string>;
+}) {
+  return (
+    <div>
+      <h2
+        className="font-serif text-3xl md:text-4xl font-light mb-2"
+        style={{ color: "#e8e4f4" }}
+      >
+        About you
+      </h2>
+      <p
+        className="font-sans text-base font-light mb-8"
+        style={{ color: "#9890ab" }}
+      >
+        Tell us about your brand or creator profile.
+      </p>
+      <TextInput
+        label="Brand or creator name"
+        value={formData.brandCreatorName}
+        onChange={(v) => setField("brandCreatorName", v)}
+        placeholder="Your Brand Name"
+        required
+        error={errors.brandCreatorName}
+      />
+      <TextInput
+        label="Your role or title"
+        value={formData.senderRole}
+        onChange={(v) => setField("senderRole", v)}
+        placeholder="Founder, Content Creator, Brand Manager"
+        required
+        error={errors.senderRole}
+      />
+      <TextInput
+        label="Your email"
+        value={formData.senderEmail}
+        onChange={(v) => setField("senderEmail", v)}
+        placeholder="you@brand.com"
+        type="email"
+        required
+        error={errors.senderEmail}
+      />
+    </div>
+  );
+}
+
+function IB_StepPartnership({
+  formData,
+  setField,
+  errors,
+}: {
+  formData: FormData;
+  setField: (key: keyof FormData, val: string) => void;
+  errors: Record<string, string>;
+}) {
+  return (
+    <div>
+      <h2
+        className="font-serif text-3xl md:text-4xl font-light mb-2"
+        style={{ color: "#e8e4f4" }}
+      >
+        Partnership details
+      </h2>
+      <p
+        className="font-sans text-base font-light mb-8"
+        style={{ color: "#9890ab" }}
+      >
+        What kind of collaboration are you pitching?
+      </p>
+      <RadioGroup
+        label="Partnership type"
+        options={[
+          { value: "sponsorship", label: "Sponsorship" },
+          { value: "collaboration", label: "Collaboration" },
+          { value: "ambassador", label: "Ambassador/Affiliate" },
+          { value: "other", label: "Other" },
+        ]}
+        value={formData.partnershipType}
+        onChange={(v) => setField("partnershipType", v)}
+        error={errors.partnershipType}
+      />
+      <TextArea
+        label="What makes this partnership a fit?"
+        value={formData.partnershipFit}
+        onChange={(v) => setField("partnershipFit", v)}
+        placeholder="Why your brand + their product/service align..."
+        required
+        error={errors.partnershipFit}
+        rows={3}
+      />
+      <HelperTip text="Focus on mutual value — why is this good for both sides?" />
+
+      <TextArea
+        label="Audience overlap notes (optional)"
+        value={formData.audienceOverlapNotes}
+        onChange={(v) => setField("audienceOverlapNotes", v)}
+        placeholder="Audience demographics, interests, platform overlap..."
+        rows={3}
+      />
+    </div>
+  );
+}
+
+function IB_StepTarget({
+  formData,
+  setField,
+  errors,
+}: {
+  formData: FormData;
+  setField: (key: keyof FormData, val: string) => void;
+  errors: Record<string, string>;
+}) {
+  return (
+    <div>
+      <h2
+        className="font-serif text-3xl md:text-4xl font-light mb-2"
+        style={{ color: "#e8e4f4" }}
+      >
+        Target partner
+      </h2>
+      <p
+        className="font-sans text-base font-light mb-8"
+        style={{ color: "#9890ab" }}
+      >
+        Which brand, company, or creator are you pitching to?
+      </p>
+      <TextInput
+        label="Company or brand name"
+        value={formData.targetCompany}
+        onChange={(v) => setField("targetCompany", v)}
+        placeholder="Brand Name"
+        required
+        error={errors.targetCompany}
+      />
+      <TextInput
+        label="Contact name (optional)"
+        value={formData.targetName}
+        onChange={(v) => setField("targetName", v)}
+        placeholder="Full name of contact person"
+      />
+      <TextInput
+        label="Their title (optional)"
+        value={formData.targetTitle}
+        onChange={(v) => setField("targetTitle", v)}
+        placeholder="Partnerships Manager, CMO, CEO"
+      />
+      <TextInput
+        label="LinkedIn URL (optional)"
+        value={formData.targetLinkedIn}
+        onChange={(v) => setField("targetLinkedIn", v)}
+        placeholder="https://linkedin.com/in/..."
+        type="url"
+      />
+      <HelperTip text="This helps us gather intel on their brand positioning and past partnerships." />
+
+      <TextArea
+        label="Specific angle or unique value prop? (optional)"
+        value={formData.uniqueAngle}
+        onChange={(v) => setField("uniqueAngle", v)}
+        placeholder="Why now? Recent milestone, shared values, trending topic..."
+        rows={2}
+      />
+      <HelperTip text="What makes THIS partnership pitch stand out?" />
     </div>
   );
 }
@@ -1254,9 +1486,13 @@ function StepPreview({
   formData: FormData;
 }) {
   const targetLabel =
-    userType === "hiring_manager" ? "candidate" : "prospect";
-  const recipientName = formData.targetName || "your target";
-  const senderName = formData.senderName || "You";
+    userType === "hiring_manager"
+      ? "candidate"
+      : userType === "influencer_brand"
+      ? "partner"
+      : "prospect";
+  const recipientName = formData.targetName || formData.targetCompany || "your target";
+  const senderName = formData.brandCreatorName || formData.senderName || "You";
 
   return (
     <div>
@@ -1301,6 +1537,8 @@ function StepPreview({
                 ? `A brief for ${recipientName}`
                 : userType === "hiring_manager"
                 ? `${recipientName} — Candidate Brief`
+                : userType === "influencer_brand"
+                ? `Partnership Brief: ${recipientName}`
                 : `Intel brief: ${recipientName}`}
             </span>
           </div>
@@ -1328,6 +1566,16 @@ function StepPreview({
                   for this role.
                 </em>
               </>
+            ) : userType === "influencer_brand" ? (
+              <>
+                {recipientName},{" "}
+                <em
+                  className="font-normal italic"
+                  style={{ color: "#f28fb5" }}
+                >
+                  why we&rsquo;re a perfect fit.
+                </em>
+              </>
             ) : (
               <>
                 {recipientName},{" "}
@@ -1349,6 +1597,8 @@ function StepPreview({
               ? `A cinematic look at what ${senderName} brings to ${formData.targetCompany || "the team"}.`
               : userType === "hiring_manager"
               ? `A visual intelligence brief on ${recipientName} for the ${formData.roleHiringFor || "open"} role.`
+              : userType === "influencer_brand"
+              ? `Partnership research and pitch for ${recipientName}.`
               : `Personalized research and pitch for ${recipientName} at ${formData.targetCompany || "their company"}.`}
           </p>
         </div>
@@ -1675,37 +1925,71 @@ function StepReview({
       ];
     }
 
-    /* salesperson */
+    if (userType === "salesperson") {
+      return [
+        {
+          title: "About You",
+          step: 0,
+          fields: [
+            { label: "Name", value: formData.senderName },
+            { label: "Role", value: formData.senderRole },
+            { label: "Company", value: formData.senderCompany },
+            { label: "Product", value: formData.yourProduct },
+          ],
+        },
+        {
+          title: "Prospect",
+          step: 1,
+          fields: [
+            { label: "Name", value: formData.targetName },
+            { label: "Title", value: formData.targetTitle },
+            { label: "Company", value: formData.targetCompany },
+            { label: "Industry", value: formData.prospectIndustry },
+            { label: "LinkedIn", value: formData.targetLinkedIn },
+          ],
+        },
+        {
+          title: "Context",
+          step: 2,
+          fields: [
+            { label: "Outreach", value: formData.outreachType },
+            { label: "Goal", value: formData.goal },
+            { label: "Pain Points", value: formData.painPoints },
+            { label: "Angle", value: formData.specificAngle },
+          ],
+        },
+      ];
+    }
+
+    /* influencer_brand */
     return [
       {
         title: "About You",
         step: 0,
         fields: [
-          { label: "Name", value: formData.senderName },
+          { label: "Brand/Creator", value: formData.brandCreatorName },
           { label: "Role", value: formData.senderRole },
-          { label: "Company", value: formData.senderCompany },
-          { label: "Product", value: formData.yourProduct },
+          { label: "Email", value: formData.senderEmail },
         ],
       },
       {
-        title: "Prospect",
+        title: "Partnership",
         step: 1,
         fields: [
-          { label: "Name", value: formData.targetName },
-          { label: "Title", value: formData.targetTitle },
-          { label: "Company", value: formData.targetCompany },
-          { label: "Industry", value: formData.prospectIndustry },
-          { label: "LinkedIn", value: formData.targetLinkedIn },
+          { label: "Type", value: formData.partnershipType },
+          { label: "Fit", value: formData.partnershipFit },
+          { label: "Audience Overlap", value: formData.audienceOverlapNotes },
         ],
       },
       {
-        title: "Context",
+        title: "Target Partner",
         step: 2,
         fields: [
-          { label: "Outreach", value: formData.outreachType },
-          { label: "Goal", value: formData.goal },
-          { label: "Pain Points", value: formData.painPoints },
-          { label: "Angle", value: formData.specificAngle },
+          { label: "Company/Brand", value: formData.targetCompany },
+          { label: "Contact", value: formData.targetName },
+          { label: "Title", value: formData.targetTitle },
+          { label: "LinkedIn", value: formData.targetLinkedIn },
+          { label: "Unique Angle", value: formData.uniqueAngle },
         ],
       },
     ];
@@ -1929,6 +2213,22 @@ export default function IntakePage() {
       }
     }
 
+    if (userType === "influencer_brand") {
+      if (step === 0) {
+        if (!formData.brandCreatorName.trim()) e.brandCreatorName = "Brand/creator name is required";
+        if (!formData.senderRole.trim()) e.senderRole = "Role is required";
+        if (!formData.senderEmail.trim()) e.senderEmail = "Email is required";
+      }
+      if (step === 1) {
+        if (!formData.partnershipType) e.partnershipType = "Select a partnership type";
+        if (!formData.partnershipFit.trim()) e.partnershipFit = "Partnership fit description is required";
+      }
+      if (step === 2) {
+        if (!formData.targetCompany.trim())
+          e.targetCompany = "Target company/brand is required";
+      }
+    }
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -1982,6 +2282,11 @@ export default function IntakePage() {
           prospectIndustry: formData.prospectIndustry,
           painPoints: formData.painPoints,
           yourProduct: formData.yourProduct,
+          brandCreatorName: formData.brandCreatorName,
+          partnershipType: formData.partnershipType,
+          partnershipFit: formData.partnershipFit,
+          audienceOverlapNotes: formData.audienceOverlapNotes,
+          uniqueAngle: formData.uniqueAngle,
           plan: selectedPlan,
         }),
       });
@@ -2063,6 +2368,20 @@ export default function IntakePage() {
         return <SP_StepProspect formData={formData} setField={setField} errors={errors} />;
       if (step === 2)
         return <SP_StepContext formData={formData} setField={setField} errors={errors} />;
+      if (step === 3)
+        return <StepPreview userType={userType} formData={formData} />;
+      if (step === 4)
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} />;
+    }
+
+    /* Influencer/Brand: About(0) → Partnership(1) → Target(2) → Preview(3) → Review(4) */
+    if (userType === "influencer_brand") {
+      if (step === 0)
+        return <IB_StepAboutYou formData={formData} setField={setField} errors={errors} />;
+      if (step === 1)
+        return <IB_StepPartnership formData={formData} setField={setField} errors={errors} />;
+      if (step === 2)
+        return <IB_StepTarget formData={formData} setField={setField} errors={errors} />;
       if (step === 3)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 4)
