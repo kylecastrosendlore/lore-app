@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 /* ───────────────────────────────────────────
@@ -24,7 +24,9 @@ interface BriefData {
 
 export default function BriefViewer() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const briefId = params.id as string;
+  const accessToken = searchParams.get("t") || "";
   const [brief, setBrief] = useState<BriefData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showEmail, setShowEmail] = useState(false);
@@ -74,7 +76,9 @@ export default function BriefViewer() {
   /* Poll for brief status */
   const fetchBrief = useCallback(async () => {
     try {
-      const res = await fetch(`/api/briefs/${briefId}`);
+      const res = await fetch(
+        `/api/briefs/${briefId}${accessToken ? `?t=${encodeURIComponent(accessToken)}` : ""}`
+      );
       const data = await res.json();
 
       if (!res.ok) {
@@ -96,7 +100,7 @@ export default function BriefViewer() {
     } catch {
       setError("Network error loading brief");
     }
-  }, [briefId, generationTriggered, triggerGeneration]);
+  }, [briefId, accessToken, generationTriggered, triggerGeneration]);
 
   useEffect(() => {
     if (!briefId) return;

@@ -15,6 +15,10 @@ function SuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const briefId = searchParams.get("brief_id");
+  const token = searchParams.get("t");
+  const briefUrl = briefId
+    ? `/brief/${briefId}${token ? `?t=${encodeURIComponent(token)}` : ""}`
+    : null;
   const [dots, setDots] = useState("");
 
   /* Animated dots */
@@ -27,12 +31,12 @@ function SuccessContent() {
 
   /* Auto-redirect to the brief viewer after a short delay */
   useEffect(() => {
-    if (!briefId) return;
+    if (!briefUrl) return;
     const timer = setTimeout(() => {
-      router.push(`/brief/${briefId}`);
+      router.push(briefUrl);
     }, 3000); // 3 seconds — enough time to see the confirmation
     return () => clearTimeout(timer);
-  }, [briefId, router]);
+  }, [briefUrl, router]);
 
   return (
     <div
@@ -103,9 +107,9 @@ function SuccessContent() {
         Preparing your brief{dots}
       </motion.div>
 
-      {briefId && (
+      {briefUrl && (
         <motion.a
-          href={`/brief/${briefId}`}
+          href={briefUrl}
           className="font-mono text-xs uppercase transition-colors hover:text-[#f28fb5]"
           style={{ letterSpacing: "0.15em", color: "#9890ab" }}
           initial={{ opacity: 0 }}

@@ -57,14 +57,27 @@ export async function POST(request: Request) {
       );
     }
 
-    /* ── Sanitize: strip HTML and problematic characters ── */
-    const sanitize = (val: unknown): string | null => {
+    /* ── Email format check (sender_email is optional but must be valid if present) ── */
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (body.senderEmail && (typeof body.senderEmail !== "string" || !EMAIL_REGEX.test(body.senderEmail) || body.senderEmail.length > 320)) {
+      return NextResponse.json(
+        { error: "Invalid sender email" },
+        { status: 400 }
+      );
+    }
+
+    /* ── Sanitize: strip HTML, problematic characters, and cap length ── */
+    const MAX_LEN = 4000;
+    const MAX_RESUME_LEN = 20000;
+    const sanitize = (val: unknown, max: number = MAX_LEN): string | null => {
       if (typeof val !== "string") return null;
-      return val
+      const cleaned = val
         .replace(/<[^>]*>/g, "")       // strip HTML tags
         .replace(/\x00/g, "")           // remove null bytes
         .replace(/\\u0000/g, "")        // remove escaped null bytes
-        .trim() || null;
+        .trim();
+      if (!cleaned) return null;
+      return cleaned.slice(0, max);
     };
 
     /* ── Build row ── */
@@ -76,7 +89,7 @@ export async function POST(request: Request) {
       sender_background: sanitize(body.senderBackground),
       sender_company: sanitize(body.senderCompany),
       sender_company_desc: sanitize(body.senderCompanyDesc),
-      resume_text: sanitize(body.resumeText),
+      resume_text: sanitize(body.resumeText, MAX_RESUME_LEN),
       resume_file_name: sanitize(body.resumeFileName),
       target_name: sanitize(body.targetName),
       target_title: sanitize(body.targetTitle),
@@ -107,18 +120,21 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from("briefs")
       .insert(row)
-      .select("id")
+      .select("id, access_token")
       .single();
 
     if (error) {
-      console.error("Supabase insert error:", error.message, error.details, error.hint);
+      console.error("Supabase insert error:", error.message);
       return NextResponse.json(
-        { error: `Failed to save brief: ${error.message}` },
+        { error: "Failed to save brief" },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ briefId: data.id }, { status: 201 });
+    return NextResponse.json(
+      { briefId: data.id, accessToken: data.access_token },
+      { status: 201 }
+    );
   } catch (err) {
     console.error("API error:", err);
     return NextResponse.json(

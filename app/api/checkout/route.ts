@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     const supabase = getSupabaseAdmin();
     const { data: brief, error: briefError } = await supabase
       .from("briefs")
-      .select("id, payment_status")
+      .select("id, payment_status, access_token")
       .eq("id", briefId)
       .single();
 
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
         briefId,
         plan,
       },
-      success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}&brief_id=${briefId}`,
+      success_url: `${origin}/payment/success?session_id={CHECKOUT_SESSION_ID}&brief_id=${briefId}${brief.access_token ? `&t=${brief.access_token}` : ""}`,
       cancel_url: `${origin}/payment/cancel?brief_id=${briefId}`,
     });
 

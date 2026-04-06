@@ -69,13 +69,9 @@ export async function POST(request: Request) {
       .eq("id", briefId);
 
     if (result.found) {
-      console.log(
-        `✅ Apollo enrichment found data for ${brief.target_name} (brief ${briefId})`
-      );
+      console.log(`✅ Apollo enrichment found data for brief ${briefId}`);
     } else {
-      console.log(
-        `❌ Apollo enrichment found nothing for ${brief.target_name} (brief ${briefId})`
-      );
+      console.log(`❌ Apollo enrichment found nothing for brief ${briefId}`);
     }
 
     return NextResponse.json(

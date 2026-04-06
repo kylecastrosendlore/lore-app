@@ -21,16 +21,30 @@ export async function GET(
       );
     }
 
+    /* Access token is required in addition to the UUID. UUIDs are
+       identifiers, not secrets. */
+    const url = new URL(request.url);
+    const token = url.searchParams.get("t");
+
     const supabase = getSupabaseAdmin();
     const { data: brief, error } = await supabase
       .from("briefs")
       .select(
-        "id, brief_status, brief_html, email_subject, email_body, target_name, sender_name, user_type, payment_status, contact_id_status"
+        "id, access_token, brief_status, brief_html, email_subject, email_body, target_name, sender_name, user_type, payment_status, contact_id_status"
       )
       .eq("id", id)
       .single();
 
     if (error || !brief) {
+      return NextResponse.json(
+        { error: "Brief not found" },
+        { status: 404 }
+      );
+    }
+
+    /* If the brief has an access token, require it. (Legacy rows without
+       one fall through for backward compat until backfill runs.) */
+    if (brief.access_token && brief.access_token !== token) {
       return NextResponse.json(
         { error: "Brief not found" },
         { status: 404 }

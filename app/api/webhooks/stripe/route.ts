@@ -52,6 +52,22 @@ export async function POST(request: Request) {
     event = JSON.parse(body);
   }
 
+  /* ── Idempotency guard ──
+     Stripe retries events on failures. Insert the event id into
+     stripe_events first; if it already exists, we've processed this event
+     before and can short-circuit. */
+  const { error: dedupeError } = await supabase
+    .from("stripe_events")
+    .insert({ id: event.id });
+
+  if (dedupeError) {
+    /* Duplicate pkey = already handled. Any other error = log + continue. */
+    if ((dedupeError as { code?: string }).code === "23505") {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+    console.error("stripe_events insert error:", dedupeError.message);
+  }
+
   /* ── Handle events ── */
   try {
     switch (event.type) {
