@@ -458,7 +458,7 @@ function HeroSection() {
         animate={inView ? "animate" : "initial"}
       >
         <motion.div variants={fadeUp} className="mb-8">
-          <Eyebrow text="Real Results" inView={inView} />
+          <Eyebrow text="Example Scenarios" inView={inView} />
         </motion.div>
 
         <motion.h1
@@ -492,11 +492,11 @@ function CaseStudiesSection() {
   const cases: CaseStudy[] = [
     {
       id: "marcus",
-      name: "Marcus Chen",
+      name: "Marcus C.",
       type: "Job Seeker",
       situation:
         "Marcus had 5 years of marketing experience but was losing out to hundreds of other qualified candidates. His cold LinkedIn messages were getting ignored.",
-      company: "Bloom Cosmetics",
+      company: "a DTC beauty brand",
       brief:
         "Instead of a standard cold message, Marcus created a LORE brief analyzing Bloom's content strategy. He identified that only 6% of their content was video, and provided a comprehensive roadmap showing how to increase that to 40% with projected engagement metrics.",
       results: [
@@ -510,7 +510,7 @@ function CaseStudiesSection() {
     },
     {
       id: "ava",
-      name: "Ava Rodriguez",
+      name: "Ava R.",
       type: "Sales",
       situation:
         "Ava's SaaS company sold supply chain optimization software, but breaking into Fortune 500 accounts meant fighting through gatekeepers and generic pitch decks that never got opened.",
@@ -528,13 +528,13 @@ function CaseStudiesSection() {
     },
     {
       id: "jordan",
-      name: "Jordan Park",
+      name: "Jordan P.",
       type: "Influencer",
       situation:
         "Jordan had 180K engaged followers in fitness and wellness, but brand deals came in piecemeal. Working with premium athletic brands required proving value beyond follower count.",
-      company: "Stride Athletics",
+      company: "a premium athletic brand",
       brief:
-        "Jordan sent a LORE brief to Stride Athletics that went beyond pitch deck basics—detailed audience demographics, engagement benchmarks vs. industry standards, and a complete 6-month content collaboration roadmap with specific deliverables and cross-promotion strategy.",
+        "Jordan sent a LORE brief to a premium athletic brand that went beyond pitch deck basics—detailed audience demographics, engagement benchmarks vs. industry standards, and a complete 6-month content collaboration roadmap with specific deliverables and cross-promotion strategy.",
       results: [
         { metric: "Deal Value", value: "$45K" },
         { metric: "Contract Length", value: "6 months" },

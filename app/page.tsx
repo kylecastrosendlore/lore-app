@@ -979,7 +979,7 @@ function SampleBriefSection() {
                   className="font-mono text-xs uppercase"
                   style={{ letterSpacing: "0.2em", color: "#c9a96e" }}
                 >
-                  A brief for Jenna, from Marcus Chen
+                  A brief for Jenna, from Marcus C.
                 </span>
               </div>
               <h3
@@ -1351,7 +1351,7 @@ function SampleBriefSection() {
                 style={{ color: "#e8e4f4" }}
               >
                 Same playbook.{" "}
-                <em className="font-normal italic" style={{ color: "#f28fb5" }}>Meridian Media.</em>
+                <em className="font-normal italic" style={{ color: "#f28fb5" }}>a media brand.</em>
               </h4>
               <p className="font-sans text-base font-light mb-10 text-center max-w-lg" style={{ color: "#9890ab" }}>
                 180K followers. Zero video. Here&apos;s what happened in 6 months.
@@ -1384,14 +1384,14 @@ function SampleBriefSection() {
 
               <div className="w-full max-w-lg p-5 border rounded-lg text-center" style={{ borderColor: "rgba(201, 169, 110, 0.3)", backgroundColor: "rgba(201, 169, 110, 0.05)" }}>
                 <p className="font-sans text-base font-light" style={{ color: "#d2cfe0" }}>
-                  Meridian&apos;s video now drives{" "}
+                  Their video now drives{" "}
                   <span className="font-serif text-xl" style={{ color: "#c9a96e" }}>$52K/month</span>{" "}
                   in revenue. Same audience size. Same playbook.
                 </p>
               </div>
 
               <p className="font-mono text-xs uppercase mt-4" style={{ letterSpacing: "0.1em", color: "#9890ab" }}>
-                Meridian Media · Head of Video · 2023–2025
+                Media Brand · Head of Video · 2023–2025
               </p>
             </div>
 
@@ -1431,7 +1431,7 @@ function SampleBriefSection() {
               </motion.button>
               <div className="mt-12">
                 <span className="font-mono text-xs uppercase" style={{ letterSpacing: "0.2em", color: "#c9a96e" }}>
-                  LORE Intelligence Brief &mdash; Built by Marcus Chen
+                  LORE Intelligence Brief &mdash; Built by Marcus C.
                 </span>
               </div>
             </div>
