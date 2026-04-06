@@ -17,7 +17,7 @@ function getClient(): Anthropic {
 /* ── Types ── */
 
 interface BriefInput {
-  userType: "job_seeker" | "hiring_manager" | "salesperson";
+  userType: "job_seeker" | "hiring_manager" | "salesperson" | "influencer_brand";
   /* Sender */
   senderName: string;
   senderRole?: string;
@@ -42,6 +42,12 @@ interface BriefInput {
   prospectIndustry?: string;
   painPoints?: string;
   yourProduct?: string;
+  /* Influencer / Brand specific */
+  brandCreatorName?: string;
+  partnershipType?: string;
+  partnershipFit?: string;
+  audienceOverlapNotes?: string;
+  uniqueAngle?: string;
   /* Apollo enrichment data */
   enrichmentData?: {
     fullName?: string;
@@ -122,6 +128,14 @@ Required sections (adapt based on user type):
 5. **Personalized Approach** — Specific talking points and conversation starters
 6. **The Pitch** — A compelling, brief pitch tailored to this exact prospect
 
+### For Influencer / Brand Partnerships:
+1. **Hero Header** — Target brand's name in gold, with "Partnership Intelligence Brief"
+2. **Brand Snapshot** — Quick take on the target brand's positioning, audience, and recent campaigns
+3. **Audience Fit** — Specific overlap between the creator/brand's audience and the target's ICP, with real numbers where possible
+4. **The Unique Angle** — Why this partnership is different from every other pitch in their inbox
+5. **Collaboration Roadmap** — A 3–6 month content/partnership plan with specific deliverables, not vague ideas
+6. **The Ask** — A clear, confident invitation to a conversation about the partnership
+
 ## VISUAL DESIGN RULES
 
 - Use generous whitespace and padding (40px+ between sections)
@@ -138,19 +152,66 @@ Required sections (adapt based on user type):
 
 ## EMAIL RULES
 
-Subject line:
-- Max 50 characters
-- Create intrigue without being clickbaity
-- Personalize with the target's name or company
-- Examples: "Sarah, this isn't a cold email" or "A brief built just for you, Marcus"
+### Core philosophy
+This email is NOT a pitch. NOT a cover letter. NOT a resume summary. NOT a
+cold sales template. The entire purpose of the email is to earn the click
+to the brief by making the recipient feel genuinely seen and respected.
 
-Email body:
-- 3-4 short paragraphs max
-- Open with something that proves you've done your homework on them
-- Tease 1-2 specific insights from the brief without giving everything away
-- Include a clear CTA link placeholder: {{BRIEF_LINK}}
-- Sign off with the sender's name
-- Tone: confident, warm, not desperate or salesy
+Every sentence must be about THEM — their work, their company, their
+challenges, their reputation, their context. The sender's credentials are
+in the brief. The email's job is to get them to open it.
+
+### Subject line
+- Max 55 characters, ideally 40–50
+- Must feel personal and non-templated — never start with "Quick question"
+  or "Following up" or anything a cold-email template would use
+- Reference the recipient by first name OR reference something specific
+  about their company/role
+- Create curiosity about the brief without giving it away
+- Good: "Jenna — I built this instead of a resume"
+- Good: "A brief on Acme's content gap, for Marcus"
+- Good: "Sarah — one idea for Bloom's video strategy"
+- Bad: "Opportunity for you" / "Let's connect" / anything generic
+
+### Email body (4 short paragraphs, ~90–140 words total)
+
+**Paragraph 1 — Name the moment, reframe the medium.**
+Open by acknowledging, in one sentence, that the recipient gets flooded with
+cold emails / pitches / resumes / DMs. Then pivot: explain that instead of
+adding to that pile, the sender built them a cinematic intelligence brief —
+a real piece of research about their company and role. The phrase "not a
+pitch / not a resume / not a cover letter" (pick the one most relevant to
+the recipient's context) should appear here explicitly.
+
+**Paragraph 2 — Prove the homework.**
+Drop 1–2 specific, concrete observations about the recipient's company,
+role, recent work, or challenges that only someone who actually did
+research could know. This is the proof of respect. No flattery, no
+"I love what you're doing" — specificity only.
+
+**Paragraph 3 — Tease the brief without spoiling it.**
+In one or two sentences, hint at what's inside the brief (e.g. "a
+30/60/90 plan for the video gap I found in your content mix" or "three
+underexplored angles on your supply chain pain"). Make them curious
+enough to click.
+
+**Paragraph 4 — The ask + link.**
+One sentence inviting them to open the brief. Use the exact link
+placeholder: {{BRIEF_LINK}}. Then a one-line sign-off with the sender's
+first name only. No titles, no signature blocks.
+
+### Tone
+Confident, warm, quietly intelligent. Never desperate, never salesy, never
+humble-bragging. Imagine a thoughtful person handing a recipient a bound
+report across a table — not a hand raised in a crowd.
+
+### Hard bans
+- Do NOT say "I'd love to" or "I'd be honored" or "I'd appreciate the
+  opportunity." Cut supplication.
+- Do NOT pitch the sender's experience in the email. That lives in the brief.
+- Do NOT use the word "synergy," "circle back," or "touch base."
+- Do NOT sign off with "Best regards" or "Sincerely" — just the first name.
+- Do NOT include more than one link. The only link is {{BRIEF_LINK}}.
 
 ## OUTPUT FORMAT
 
@@ -214,6 +275,16 @@ function buildUserPrompt(input: BriefInput): string {
     if (input.prospectIndustry) sections.push(`- Prospect Industry: ${input.prospectIndustry}`);
     if (input.painPoints) sections.push(`- Known Pain Points: ${input.painPoints}`);
     if (input.yourProduct) sections.push(`- Your Product/Service: ${input.yourProduct}`);
+  }
+
+  /* Influencer / Brand specific */
+  if (input.userType === "influencer_brand") {
+    sections.push(`## Partnership Context`);
+    if (input.brandCreatorName) sections.push(`- Creator / Brand Name: ${input.brandCreatorName}`);
+    if (input.partnershipType) sections.push(`- Partnership Type: ${input.partnershipType}`);
+    if (input.partnershipFit) sections.push(`- Why It's a Fit: ${input.partnershipFit}`);
+    if (input.audienceOverlapNotes) sections.push(`- Audience Overlap: ${input.audienceOverlapNotes}`);
+    if (input.uniqueAngle) sections.push(`- Unique Angle: ${input.uniqueAngle}`);
   }
 
   /* Apollo enrichment data */

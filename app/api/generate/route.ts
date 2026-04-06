@@ -92,6 +92,11 @@ export async function POST(request: Request) {
       prospectIndustry: brief.prospect_industry || undefined,
       painPoints: brief.pain_points || undefined,
       yourProduct: brief.your_product || undefined,
+      brandCreatorName: brief.brand_creator_name || undefined,
+      partnershipType: brief.partnership_type || undefined,
+      partnershipFit: brief.partnership_fit || undefined,
+      audienceOverlapNotes: brief.audience_overlap_notes || undefined,
+      uniqueAngle: brief.unique_angle || undefined,
       enrichmentData,
     });
 
