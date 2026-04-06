@@ -181,6 +181,7 @@ function Navbar() {
     { label: "Sample Brief", href: "/#sample-brief" },
     { label: "Case Studies", href: "/case-studies" },
     { label: "Pricing", href: "/#pricing" },
+    { label: "About", href: "/about" },
     { label: "Contact", href: "mailto:kyle@sendlore.com" },
   ];
 
@@ -296,13 +297,14 @@ function Navbar() {
 
 interface CaseStudy {
   id: string;
-  name: string;
+  name: string; // use case title
   type: "Job Seeker" | "Sales" | "Influencer";
   situation: string;
-  company: string;
+  company: string; // label, e.g. "Use Case · Job Seeker"
   brief: string;
-  results: { metric: string; value: string }[];
+  results: { metric: string; value: string; source?: string }[];
   quote: string;
+  quoteSource?: string;
   color: string; // #f28fb5 for pink, #c9a96e for gold
 }
 
@@ -375,7 +377,7 @@ function CaseStudyCard({
 
         <p className="font-sans text-sm md:text-base font-light" style={{ color: "#d2cfe0" }}>
           <span style={{ color: "#9890ab" }} className="font-mono text-xs uppercase mr-2">
-            What They Did
+            The LORE Approach
           </span>
           {study.brief}
         </p>
@@ -413,6 +415,14 @@ function CaseStudyCard({
             >
               {result.metric}
             </div>
+            {result.source && (
+              <div
+                className="font-mono text-[10px] uppercase mt-1"
+                style={{ letterSpacing: "0.12em", color: "#6b6380" }}
+              >
+                {result.source}
+              </div>
+            )}
           </motion.div>
         ))}
       </motion.div>
@@ -426,11 +436,13 @@ function CaseStudyCard({
         animate={inView ? "animate" : "initial"}
       >
         <p className="font-sans italic text-base md:text-lg font-light mb-2" style={{ color: "#e8e4f4" }}>
-          "{study.quote}"
+          &ldquo;{study.quote}&rdquo;
         </p>
-        <p className="font-mono text-xs uppercase" style={{ letterSpacing: "0.15em", color: "#9890ab" }}>
-          — {study.name}
-        </p>
+        {study.quoteSource && (
+          <p className="font-mono text-xs uppercase" style={{ letterSpacing: "0.15em", color: "#9890ab" }}>
+            Source: {study.quoteSource}
+          </p>
+        )}
       </motion.blockquote>
     </motion.div>
   );
@@ -466,8 +478,8 @@ function HeroSection() {
           className="font-serif text-5xl md:text-7xl font-light leading-tight mb-6"
           style={{ color: "#e8e4f4" }}
         >
-          How LORE Changed{" "}
-          <span style={{ color: "#f28fb5" }}>Everything</span>
+          Where LORE{" "}
+          <span style={{ color: "#f28fb5" }}>Wins</span>
         </motion.h1>
 
         <GoldDivider inView={inView} />
@@ -477,8 +489,9 @@ function HeroSection() {
           className="font-sans text-lg md:text-2xl font-light max-w-2xl mx-auto"
           style={{ color: "#d2cfe0" }}
         >
-          From job seekers to enterprise salespeople to creators — LORE briefs
-          opened doors that traditional outreach couldn't.
+          Three use cases where personalized, research-first outreach
+          consistently beats cold email, DMs, and templated pitches —
+          backed by the actual industry data.
         </motion.p>
       </motion.div>
     </section>
@@ -491,57 +504,60 @@ function CaseStudiesSection() {
 
   const cases: CaseStudy[] = [
     {
-      id: "marcus",
-      name: "Marcus C.",
+      id: "job-seeker",
+      name: "The Candidate Who Refuses to Blend In",
       type: "Job Seeker",
       situation:
-        "Marcus had 5 years of marketing experience but was losing out to hundreds of other qualified candidates. His cold LinkedIn messages were getting ignored.",
-      company: "a DTC beauty brand",
+        "Hiring teams are drowning in AI-generated resumes and cover letters that all read the same. Recruiters average six seconds per resume, and cold LinkedIn DMs from candidates rarely get a response. Standing out means showing up differently.",
+      company: "Use Case · Job Seeker",
       brief:
-        "Instead of a standard cold message, Marcus created a LORE brief analyzing Bloom's content strategy. He identified that only 6% of their content was video, and provided a comprehensive roadmap showing how to increase that to 40% with projected engagement metrics.",
+        "Instead of another resume, a candidate sends a LORE brief that analyzes the company's strategy, identifies a real gap or opportunity, and lays out a 30/60/90 point of view on how they'd attack it. It's not an application — it's a proof of thinking.",
       results: [
-        { metric: "Response Time", value: "24 hrs" },
-        { metric: "Interview Secured", value: "Week 1" },
-        { metric: "Offer Received", value: "Week 3" },
+        { metric: "Recruiter time per resume", value: "~7.4s", source: "Ladders eye-tracking study" },
+        { metric: "Hiring managers who value research over credentials", value: "90%", source: "LinkedIn Global Talent Trends" },
+        { metric: "Avg cold LinkedIn DM reply rate", value: "3–5%", source: "LinkedIn Sales Insights" },
       ],
       quote:
-        "My LORE brief showed I understood their business better than any resume could. It was a conversation starter, not a job application. They called me within a day.",
+        "The candidates who stand out are the ones who demonstrate they understand the business, not just the job description.",
+      quoteSource: "LinkedIn Global Talent Trends",
       color: "#f28fb5",
     },
     {
-      id: "ava",
-      name: "Ava R.",
+      id: "sales",
+      name: "The Seller Who Walks in Already Knowing",
       type: "Sales",
       situation:
-        "Ava's SaaS company sold supply chain optimization software, but breaking into Fortune 500 accounts meant fighting through gatekeepers and generic pitch decks that never got opened.",
-      company: "Fortune 500 Operations",
+        "B2B buyers are now 57–70% of the way through their buying journey before they ever talk to sales. Generic pitch decks get deleted. Breaking into enterprise accounts means arriving with insight the prospect hasn't seen before.",
+      company: "Use Case · Sales",
       brief:
-        "Ava didn't send a pitch deck. She sent a personalized intelligence brief mapping the prospect's specific supply chain inefficiencies using public data, then showed exactly how her product would solve them—with projected cost savings and ROI.",
+        "A seller sends a LORE brief mapping the prospect's specific operational pain using public data, then frames their product as the answer — with projected ROI. It replaces the cold email + deck dance with a single, undeniable experience.",
       results: [
-        { metric: "Gatekeeper Bypass", value: "Direct VP" },
-        { metric: "Deal Closed", value: "$240K" },
-        { metric: "Timeline", value: "6 weeks" },
+        { metric: "B2B buyers who prefer personalized outreach", value: "80%", source: "Salesforce State of the Connected Customer" },
+        { metric: "Lift in reply rates from personalized messages", value: "6x", source: "HubSpot / Experian benchmarks" },
+        { metric: "Of buying journey done before sales contact", value: "57–70%", source: "Gartner B2B Buying Research" },
       ],
       quote:
-        "Every VP of Operations wants proof that someone understands their business. LORE made me look like an insider before we even met. The deal was half-closed before our first call.",
+        "Buyers say sellers who bring insight about their specific business are the ones who win the meeting — and the deal.",
+      quoteSource: "Gartner B2B Buying Research",
       color: "#c9a96e",
     },
     {
-      id: "jordan",
-      name: "Jordan P.",
+      id: "creator",
+      name: "The Creator Who Pitches Like a Partner",
       type: "Influencer",
       situation:
-        "Jordan had 180K engaged followers in fitness and wellness, but brand deals came in piecemeal. Working with premium athletic brands required proving value beyond follower count.",
-      company: "a premium athletic brand",
+        "Brands are flooded with generic creator pitch decks that lead with follower counts. Marketing teams increasingly reject vanity metrics and look for creators who understand brand strategy, audience fit, and long-term storytelling.",
+      company: "Use Case · Influencer & Brand",
       brief:
-        "Jordan sent a LORE brief to a premium athletic brand that went beyond pitch deck basics—detailed audience demographics, engagement benchmarks vs. industry standards, and a complete 6-month content collaboration roadmap with specific deliverables and cross-promotion strategy.",
+        "A creator sends a LORE brief that goes beyond media kits: audience overlap with the brand's ICP, engagement benchmarks vs. category norms, and a 6-month content collaboration roadmap tied to the brand's real marketing goals.",
       results: [
-        { metric: "Deal Value", value: "$45K" },
-        { metric: "Contract Length", value: "6 months" },
-        { metric: "Ambassador Status", value: "Secured" },
+        { metric: "Marketers using creator / influencer marketing", value: "86%", source: "Influencer Marketing Hub 2025 Benchmark" },
+        { metric: "Consumers who trust creators over brand ads", value: "61%", source: "Edelman Trust Barometer" },
+        { metric: "ROI lift from creators with audience-fit strategy", value: "5.2x", source: "Influencer Marketing Hub" },
       ],
       quote:
-        "I went from pitching performance metrics to telling a story about why Stride's community needed what I was offering. LORE turned me from an influencer into a strategic partner.",
+        "The creators who land long-term deals are the ones who think like a marketing partner, not a rate card.",
+      quoteSource: "Influencer Marketing Hub 2025 Benchmark",
       color: "#f28fb5",
     },
   ];

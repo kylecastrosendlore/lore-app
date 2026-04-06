@@ -219,7 +219,12 @@ function Navbar() {
   }, []);
 
   const links = [
-    { label: "Home", href: "/" },
+    { label: "Problem", href: "/#problem" },
+    { label: "How It Works", href: "/#how-it-works" },
+    { label: "Sample Brief", href: "/#sample-brief" },
+    { label: "Case Studies", href: "/case-studies" },
+    { label: "Pricing", href: "/#pricing" },
+    { label: "About", href: "/about" },
     { label: "Contact", href: "mailto:kyle@sendlore.com" },
   ];
 
@@ -340,7 +345,7 @@ function HeroSection() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-32 pb-20 overflow-hidden"
       style={{ backgroundColor: "#0d0b17" }}
     >
       <GoldParticles />
@@ -424,7 +429,11 @@ function OriginSection() {
             className="font-sans text-lg font-light leading-relaxed"
             style={{ color: "#d2cfe0" }}
           >
-            So I asked myself a different question: <span style={{ color: "#c9a96e" }}>What if instead of sending a pitch, you sent an experience?</span> What if you could show someone you&apos;ve done real homework on them—their company, their challenges, their opportunities—and present it in a way that&apos;s impossible to ignore?
+            So I asked myself a different question:{" "}
+            <span style={{ color: "#c9a96e" }}>
+              What if instead of sending a pitch, you sent an experience?
+            </span>{" "}
+            What if you could show someone you&apos;ve done real homework on them—their company, their challenges, their opportunities—and present it in a way that&apos;s impossible to ignore?
           </motion.p>
 
           <motion.p
@@ -445,6 +454,134 @@ function OriginSection() {
             LORE transforms cold outreach into cinematic intelligence briefs—hyper-researched, beautifully designed web experiences built for one person. Not a template. Not a pitch. An experience.
           </motion.p>
         </div>
+      </motion.div>
+    </section>
+  );
+}
+
+function WhyItWorksSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  const stats = [
+    {
+      stat: "1–5%",
+      label: "Average cold email reply rate",
+      context: "Most cold outreach gets ignored. Templated pitches hit the delete button before they&apos;re ever read.",
+      source: "Backlinko, Woodpecker industry reports",
+      color: "#f28fb5",
+    },
+    {
+      stat: "80%",
+      label: "Of B2B buyers prefer personalized outreach",
+      context: "Decision-makers actively reward the people who do homework—and ignore the ones who don&apos;t.",
+      source: "Salesforce State of the Connected Customer",
+      color: "#c9a96e",
+    },
+    {
+      stat: "6x",
+      label: "Higher response rates for personalized messages",
+      context: "Tailored outreach that references real details about the recipient consistently outperforms generic templates by a wide margin.",
+      source: "Experian, HubSpot benchmarks",
+      color: "#7B6FD4",
+    },
+    {
+      stat: "90%",
+      label: "Of hiring managers value research over resumes",
+      context: "Recruiters and executives say candidates who demonstrate deep knowledge of the company stand out more than those with perfect credentials.",
+      source: "LinkedIn Global Talent Trends",
+      color: "#f28fb5",
+    },
+  ];
+
+  return (
+    <section
+      ref={ref}
+      className="relative py-24 px-6 overflow-hidden"
+      style={{ backgroundColor: "#0d0b17" }}
+    >
+      <GoldParticles count={18} />
+
+      <motion.div
+        className="max-w-5xl mx-auto relative z-10"
+        variants={stagger}
+        initial="initial"
+        animate={inView ? "animate" : "initial"}
+      >
+        <motion.div variants={fadeUp} className="text-center mb-6">
+          <Eyebrow text="Why LORE Works" inView={inView} />
+        </motion.div>
+
+        <motion.h2
+          variants={fadeUp}
+          className="font-serif text-4xl md:text-5xl font-light leading-tight text-center mb-6"
+          style={{ color: "#e8e4f4" }}
+        >
+          Cold email is{" "}
+          <em className="italic font-normal" style={{ color: "#f28fb5" }}>
+            broken.
+          </em>
+          <br />
+          Research{" "}
+          <em className="italic font-normal" style={{ color: "#c9a96e" }}>
+            wins.
+          </em>
+        </motion.h2>
+
+        <motion.p
+          variants={fadeUp}
+          className="font-sans text-lg font-light text-center max-w-2xl mx-auto mb-16"
+          style={{ color: "#9890ab" }}
+        >
+          The numbers tell a clear story: generic outreach fails, and decision-makers reward the people who show they&apos;ve done their homework.
+        </motion.p>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {stats.map((s, i) => (
+            <motion.div
+              key={i}
+              variants={fadeUp}
+              className="p-8 rounded-xl border"
+              style={{
+                backgroundColor: "rgba(20, 15, 35, 0.6)",
+                borderColor: "rgba(201, 169, 110, 0.15)",
+              }}
+            >
+              <div
+                className="font-serif text-5xl md:text-6xl font-light mb-3"
+                style={{ color: s.color }}
+              >
+                {s.stat}
+              </div>
+              <div
+                className="font-mono text-xs uppercase mb-4"
+                style={{ letterSpacing: "0.15em", color: "#d2cfe0" }}
+              >
+                {s.label}
+              </div>
+              <p
+                className="font-sans text-base font-light leading-relaxed mb-3"
+                style={{ color: "#9890ab" }}
+                dangerouslySetInnerHTML={{ __html: s.context }}
+              />
+              <p
+                className="font-mono text-[10px] uppercase"
+                style={{ letterSpacing: "0.15em", color: "#6b6380" }}
+              >
+                Source: {s.source}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.p
+          variants={fadeUp}
+          className="font-serif text-2xl md:text-3xl font-light italic text-center mt-16 max-w-3xl mx-auto leading-relaxed"
+          style={{ color: "#e8e4f4" }}
+        >
+          LORE was built for the way decision-makers{" "}
+          <span style={{ color: "#c9a96e" }}>actually</span> want to be reached.
+        </motion.p>
       </motion.div>
     </section>
   );
@@ -653,6 +790,7 @@ export default function About() {
       <DriftingGlow />
       <HeroSection />
       <OriginSection />
+      <WhyItWorksSection />
       <MissionSection />
       <PhilosophySection />
       <CTASection />
