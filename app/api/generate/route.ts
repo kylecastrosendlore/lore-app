@@ -54,11 +54,32 @@ export async function POST(request: Request) {
       );
     }
 
-    /* ── Mark as generating ── */
-    await supabase
+    /* ── Claim the row atomically ──
+       Only proceed if the status is still 'draft'. This prevents
+       duplicate concurrent generations (e.g. React double-invokes,
+       webhook + client race, retries) from each burning an Anthropic call. */
+    const { data: claimed, error: claimError } = await supabase
       .from("briefs")
       .update({ brief_status: "generating" })
-      .eq("id", briefId);
+      .eq("id", briefId)
+      .eq("brief_status", "draft")
+      .select("id")
+      .maybeSingle();
+
+    if (claimError) {
+      return NextResponse.json(
+        { error: "Failed to claim brief for generation" },
+        { status: 500 }
+      );
+    }
+
+    if (!claimed) {
+      /* Another worker already picked this up — not an error. */
+      return NextResponse.json(
+        { success: true, alreadyInFlight: true, briefId },
+        { status: 200 }
+      );
+    }
 
     /* ── Parse Apollo enrichment data if available ── */
     let enrichmentData = null;
@@ -149,8 +170,9 @@ export async function POST(request: Request) {
       }
     } catch { /* ignore */ }
 
+    void message;
     return NextResponse.json(
-      { error: `Brief generation failed: ${message}` },
+      { error: "Brief generation failed" },
       { status: 500 }
     );
   }

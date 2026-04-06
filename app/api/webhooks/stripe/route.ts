@@ -26,7 +26,10 @@ export async function POST(request: Request) {
   /* ── Verify webhook signature ── */
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (webhookSecret && signature) {
+  if (webhookSecret) {
+    if (!signature) {
+      return NextResponse.json({ error: "Missing signature" }, { status: 400 });
+    }
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
@@ -37,8 +40,15 @@ export async function POST(request: Request) {
       );
     }
   } else {
-    /* Dev mode — no signature verification */
-    console.warn("⚠️  No STRIPE_WEBHOOK_SECRET set — skipping signature check");
+    /* No secret configured — ONLY allowed outside production. */
+    if (process.env.NODE_ENV === "production") {
+      console.error("STRIPE_WEBHOOK_SECRET is not set in production — refusing webhook");
+      return NextResponse.json(
+        { error: "Webhook not configured" },
+        { status: 500 }
+      );
+    }
+    console.warn("⚠️  No STRIPE_WEBHOOK_SECRET set — skipping signature check (dev only)");
     event = JSON.parse(body);
   }
 

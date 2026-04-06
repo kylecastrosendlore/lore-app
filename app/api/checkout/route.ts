@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("Checkout API error:", message);
     return NextResponse.json(
-      { error: `Failed to create checkout session: ${message}` },
+      { error: "Failed to create checkout session" },
       { status: 500 }
     );
   }

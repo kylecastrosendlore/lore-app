@@ -30,6 +30,21 @@ export default function BriefViewer() {
   const [showEmail, setShowEmail] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [dots, setDots] = useState("");
+  const [iframeHeight, setIframeHeight] = useState(3000);
+
+  /* Listen for height messages from the sandboxed iframe */
+  useEffect(() => {
+    const handler = (event: MessageEvent) => {
+      /* sandboxed iframes without allow-same-origin post from "null" origin */
+      if (event.origin !== "null" && event.origin !== window.location.origin) return;
+      const data = event.data;
+      if (data && data.type === "lore:resize" && typeof data.height === "number") {
+        setIframeHeight(Math.min(Math.max(data.height + 50, 600), 20000));
+      }
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, []);
 
   /* Animated dots while generating */
   useEffect(() => {
@@ -266,27 +281,36 @@ export default function BriefViewer() {
         </motion.div>
       )}
 
-      {/* The actual brief HTML */}
+      {/* The actual brief HTML — sandboxed (no allow-same-origin, no top-nav)
+          so AI-generated content can't touch parent cookies, storage, or DOM.
+          Height is reported back via postMessage from an injected resize script. */}
       {brief.briefHtml && (
         <div className="w-full">
           <iframe
-            srcDoc={brief.briefHtml}
+            srcDoc={`${brief.briefHtml}
+<script>
+  (function () {
+    function report() {
+      var h = Math.max(
+        document.body ? document.body.scrollHeight : 0,
+        document.documentElement ? document.documentElement.scrollHeight : 0
+      );
+      try { parent.postMessage({ type: "lore:resize", height: h }, "*"); } catch (e) {}
+    }
+    window.addEventListener("load", report);
+    window.addEventListener("resize", report);
+    if (window.ResizeObserver && document.body) {
+      new ResizeObserver(report).observe(document.body);
+    }
+    setTimeout(report, 300);
+    setTimeout(report, 1500);
+  })();
+</script>`}
+            sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+            referrerPolicy="no-referrer"
             className="w-full border-0"
-            style={{ minHeight: "100vh" }}
+            style={{ minHeight: "100vh", height: `${iframeHeight}px` }}
             title={`Intelligence Brief for ${brief.targetName}`}
-            onLoad={(e) => {
-              /* Auto-resize iframe to content height */
-              const iframe = e.target as HTMLIFrameElement;
-              try {
-                const height = iframe.contentDocument?.documentElement?.scrollHeight;
-                if (height) {
-                  iframe.style.height = `${height + 50}px`;
-                }
-              } catch {
-                /* Cross-origin fallback — use a generous default */
-                iframe.style.height = "3000px";
-              }
-            }}
           />
         </div>
       )}
