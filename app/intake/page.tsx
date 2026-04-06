@@ -44,6 +44,8 @@ interface FormData {
   partnershipFit: string;
   audienceOverlapNotes: string;
   uniqueAngle: string;
+  /* Contact enrichment opt-in */
+  wantsContactEnrichment: boolean;
 }
 
 const emptyForm: FormData = {
@@ -73,6 +75,7 @@ const emptyForm: FormData = {
   partnershipFit: "",
   audienceOverlapNotes: "",
   uniqueAngle: "",
+  wantsContactEnrichment: false,
 };
 
 /* Step configs per user type */
@@ -712,7 +715,7 @@ function JS_StepResume({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   onFileRead: (text: string, fileName: string) => void;
   errors: Record<string, string>;
 }) {
@@ -749,7 +752,7 @@ function JS_StepAboutYou({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -805,7 +808,7 @@ function JS_StepTarget({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -868,7 +871,7 @@ function JS_StepContext({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -934,7 +937,7 @@ function HM_StepResume({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   onFileRead: (text: string, fileName: string) => void;
   errors: Record<string, string>;
 }) {
@@ -986,7 +989,7 @@ function HM_StepAboutYou({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -1037,7 +1040,7 @@ function HM_StepRole({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -1100,7 +1103,7 @@ function SP_StepAboutYou({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -1161,7 +1164,7 @@ function SP_StepProspect({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -1231,7 +1234,7 @@ function SP_StepContext({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -1303,7 +1306,7 @@ function IB_StepAboutYou({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -1355,7 +1358,7 @@ function IB_StepPartnership({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -1412,7 +1415,7 @@ function IB_StepTarget({
   errors,
 }: {
   formData: FormData;
-  setField: (key: keyof FormData, val: string) => void;
+  setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
 }) {
   return (
@@ -1825,6 +1828,7 @@ function StepReview({
   onPlanChange,
   onEmailChange,
   emailError,
+  onContactToggle,
 }: {
   userType: Exclude<UserType, null>;
   formData: FormData;
@@ -1833,6 +1837,7 @@ function StepReview({
   onPlanChange: (plan: string) => void;
   onEmailChange: (email: string) => void;
   emailError?: string;
+  onContactToggle: (value: boolean) => void;
 }) {
   const buildSections = () => {
     if (userType === "job_seeker") {
@@ -2104,6 +2109,69 @@ function StepReview({
         )}
       </div>
 
+      {/* Contact enrichment opt-in */}
+      <div
+        className="mt-8 p-6 rounded-xl border transition-all duration-200"
+        style={{
+          borderColor: formData.wantsContactEnrichment
+            ? "#c9a96e"
+            : "rgba(201, 169, 110, 0.3)",
+          backgroundColor: formData.wantsContactEnrichment
+            ? "rgba(201, 169, 110, 0.08)"
+            : "rgba(30, 21, 53, 0.3)",
+        }}
+      >
+        <label className="flex items-start gap-4 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.wantsContactEnrichment}
+            onChange={(e) => onContactToggle(e.target.checked)}
+            className="mt-1 w-5 h-5 rounded accent-[#c9a96e] cursor-pointer shrink-0"
+          />
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span
+                className="font-mono text-xs uppercase"
+                style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+              >
+                Find their email &amp; phone
+              </span>
+              <span
+                className="font-mono text-[10px] uppercase px-2 py-0.5 rounded-full"
+                style={{
+                  letterSpacing: "0.12em",
+                  color: "#0d0b17",
+                  backgroundColor: "#c9a96e",
+                }}
+              >
+                Optional
+              </span>
+            </div>
+            <p
+              className="font-sans text-base font-light mb-2"
+              style={{ color: "#e8e4f4" }}
+            >
+              Let LORE look up{" "}
+              <span style={{ color: "#f28fb5" }}>
+                {formData.targetName || "your contact"}
+              </span>
+              &rsquo;s direct work email and phone number so your brief lands
+              where it counts.
+            </p>
+            <p
+              className="font-sans text-sm font-light"
+              style={{ color: "#9890ab" }}
+            >
+              Included free on{" "}
+              <span style={{ color: "#c9a96e" }}>Unlimited</span>. One lookup
+              credit is included with Single Brief and 5-Pack. Results are
+              best-effort &mdash; we&rsquo;ll tell you if we can&rsquo;t find
+              verified contact info.
+            </p>
+          </div>
+        </label>
+      </div>
+
       {/* Pricing tiers */}
       <PricingSelector selected={selectedPlan} onChange={onPlanChange} />
     </div>
@@ -2124,7 +2192,7 @@ export default function IntakePage() {
   const config = userType ? STEP_CONFIG[userType] : null;
   const totalSteps = config?.total ?? 0;
 
-  const setField = (key: keyof FormData, val: string) => {
+  const setField = (key: keyof FormData, val: string | boolean) => {
     setFormData((prev) => ({ ...prev, [key]: val }));
     if (errors[key]) {
       setErrors((prev) => {
@@ -2263,6 +2331,7 @@ export default function IntakePage() {
         body: JSON.stringify({
           userType,
           senderName: formData.senderName,
+          senderEmail: formData.senderEmail,
           senderRole: formData.senderRole,
           senderBackground: formData.senderBackground,
           senderCompany: formData.senderCompany,
@@ -2288,6 +2357,7 @@ export default function IntakePage() {
           audienceOverlapNotes: formData.audienceOverlapNotes,
           uniqueAngle: formData.uniqueAngle,
           plan: selectedPlan,
+          contactIdRequested: formData.wantsContactEnrichment,
         }),
       });
 
@@ -2343,7 +2413,7 @@ export default function IntakePage() {
       if (step === 4)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 5)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} />;
     }
 
     /* Hiring Manager: Resume(0) → About(1) → Role(2) → Preview(3) → Review(4) */
@@ -2357,7 +2427,7 @@ export default function IntakePage() {
       if (step === 3)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 4)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} />;
     }
 
     /* Salesperson: About(0) → Prospect(1) → Context(2) → Preview(3) → Review(4) */
@@ -2371,7 +2441,7 @@ export default function IntakePage() {
       if (step === 3)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 4)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} />;
     }
 
     /* Influencer/Brand: About(0) → Partnership(1) → Target(2) → Preview(3) → Review(4) */
@@ -2385,7 +2455,7 @@ export default function IntakePage() {
       if (step === 3)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 4)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} />;
     }
 
     return null;

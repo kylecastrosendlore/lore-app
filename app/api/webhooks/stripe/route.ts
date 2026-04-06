@@ -98,15 +98,21 @@ export async function POST(request: Request) {
           });
         }
 
-        /* ── Trigger Apollo enrichment (non-blocking) ── */
+        /* ── Trigger Apollo enrichment (non-blocking, opt-in) ── */
         try {
           const { data: briefData } = await supabase
             .from("briefs")
-            .select("target_name, target_company, target_linkedin")
+            .select("target_name, target_company, target_linkedin, contact_id_requested, plan")
             .eq("id", briefId)
             .single();
 
-          if (briefData?.target_name) {
+          // Only run Apollo if the user opted in on the review step.
+          // Unlimited-plan users always get contact lookups (plan includes them).
+          const shouldEnrich =
+            briefData?.contact_id_requested === true ||
+            briefData?.plan === "subscription";
+
+          if (shouldEnrich && briefData?.target_name) {
             const { firstName, lastName } = parseName(briefData.target_name);
             const enrichResult = await enrichPerson({
               firstName,

@@ -8,7 +8,12 @@ import { getSupabaseAdmin } from "@/lib/supabase";
    ─────────────────────────────────────────── */
 
 /* Allowed values for validation */
-const VALID_USER_TYPES = ["job_seeker", "hiring_manager", "salesperson"];
+const VALID_USER_TYPES = [
+  "job_seeker",
+  "hiring_manager",
+  "salesperson",
+  "influencer_brand",
+];
 const VALID_PLANS = ["one_off", "subscription", "pack_five"];
 const VALID_OUTREACH = ["cold", "warm", "referral", "followup"];
 
@@ -89,6 +94,7 @@ export async function POST(request: Request) {
       plan: body.plan || "one_off",
       payment_status: "pending" as const,
       brief_status: "draft" as const,
+      contact_id_requested: body.contactIdRequested === true,
     };
 
     /* ── Insert ── */
