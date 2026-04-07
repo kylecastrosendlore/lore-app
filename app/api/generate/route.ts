@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { generateBrief } from "@/lib/ai";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
-/* Allow up to 60s for AI generation (Vercel Pro) or 10s (free) */
-export const maxDuration = 60;
+/* Allow up to 300s — sonnet-4-5 generating 16K tokens of HTML can take 90-180s */
+export const maxDuration = 300;
 
 /* ───────────────────────────────────────────
    POST /api/generate
