@@ -29,7 +29,7 @@ export default function BriefViewer() {
   const accessToken = searchParams.get("t") || "";
   const [brief, setBrief] = useState<BriefData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [showEmail, setShowEmail] = useState(false);
+  const [showEmail, setShowEmail] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
   const [dots, setDots] = useState("");
   const [iframeHeight, setIframeHeight] = useState(3000);
@@ -218,6 +218,18 @@ export default function BriefViewer() {
 
         <div className="flex items-center gap-3">
           <button
+            onClick={() => copyToClipboard(typeof window !== "undefined" ? window.location.href : "", "link")}
+            className="font-mono text-xs uppercase px-4 py-2 rounded-full border transition-all duration-200"
+            style={{
+              letterSpacing: "0.1em",
+              color: copied === "link" ? "#0d0b17" : "#0d0b17",
+              backgroundColor: copied === "link" ? "#c9a96e" : "#f28fb5",
+              borderColor: "transparent",
+            }}
+          >
+            {copied === "link" ? "Link copied!" : "Copy shareable link"}
+          </button>
+          <button
             onClick={() => setShowEmail(!showEmail)}
             className="font-mono text-xs uppercase px-4 py-2 rounded-full border transition-all duration-200 hover:border-[#c9a96e] hover:text-[#c9a96e]"
             style={{ letterSpacing: "0.1em", color: "#9890ab", borderColor: "#2a2340" }}
@@ -319,12 +331,57 @@ export default function BriefViewer() {
         </div>
       )}
 
-      {/* Footer */}
+      {/* Big Copy Link block — paste this URL into your email */}
       <div
-        className="py-8 text-center"
+        className="py-16 px-6 text-center"
         style={{ borderTop: "1px solid #2a2340" }}
       >
-        <p className="font-mono text-xs uppercase" style={{ letterSpacing: "0.15em", color: "#9890ab" }}>
+        <span
+          className="font-mono text-xs uppercase block mb-4"
+          style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+        >
+          Your shareable brief link
+        </span>
+        <h2
+          className="font-serif text-3xl md:text-4xl font-light mb-3"
+          style={{ color: "#e8e4f4" }}
+        >
+          Paste this in your email <span style={{ color: "#f28fb5", fontStyle: "italic" }}>and send it.</span>
+        </h2>
+        <p
+          className="font-sans text-base mb-8 max-w-xl mx-auto"
+          style={{ color: "#9890ab" }}
+        >
+          Anyone with this link can view the brief. Drop it into the email body above (we already wrote one for you).
+        </p>
+
+        <div
+          className="max-w-2xl mx-auto p-4 rounded-xl border flex items-center justify-between gap-3 mb-4"
+          style={{
+            borderColor: "#2a2340",
+            backgroundColor: "rgba(30, 21, 53, 0.4)",
+          }}
+        >
+          <code
+            className="font-mono text-xs md:text-sm truncate text-left flex-1"
+            style={{ color: "#d2cfe0" }}
+          >
+            {typeof window !== "undefined" ? window.location.href : ""}
+          </code>
+          <button
+            onClick={() => copyToClipboard(typeof window !== "undefined" ? window.location.href : "", "link-bottom")}
+            className="font-mono text-xs uppercase px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap"
+            style={{
+              letterSpacing: "0.1em",
+              color: "#0d0b17",
+              backgroundColor: copied === "link-bottom" ? "#c9a96e" : "#f28fb5",
+            }}
+          >
+            {copied === "link-bottom" ? "Copied!" : "Copy link"}
+          </button>
+        </div>
+
+        <p className="font-mono text-xs uppercase mt-8" style={{ letterSpacing: "0.15em", color: "#9890ab" }}>
           Crafted by LORE &mdash; Intelligence Briefs
         </p>
         <a
