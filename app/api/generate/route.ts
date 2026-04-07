@@ -95,6 +95,7 @@ export async function POST(request: Request) {
     const result = await generateBrief({
       userType: brief.user_type,
       senderName: brief.sender_name,
+      senderEmail: brief.sender_email || undefined,
       senderRole: brief.sender_role || undefined,
       senderBackground: brief.sender_background || undefined,
       senderCompany: brief.sender_company || undefined,
