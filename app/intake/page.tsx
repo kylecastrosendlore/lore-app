@@ -44,6 +44,8 @@ interface FormData {
   partnershipFit: string;
   audienceOverlapNotes: string;
   uniqueAngle: string;
+  mediaKitText: string;
+  mediaKitFileName: string;
   /* Contact enrichment opt-in */
   wantsContactEnrichment: boolean;
 }
@@ -75,6 +77,8 @@ const emptyForm: FormData = {
   partnershipFit: "",
   audienceOverlapNotes: "",
   uniqueAngle: "",
+  mediaKitText: "",
+  mediaKitFileName: "",
   wantsContactEnrichment: false,
 };
 
@@ -96,8 +100,8 @@ const STEP_CONFIG: Record<
     total: 5,
   },
   influencer_brand: {
-    titles: ["About You", "Partnership", "Target", "Preview", "Review"],
-    total: 5,
+    titles: ["Media Kit", "About You", "Partnership", "Target", "Preview", "Review"],
+    total: 6,
   },
 };
 
@@ -402,6 +406,10 @@ function ResumeUpload({
   onFileRead,
   error,
   ownerLabel,
+  kind = "resume",
+  acceptAttr = ".pdf,.docx,.doc,.txt",
+  acceptHint = "PDF, DOCX, or TXT",
+  pastePlaceholder = "Paste your resume content here...",
 }: {
   resumeText: string;
   resumeFileName: string;
@@ -409,6 +417,10 @@ function ResumeUpload({
   onFileRead: (text: string, fileName: string) => void;
   error?: string;
   ownerLabel: string;
+  kind?: string;
+  acceptAttr?: string;
+  acceptHint?: string;
+  pastePlaceholder?: string;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -473,7 +485,7 @@ function ResumeUpload({
           className="font-mono text-xs uppercase"
           style={{ letterSpacing: "0.15em", color: "#d2cfe0" }}
         >
-          {ownerLabel} resume
+          {ownerLabel} {kind}
           <span style={{ color: "#f28fb5" }}> *</span>
         </span>
       </label>
@@ -523,7 +535,7 @@ function ResumeUpload({
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.docx,.doc,.txt"
+            accept={acceptAttr}
             onChange={handleFileSelect}
             className="hidden"
           />
@@ -594,7 +606,7 @@ function ResumeUpload({
                 className="font-sans text-sm"
                 style={{ color: "#9890ab" }}
               >
-                PDF, DOCX, or TXT
+                {acceptHint}
               </p>
             </div>
           )}
@@ -603,7 +615,7 @@ function ResumeUpload({
         <textarea
           value={resumeText}
           onChange={(e) => onTextChange(e.target.value)}
-          placeholder="Paste your resume content here..."
+          placeholder={pastePlaceholder}
           rows={10}
           className="w-full px-4 py-3.5 rounded-lg font-sans text-base outline-none transition-all duration-200 border resize-none"
           style={{
@@ -942,6 +954,24 @@ function JS_StepTarget({
         type="url"
       />
       <HelperTip text="This helps us gather intel on their background and interests." />
+
+      <ProTipsBox
+        title="How to pick the right target"
+        tips={[
+          {
+            headline: "Go one level above the role you want",
+            detail: "The hiring manager, not the recruiter. Decision-makers reply; gatekeepers filter.",
+          },
+          {
+            headline: "Pick someone you can actually help",
+            detail: "If you can't name what's on their plate right now, you're too far from the work.",
+          },
+          {
+            headline: "Use their full name, exact title, and LinkedIn URL",
+            detail: "Precision here is what lets the brief pull real intel instead of generic fluff.",
+          },
+        ]}
+      />
     </div>
   );
 }
@@ -1339,6 +1369,24 @@ function SP_StepProspect({
         onChange={(v) => setField("prospectIndustry", v)}
         placeholder="SaaS, Healthcare, Fintech..."
       />
+
+      <ProTipsBox
+        title="Pick a prospect worth the brief"
+        tips={[
+          {
+            headline: "Aim at the economic buyer, not the champion",
+            detail: "The person who signs off. Champions are useful later — the brief should land with whoever controls budget.",
+          },
+          {
+            headline: "Make sure there's a real trigger",
+            detail: "New funding, a leadership change, a product launch, a teardown post. No trigger, no reason to reply.",
+          },
+          {
+            headline: "Use exact title + LinkedIn URL",
+            detail: "Generic titles pull generic intel. Precision here is what gives the brief teeth.",
+          },
+        ]}
+      />
     </div>
   );
 }
@@ -1430,6 +1478,71 @@ function SP_StepContext({
 /* ───────────────────────────────────────────
    STEP COMPONENTS — INFLUENCER/BRAND
    ─────────────────────────────────────────── */
+
+function IB_StepMediaKit({
+  formData,
+  setField,
+  onFileRead,
+  errors,
+}: {
+  formData: FormData;
+  setField: (key: keyof FormData, val: string | boolean) => void;
+  onFileRead: (text: string, fileName: string) => void;
+  errors: Record<string, string>;
+}) {
+  return (
+    <div>
+      <h2
+        className="font-serif text-3xl md:text-4xl font-light mb-2"
+        style={{ color: "#e8e4f4" }}
+      >
+        Your media kit
+      </h2>
+      <p
+        className="font-sans text-base font-light mb-8"
+        style={{ color: "#9890ab" }}
+      >
+        Upload your media kit or paste the highlights. This is the proof
+        layer of your brief — followers, engagement, audience, past wins.
+      </p>
+      <ResumeUpload
+        resumeText={formData.mediaKitText}
+        resumeFileName={formData.mediaKitFileName}
+        onTextChange={(v) => setField("mediaKitText", v)}
+        onFileRead={onFileRead}
+        error={errors.mediaKitText}
+        ownerLabel="Your"
+        kind="media kit"
+        acceptAttr=".pdf,.docx,.doc,.txt"
+        acceptHint="PDF, DOCX, or TXT (the standard media kit format)"
+        pastePlaceholder={`No media kit yet? Paste your stats here. Example:
+
+Instagram: 48,200 followers · 4.7% engagement
+TikTok: 112,000 followers · avg 38k views per post
+Audience: 68% women, 25–34, US + UK
+Past collabs: Glossier (sold-out drop), Olipop (+22% trial CVR)
+Rate: $1,800 per Reel, $3,500 per integrated bundle`}
+      />
+      <ProTipsBox
+        title="What makes a media kit pitch-ready"
+        tips={[
+          {
+            headline: "Lead with engagement, not follower count",
+            detail: "Brands have learned the hard way that 50k engaged > 500k passive. Show your rate.",
+          },
+          {
+            headline: "Name 1–2 past collabs with real numbers",
+            detail: 'Sold out, +X% conversion, Y million impressions. Specifics turn a pitch into proof.',
+          },
+          {
+            headline: "Spell out who your audience is",
+            detail: "Top demo, age range, location, what they buy. Brands fund partnerships that match their ICP.",
+          },
+        ]}
+      />
+    </div>
+  );
+}
 
 function IB_StepAboutYou({
   formData,
@@ -1616,6 +1729,24 @@ function IB_StepTarget({
         rows={2}
       />
       <HelperTip text="What makes THIS partnership pitch stand out?" />
+
+      <ProTipsBox
+        title="Pick a partner worth the pitch"
+        tips={[
+          {
+            headline: "Target brands whose audience overlaps yours",
+            detail: "Not brands you admire — brands whose customer is already your viewer. Overlap is the whole game.",
+          },
+          {
+            headline: "Aim at partnerships or brand, not press",
+            detail: "PR inboxes are graveyards. Partnerships managers have budget and KPIs and actually read pitches.",
+          },
+          {
+            headline: "Time it to something real",
+            detail: "A new product drop, a campaign launch, a seasonal push. A reason-to-believe beats a cold ask every time.",
+          },
+        ]}
+      />
     </div>
   );
 }
@@ -2116,8 +2247,15 @@ function StepReview({
     /* influencer_brand */
     return [
       {
-        title: "About You",
+        title: "Media Kit",
         step: 0,
+        fields: [
+          { label: "File", value: formData.mediaKitFileName || (formData.mediaKitText ? "Pasted stats" : "") },
+        ],
+      },
+      {
+        title: "About You",
+        step: 1,
         fields: [
           { label: "Brand/Creator", value: formData.brandCreatorName },
           { label: "Role", value: formData.senderRole },
@@ -2126,7 +2264,7 @@ function StepReview({
       },
       {
         title: "Partnership",
-        step: 1,
+        step: 2,
         fields: [
           { label: "Type", value: formData.partnershipType },
           { label: "Fit", value: formData.partnershipFit },
@@ -2135,7 +2273,7 @@ function StepReview({
       },
       {
         title: "Target Partner",
-        step: 2,
+        step: 3,
         fields: [
           { label: "Company/Brand", value: formData.targetCompany },
           { label: "Contact", value: formData.targetName },
@@ -2365,6 +2503,21 @@ export default function IntakePage() {
     }
   };
 
+  const handleMediaKitFileRead = (text: string, fileName: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      mediaKitText: text,
+      mediaKitFileName: fileName,
+    }));
+    if (errors.mediaKitText) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next.mediaKitText;
+        return next;
+      });
+    }
+  };
+
   /* ── Validation per user-type + step ── */
   const validate = (): boolean => {
     const e: Record<string, string> = {};
@@ -2429,16 +2582,18 @@ export default function IntakePage() {
     }
 
     if (userType === "influencer_brand") {
-      if (step === 0) {
+      if (step === 0 && !formData.mediaKitText.trim())
+        e.mediaKitText = "Upload or paste your media kit (or paste your stats)";
+      if (step === 1) {
         if (!formData.brandCreatorName.trim()) e.brandCreatorName = "Brand/creator name is required";
         if (!formData.senderRole.trim()) e.senderRole = "Role is required";
         if (!formData.senderEmail.trim()) e.senderEmail = "Email is required";
       }
-      if (step === 1) {
+      if (step === 2) {
         if (!formData.partnershipType) e.partnershipType = "Select a partnership type";
         if (!formData.partnershipFit.trim()) e.partnershipFit = "Partnership fit description is required";
       }
-      if (step === 2) {
+      if (step === 3) {
         if (!formData.targetCompany.trim())
           e.targetCompany = "Target company/brand is required";
       }
@@ -2503,6 +2658,8 @@ export default function IntakePage() {
           partnershipFit: formData.partnershipFit,
           audienceOverlapNotes: formData.audienceOverlapNotes,
           uniqueAngle: formData.uniqueAngle,
+          mediaKitText: formData.mediaKitText,
+          mediaKitFileName: formData.mediaKitFileName,
           plan: selectedPlan,
           contactIdRequested: formData.wantsContactEnrichment,
         }),
@@ -2591,17 +2748,19 @@ export default function IntakePage() {
         return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} />;
     }
 
-    /* Influencer/Brand: About(0) → Partnership(1) → Target(2) → Preview(3) → Review(4) */
+    /* Influencer/Brand: MediaKit(0) → About(1) → Partnership(2) → Target(3) → Preview(4) → Review(5) */
     if (userType === "influencer_brand") {
       if (step === 0)
-        return <IB_StepAboutYou formData={formData} setField={setField} errors={errors} />;
+        return <IB_StepMediaKit formData={formData} setField={setField} onFileRead={handleMediaKitFileRead} errors={errors} />;
       if (step === 1)
-        return <IB_StepPartnership formData={formData} setField={setField} errors={errors} />;
+        return <IB_StepAboutYou formData={formData} setField={setField} errors={errors} />;
       if (step === 2)
-        return <IB_StepTarget formData={formData} setField={setField} errors={errors} />;
+        return <IB_StepPartnership formData={formData} setField={setField} errors={errors} />;
       if (step === 3)
-        return <StepPreview userType={userType} formData={formData} />;
+        return <IB_StepTarget formData={formData} setField={setField} errors={errors} />;
       if (step === 4)
+        return <StepPreview userType={userType} formData={formData} />;
+      if (step === 5)
         return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} />;
     }
 

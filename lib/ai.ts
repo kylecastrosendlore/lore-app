@@ -48,6 +48,7 @@ interface BriefInput {
   partnershipFit?: string;
   audienceOverlapNotes?: string;
   uniqueAngle?: string;
+  mediaKitText?: string;
   /* Apollo enrichment data */
   enrichmentData?: {
     fullName?: string;
@@ -285,6 +286,10 @@ function buildUserPrompt(input: BriefInput): string {
     if (input.partnershipFit) sections.push(`- Why It's a Fit: ${input.partnershipFit}`);
     if (input.audienceOverlapNotes) sections.push(`- Audience Overlap: ${input.audienceOverlapNotes}`);
     if (input.uniqueAngle) sections.push(`- Unique Angle: ${input.uniqueAngle}`);
+    if (input.mediaKitText) {
+      sections.push(`- Media Kit Content:`);
+      sections.push(input.mediaKitText.slice(0, 4000));
+    }
   }
 
   /* Apollo enrichment data */

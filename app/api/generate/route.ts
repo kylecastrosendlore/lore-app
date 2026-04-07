@@ -118,6 +118,7 @@ export async function POST(request: Request) {
       partnershipFit: brief.partnership_fit || undefined,
       audienceOverlapNotes: brief.audience_overlap_notes || undefined,
       uniqueAngle: brief.unique_angle || undefined,
+      mediaKitText: brief.media_kit_text || undefined,
       enrichmentData,
     });
 

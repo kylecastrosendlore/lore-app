@@ -109,6 +109,8 @@ export async function POST(request: Request) {
       partnership_fit: sanitize(body.partnershipFit),
       audience_overlap_notes: sanitize(body.audienceOverlapNotes),
       unique_angle: sanitize(body.uniqueAngle),
+      media_kit_text: sanitize(body.mediaKitText, MAX_RESUME_LEN),
+      media_kit_file_name: sanitize(body.mediaKitFileName),
       plan: body.plan || "one_off",
       payment_status: "pending" as const,
       brief_status: "draft" as const,
