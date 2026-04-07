@@ -324,6 +324,54 @@ Executive Summary, Value Proposition, Strategic Alignment, Strengths Analysis, P
 
 ALWAYS address the recipient by their FIRST NAME ONLY. "Jenna Williams" → "Jenna." "Emily Haahr" → "Emily." No titles, no last names anywhere except in the personalization pill.
 
+## MOTION & CINEMATICS — MANDATORY
+
+A static brief is a failed brief. Every brief MUST include an inline <script> at the end of <body> that powers the following motion. No external libraries. Pure vanilla JS + CSS.
+
+### Required motion effects (ALL of these, every brief):
+
+1. **Hero typewriter on the bold half of the headline.** The bold span types in character-by-character at 55-70ms per char. The italic accent half fades in (opacity 0 → 1, translateY 12px → 0, 700ms ease-out) after the typewriter completes. Use a span with data-typewriter="text here" — the script reads textContent, clears it, and types it back.
+
+2. **Scroll-triggered fade-up on every section.** Use IntersectionObserver with threshold 0.15. When a section enters viewport, add a class that animates: opacity 0 → 1, translateY 40px → 0, 900ms cubic-bezier(0.16, 1, 0.3, 1). Stagger child elements (stat cards, bullets, playbook items) by 120ms each using transition-delay.
+
+3. **Stat number count-up.** Every big serif accent number in stat cards animates from 0 to its final value over 1400ms when its card enters the viewport. Use easeOutQuart. Format: preserve the suffix ($, %, M, +, etc). Mark numbers with data-countup="2100000" data-prefix="$" data-suffix="M".
+
+4. **SVG chart draw-in.** Bar charts: bars scale from height 0 to full over 1000ms with 80ms stagger between bars. Line charts: animate stroke-dashoffset from path length to 0 over 1400ms ease-out. Trigger when chart enters viewport.
+
+5. **Section divider draw.** The 1px accent dividers between sections animate width 0% → 100% over 800ms ease-out when in view.
+
+6. **Sticky header bar reveal.** Header bar starts hidden (translateY -100%). After the user scrolls past the hero (window.scrollY > window.innerHeight * 0.6), slide it down (translateY 0). Add backdrop blur on scroll.
+
+7. **Power bullet stagger in Fit columns.** Each bullet fades in (opacity 0 → 1, translateX -16px → 0 for left col, +16px → 0 for right col), staggered 90ms each.
+
+8. **Subtle parallax on the hero personalization pill.** Translate Y based on scroll position (transform: translateY(scrollY * 0.15)) until hero exits.
+
+### CSS rules to put in <style>:
+
+\`\`\`css
+.lore-fade { opacity: 0; transform: translateY(40px); transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1), transform 900ms cubic-bezier(0.16, 1, 0.3, 1); }
+.lore-fade.in { opacity: 1; transform: translateY(0); }
+.lore-fade-left { opacity: 0; transform: translateX(-16px); transition: opacity 700ms ease-out, transform 700ms ease-out; }
+.lore-fade-left.in { opacity: 1; transform: translateX(0); }
+.lore-fade-right { opacity: 0; transform: translateX(16px); transition: opacity 700ms ease-out, transform 700ms ease-out; }
+.lore-fade-right.in { opacity: 1; transform: translateX(0); }
+[data-typewriter] { display: inline-block; min-height: 1em; }
+.lore-cursor { display: inline-block; width: 3px; background: currentColor; animation: blink 0.8s infinite; margin-left: 2px; }
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .lore-fade, .lore-fade-left, .lore-fade-right { opacity: 1 !important; transform: none !important; } }
+\`\`\`
+
+### The <script> at end of <body> must include:
+
+- IntersectionObserver loop adding .in class to .lore-fade elements
+- Typewriter function targeting [data-typewriter] elements (run on load)
+- Count-up function targeting [data-countup] elements (run when their parent enters viewport)
+- SVG chart animation (draw bars / animate stroke-dashoffset on enter)
+- Sticky header reveal on scroll
+- Respect prefers-reduced-motion
+
+If the brief HTML you generate has NO <script> block and NO motion classes, you have failed. Cinematic means it MOVES.
+
 ## LAYOUT
 
 - Full-width dark background (the hue-matched near-black)
