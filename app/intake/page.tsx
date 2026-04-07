@@ -806,6 +806,7 @@ function JS_StepResume({
         error={errors.resumeText}
         ownerLabel="Your"
       />
+      <HelperTip text="No resume handy? Harvard's free guide has great sample formats: https://hwpi.harvard.edu/files/ocs/files/undergrad_resumes_and_cover_letters.pdf" />
       <ProTipsBox
         title="Make your resume work harder"
         tips={[
@@ -867,7 +868,7 @@ function JS_StepAboutYou({
         error={errors.senderRole}
       />
       <TextArea
-        label="Your 1–2 greatest accomplishments (STAR + numbers)"
+        label="Your 1–2 greatest accomplishments — use STAR (Situation, Task, Action, Result) + numbers"
         value={formData.senderBackground}
         onChange={(v) => setField("senderBackground", v)}
         placeholder="Pick one or two. Situation → Task → Action → Result. 'I cut onboarding from 14 days to 3, unlocking $400K in retained ARR.'"
@@ -888,6 +889,10 @@ function JS_StepAboutYou({
           {
             headline: "Pick one or two — not a list",
             detail: "Depth beats breadth. One story you owned end-to-end is worth ten bullet points.",
+          },
+          {
+            headline: "STAR = Situation, Task, Action, Result",
+            detail: "Set the scene, name your job, say what YOU did, then the measurable outcome. Harvard's resume guide has great examples: https://hwpi.harvard.edu/files/ocs/files/undergrad_resumes_and_cover_letters.pdf",
           },
           {
             headline: "Quantify the outcome",
@@ -2131,22 +2136,22 @@ function PricingSelector({
       color: "#9890ab",
     },
     {
-      id: "pack_five",
-      name: "5-Pack",
-      price: "$29",
-      period: "one-time",
-      desc: "$5.80 per brief — best value",
-      features: ["5 briefs (use anytime)", "AI subject line + email", "1 round of revisions each", "Best per-brief value"],
-      popular: true,
-      color: "#f28fb5",
-    },
-    {
       id: "subscription",
       name: "Unlimited",
       price: "$24",
       period: "/month",
       desc: "For active job hunts",
-      features: ["Unlimited briefs", "AI subject line + email", "1 round of revisions each", "Cancel anytime"],
+      features: ["Unlimited briefs", "Unlimited contact fetches", "AI subject line + email", "1 round of revisions each", "Cancel anytime"],
+      popular: true,
+      color: "#f28fb5",
+    },
+    {
+      id: "pack_five",
+      name: "5-Pack",
+      price: "$29",
+      period: "one-time",
+      desc: "Five briefs, use anytime",
+      features: ["5 briefs (use anytime)", "AI subject line + email", "1 round of revisions each", "Never expires"],
       color: "#c9a96e",
     },
   ];
