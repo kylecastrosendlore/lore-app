@@ -130,8 +130,9 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error("Supabase insert error:", error.message, error.code, error.details);
+      const isDev = process.env.NODE_ENV !== "production";
       return NextResponse.json(
-        { error: `Failed to save brief: ${error.message}`, code: error.code, details: error.details },
+        { error: isDev ? `Failed to save brief: ${error.message}` : "Failed to save brief" },
         { status: 500 }
       );
     }
