@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { enrichPerson, parseName } from "@/lib/apollo";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
+export const maxDuration = 30;
+
 /* ───────────────────────────────────────────
    POST /api/enrich
    Enriches a brief's target person via Apollo.
