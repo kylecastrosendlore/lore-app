@@ -49,6 +49,8 @@ interface BriefInput {
   audienceOverlapNotes?: string;
   uniqueAngle?: string;
   mediaKitText?: string;
+  jobPostingText?: string;
+  publishedWorkLinks?: string;
   /* Apollo enrichment data */
   enrichmentData?: {
     fullName?: string;
@@ -83,6 +85,14 @@ Your job is to generate THREE things:
 1. An HTML intelligence brief (the main deliverable)
 2. An email subject line optimized for open rates
 3. An email body that teases the brief and drives clicks
+
+## NAMING RULE — CRITICAL
+
+ALWAYS address the recipient by their FIRST NAME ONLY. Never use "Mr.", "Ms.",
+"Dr.", or last names anywhere in the brief or email — not in the hero, not in
+the headline, not in the email subject, not in the body. If you only know the
+full name "Jenna Williams", use "Jenna." If the brief is for "Scott Allen,"
+use "Scott." This rule has no exceptions.
 
 ## DESIGN SYSTEM
 
@@ -245,6 +255,19 @@ function buildUserPrompt(input: BriefInput): string {
   if (input.resumeText) {
     sections.push(`## Resume/CV Content`);
     sections.push(input.resumeText.slice(0, 4000)); // Cap at ~4K chars
+  }
+
+  /* Published work / portfolio links */
+  if (input.publishedWorkLinks) {
+    sections.push(`## Published Work / Portfolio Links`);
+    sections.push(input.publishedWorkLinks.slice(0, 1500));
+  }
+
+  /* Job posting — for job seekers */
+  if (input.jobPostingText) {
+    sections.push(`## Job Posting / Role Detail`);
+    sections.push(`The sender is targeting a specific role. Address this directly in the brief.`);
+    sections.push(input.jobPostingText.slice(0, 4000));
   }
 
   /* Target info */

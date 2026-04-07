@@ -119,6 +119,8 @@ export async function POST(request: Request) {
       audienceOverlapNotes: brief.audience_overlap_notes || undefined,
       uniqueAngle: brief.unique_angle || undefined,
       mediaKitText: brief.media_kit_text || undefined,
+      jobPostingText: brief.job_posting_text || undefined,
+      publishedWorkLinks: brief.published_work_links || undefined,
       enrichmentData,
     });
 

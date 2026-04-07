@@ -72,9 +72,10 @@ export async function POST(request: Request) {
     const sanitize = (val: unknown, max: number = MAX_LEN): string | null => {
       if (typeof val !== "string") return null;
       const cleaned = val
-        .replace(/<[^>]*>/g, "")       // strip HTML tags
-        .replace(/\x00/g, "")           // remove null bytes
-        .replace(/\\u0000/g, "")        // remove escaped null bytes
+        .replace(/<[^>]*>/g, "")                              // strip HTML tags
+        // eslint-disable-next-line no-control-regex
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "") // strip control chars (keep tab + LF)
+        .replace(/\\u0000/g, "")                              // escaped null bytes
         .trim();
       if (!cleaned) return null;
       return cleaned.slice(0, max);
@@ -111,6 +112,8 @@ export async function POST(request: Request) {
       unique_angle: sanitize(body.uniqueAngle),
       media_kit_text: sanitize(body.mediaKitText, MAX_RESUME_LEN),
       media_kit_file_name: sanitize(body.mediaKitFileName),
+      job_posting_text: sanitize(body.jobPostingText, MAX_RESUME_LEN),
+      published_work_links: sanitize(body.publishedWorkLinks),
       plan: body.plan || "one_off",
       payment_status: "pending" as const,
       brief_status: "draft" as const,
@@ -126,9 +129,10 @@ export async function POST(request: Request) {
       .single();
 
     if (error) {
-      console.error("Supabase insert error:", error.message);
+      console.error("Supabase insert error:", error.message, error.code, error.details);
+      const isDev = process.env.NODE_ENV !== "production";
       return NextResponse.json(
-        { error: "Failed to save brief" },
+        { error: isDev ? `Failed to save brief: ${error.message}` : "Failed to save brief" },
         { status: 500 }
       );
     }

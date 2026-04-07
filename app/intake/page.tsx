@@ -46,6 +46,9 @@ interface FormData {
   uniqueAngle: string;
   mediaKitText: string;
   mediaKitFileName: string;
+  /* Job seeker — target role intel */
+  jobPostingText: string;
+  publishedWorkLinks: string;
   /* Contact enrichment opt-in */
   wantsContactEnrichment: boolean;
 }
@@ -79,6 +82,8 @@ const emptyForm: FormData = {
   uniqueAngle: "",
   mediaKitText: "",
   mediaKitFileName: "",
+  jobPostingText: "",
+  publishedWorkLinks: "",
   wantsContactEnrichment: false,
 };
 
@@ -429,33 +434,27 @@ function ResumeUpload({
     resumeText && !resumeFileName ? "paste" : "upload"
   );
 
+  const [parseError, setParseError] = useState<string | null>(null);
+
   const readFile = useCallback(
     async (file: File) => {
       setIsReading(true);
-
-      /* For .txt files, read directly */
-      if (file.name.endsWith(".txt")) {
-        const text = await file.text();
-        onFileRead(text, file.name);
+      setParseError(null);
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        const res = await fetch("/api/parse-resume", { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok) {
+          setParseError(data.error || "Could not read that file. Try pasting instead.");
+        } else {
+          onFileRead(data.text, data.fileName || file.name);
+        }
+      } catch {
+        setParseError("Could not read that file. Try pasting instead.");
+      } finally {
         setIsReading(false);
-        return;
       }
-
-      /* For .pdf and .docx, read raw text content client-side.
-         Full parsing happens server-side in later phases. */
-      const text = await file.text().catch(() => "");
-      if (text && text.length > 50) {
-        onFileRead(text, file.name);
-      } else {
-        /* Binary file — store as base64 for server-side parsing later */
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = (reader.result as string).split(",")[1] || "";
-          onFileRead(`[FILE:${file.name}:${base64.slice(0, 100)}...]`, file.name);
-        };
-        reader.readAsDataURL(file);
-      }
-      setIsReading(false);
     },
     [onFileRead]
   );
@@ -632,14 +631,14 @@ function ResumeUpload({
         />
       )}
 
-      {error && (
+      {(error || parseError) && (
         <motion.p
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
           className="font-sans text-sm mt-2"
           style={{ color: "#f28fb5" }}
         >
-          {error}
+          {parseError || error}
         </motion.p>
       )}
     </div>
@@ -868,26 +867,35 @@ function JS_StepAboutYou({
         error={errors.senderRole}
       />
       <TextArea
-        label="What should they know about you that's NOT on your resume?"
+        label="Your 1–2 greatest accomplishments (STAR + numbers)"
         value={formData.senderBackground}
         onChange={(v) => setField("senderBackground", v)}
-        placeholder="A specific moment you owned an outcome. A passion project. The thing you'd lead with if you had 30 seconds in an elevator."
-        rows={4}
+        placeholder="Pick one or two. Situation → Task → Action → Result. 'I cut onboarding from 14 days to 3, unlocking $400K in retained ARR.'"
+        rows={5}
       />
+
+      <TextArea
+        label="Links to published work, portfolio, or projects (optional)"
+        value={formData.publishedWorkLinks}
+        onChange={(v) => setField("publishedWorkLinks", v)}
+        placeholder="Drop URLs, one per line — articles, GitHub, case studies, talks, side projects, anything that shows your work."
+        rows={3}
+      />
+      <HelperTip text="The more we can see, the sharper the brief. Real work beats job titles." />
       <ProTipsBox
-        title="What makes this section land"
+        title="How to make this hit"
         tips={[
           {
-            headline: "Lead with one specific story",
-            detail: "Not a list. One moment where you owned an outcome from start to finish.",
+            headline: "Pick one or two — not a list",
+            detail: "Depth beats breadth. One story you owned end-to-end is worth ten bullet points.",
           },
           {
-            headline: "Quantify the result",
-            detail: "Even rough numbers — 'cut load time in half,' 'shipped in 6 weeks instead of 6 months.'",
+            headline: "Quantify the outcome",
+            detail: "Numbers, %, time saved, revenue moved, users impacted. Even rough estimates land harder than adjectives.",
           },
           {
-            headline: "Tell us the why, not the what",
-            detail: "Why you took the swing, why it mattered, why you're uniquely suited to this role.",
+            headline: "Use 'I' not 'we' — extreme ownership",
+            detail: "If it was a team win, name your specific role: 'I led,' 'I built,' 'I shipped.'",
           },
         ]}
       />
@@ -910,32 +918,14 @@ function JS_StepTarget({
         className="font-serif text-3xl md:text-4xl font-light mb-2"
         style={{ color: "#e8e4f4" }}
       >
-        Who are you reaching out to?
+        The role and the person
       </h2>
       <p
         className="font-sans text-base font-light mb-8"
         style={{ color: "#9890ab" }}
       >
-        The hiring manager or contact at your target company.
+        Drop the job posting and the company. The contact is optional — we can find one for you.
       </p>
-      <TextInput
-        label="Contact's full name"
-        value={formData.targetName}
-        onChange={(v) => setField("targetName", v)}
-        placeholder="Jenna Williams"
-        required
-        error={errors.targetName}
-      />
-      <HelperTip text="The more specific, the better. Full name + title helps us research them." />
-
-      <TextInput
-        label="Their job title"
-        value={formData.targetTitle}
-        onChange={(v) => setField("targetTitle", v)}
-        placeholder="VP of Content"
-        required
-        error={errors.targetTitle}
-      />
 
       <TextInput
         label="Their company"
@@ -946,6 +936,30 @@ function JS_StepTarget({
         error={errors.targetCompany}
       />
 
+      <TextArea
+        label="Paste the job posting or paste the link"
+        value={formData.jobPostingText}
+        onChange={(v) => setField("jobPostingText", v)}
+        placeholder="Paste the full job description here, or just drop the URL. The more detail we have on the role, the sharper the brief."
+        rows={5}
+      />
+      <HelperTip text="A real posting beats a vague title every time — the brief will speak directly to what they're hiring for." />
+
+      <TextInput
+        label="Contact's full name (optional)"
+        value={formData.targetName}
+        onChange={(v) => setField("targetName", v)}
+        placeholder="Jenna Williams"
+        error={errors.targetName}
+      />
+
+      <TextInput
+        label="Their job title (optional)"
+        value={formData.targetTitle}
+        onChange={(v) => setField("targetTitle", v)}
+        placeholder="VP of Content"
+      />
+
       <TextInput
         label="LinkedIn URL (optional)"
         value={formData.targetLinkedIn}
@@ -953,22 +967,71 @@ function JS_StepTarget({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
-      <HelperTip text="This helps us gather intel on their background and interests." />
+
+      {/* Contact fetch addon — inline at the moment of friction */}
+      <button
+        type="button"
+        onClick={() =>
+          setField("wantsContactEnrichment", !formData.wantsContactEnrichment)
+        }
+        className="w-full text-left mt-4 mb-2 p-5 rounded-lg border transition-all duration-200"
+        style={{
+          borderColor: formData.wantsContactEnrichment
+            ? "#c9a96e"
+            : "rgba(201, 169, 110, 0.25)",
+          backgroundColor: formData.wantsContactEnrichment
+            ? "rgba(201, 169, 110, 0.08)"
+            : "rgba(201, 169, 110, 0.03)",
+        }}
+      >
+        <div className="flex items-start gap-3">
+          <div
+            className="mt-0.5 w-5 h-5 rounded border flex items-center justify-center flex-shrink-0"
+            style={{
+              borderColor: "#c9a96e",
+              backgroundColor: formData.wantsContactEnrichment
+                ? "#c9a96e"
+                : "transparent",
+            }}
+          >
+            {formData.wantsContactEnrichment && (
+              <span style={{ color: "#0d0b17", fontSize: 12, fontWeight: 700 }}>
+                ✓
+              </span>
+            )}
+          </div>
+          <div className="flex-1">
+            <div
+              className="font-sans text-sm font-medium mb-1"
+              style={{ color: "#e8e4f4" }}
+            >
+              Don&rsquo;t have a contact? We&rsquo;ll find one for you.{" "}
+              <span style={{ color: "#c9a96e" }}>+$1.99</span>
+            </div>
+            <div
+              className="font-sans text-xs leading-relaxed"
+              style={{ color: "#9890ab" }}
+            >
+              We&rsquo;ll surface the most relevant hiring manager or decision-maker at the company, with verified contact info.
+            </div>
+          </div>
+        </div>
+      </button>
 
       <ProTipsBox
         title="How to pick the right target"
         tips={[
           {
-            headline: "Go one level above the role you want",
-            detail: "The hiring manager, not the recruiter. Decision-makers reply; gatekeepers filter.",
+            headline: "Aim above the recruiter",
+            detail: "Hiring managers reply; gatekeepers filter. The contact fetch defaults to the right level.",
           },
           {
-            headline: "Pick someone you can actually help",
-            detail: "If you can't name what's on their plate right now, you're too far from the work.",
+            headline: "Drop the real job posting",
+            detail: "A pasted JD turns the brief into a direct response to their actual ask, not a guess.",
           },
           {
-            headline: "Use their full name, exact title, and LinkedIn URL",
-            detail: "Precision here is what lets the brief pull real intel instead of generic fluff.",
+            headline: "Specificity beats volume",
+            detail: "One sharp target with a real role beats five guesses every time.",
           },
         ]}
       />
@@ -1772,8 +1835,14 @@ function StepPreview({
       : userType === "influencer_brand"
       ? "partner"
       : "prospect";
-  const recipientName = formData.targetName || formData.targetCompany || "your target";
-  const senderName = formData.brandCreatorName || formData.senderName || "You";
+  /* First name only — never use last name in the brief preview */
+  const firstName = (raw: string) => raw.split(/[\s,]+/)[0] || raw;
+  const recipientName = formData.targetName
+    ? firstName(formData.targetName)
+    : formData.targetCompany || "your target";
+  const senderName = firstName(
+    formData.brandCreatorName || formData.senderName || "You"
+  );
 
   return (
     <div>
@@ -1884,8 +1953,81 @@ function StepPreview({
           </p>
         </div>
 
-        {/* Blurred teaser sections */}
+        {/* Teaser sections — first one unlocked as a real taste */}
         <div className="px-8 md:px-12 pb-8 space-y-4">
+          {/* UNLOCKED preview block */}
+          <div
+            className="p-6 rounded-lg border relative overflow-hidden"
+            style={{
+              borderColor: "rgba(201, 169, 110, 0.4)",
+              backgroundColor: "rgba(30, 21, 53, 0.4)",
+            }}
+          >
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: "#c9a96e" }}
+                />
+                <span
+                  className="font-mono text-xs uppercase"
+                  style={{ letterSpacing: "0.1em", color: "#c9a96e" }}
+                >
+                  Opening Hook · Unlocked Sample
+                </span>
+              </div>
+              <span
+                className="font-mono text-[10px] uppercase px-2 py-1 rounded-full"
+                style={{
+                  letterSpacing: "0.12em",
+                  color: "#0d0b17",
+                  backgroundColor: "#c9a96e",
+                }}
+              >
+                Free taste
+              </span>
+            </div>
+            <p
+              className="font-serif text-lg md:text-xl font-light leading-snug mb-3"
+              style={{ color: "#e8e4f4" }}
+            >
+              {userType === "job_seeker" ? (
+                <>
+                  &ldquo;{recipientName} — most candidates open with their resume.{" "}
+                  <em style={{ color: "#f28fb5" }}>{senderName}</em> opened with
+                  homework on {formData.targetCompany || "your company"}.&rdquo;
+                </>
+              ) : userType === "hiring_manager" ? (
+                <>
+                  &ldquo;{recipientName} isn&rsquo;t the loudest name in the
+                  pile —{" "}
+                  <em style={{ color: "#f28fb5" }}>but the right one</em> for
+                  the {formData.roleHiringFor || "role"}.&rdquo;
+                </>
+              ) : userType === "influencer_brand" ? (
+                <>
+                  &ldquo;{recipientName}, this isn&rsquo;t a pitch.{" "}
+                  <em style={{ color: "#f28fb5" }}>It&rsquo;s a brief</em> on
+                  why our audiences already overlap.&rdquo;
+                </>
+              ) : (
+                <>
+                  &ldquo;{recipientName}, you don&rsquo;t need another vendor.{" "}
+                  <em style={{ color: "#f28fb5" }}>You need this</em> answered
+                  first.&rdquo;
+                </>
+              )}
+            </p>
+            <p
+              className="font-sans text-xs"
+              style={{ color: "#9890ab" }}
+            >
+              The full brief expands this into 3–5 minutes of cinematic,
+              personalized intel.
+            </p>
+          </div>
+
+          {/* Locked sections */}
           {[
             { label: "Research & Intelligence", color: "#c9a96e" },
             { label: "Gap Analysis & Strategy", color: "#f28fb5" },
@@ -1982,29 +2124,29 @@ function PricingSelector({
     {
       id: "one_off",
       name: "Single Brief",
-      price: "$14.99",
+      price: "$9",
       period: "one-time",
       desc: "One cinematic brief + email copy",
       features: ["1 intelligence brief", "AI subject line + email", "1 round of revisions"],
       color: "#9890ab",
     },
     {
-      id: "subscription",
-      name: "Unlimited",
-      price: "$49.99",
-      period: "/month",
-      desc: "Unlimited briefs, cancel anytime",
-      features: ["Unlimited briefs", "AI subject line + email", "1 round of revisions each", "Cancel anytime"],
+      id: "pack_five",
+      name: "5-Pack",
+      price: "$29",
+      period: "one-time",
+      desc: "$5.80 per brief — best value",
+      features: ["5 briefs (use anytime)", "AI subject line + email", "1 round of revisions each", "Best per-brief value"],
       popular: true,
       color: "#f28fb5",
     },
     {
-      id: "pack_five",
-      name: "5-Pack",
-      price: "$59.99",
-      period: "one-time",
-      desc: "5 briefs + 1 free (6 total)",
-      features: ["6 briefs (5 + 1 free)", "AI subject line + email", "1 round of revisions each", "Best per-brief value"],
+      id: "subscription",
+      name: "Unlimited",
+      price: "$24",
+      period: "/month",
+      desc: "For active job hunts",
+      features: ["Unlimited briefs", "AI subject line + email", "1 round of revisions each", "Cancel anytime"],
       color: "#c9a96e",
     },
   ];
@@ -2129,9 +2271,9 @@ function StepReview({
               value: formData.resumeFileName || "(Pasted text)",
             },
             {
-              label: "Preview",
+              label: "Length",
               value: formData.resumeText
-                ? formData.resumeText.slice(0, 120) + "..."
+                ? `${formData.resumeText.split(/\s+/).filter(Boolean).length} words captured`
                 : "",
             },
           ],
@@ -2179,9 +2321,9 @@ function StepReview({
               value: formData.resumeFileName || "(Pasted text)",
             },
             {
-              label: "Preview",
+              label: "Length",
               value: formData.resumeText
-                ? formData.resumeText.slice(0, 120) + "..."
+                ? `${formData.resumeText.split(/\s+/).filter(Boolean).length} words captured`
                 : "",
             },
           ],
@@ -2530,10 +2672,11 @@ export default function IntakePage() {
         if (!formData.senderRole.trim()) e.senderRole = "Role is required";
       }
       if (step === 2) {
-        if (!formData.targetName.trim()) e.targetName = "Name is required";
-        if (!formData.targetTitle.trim()) e.targetTitle = "Title is required";
         if (!formData.targetCompany.trim())
           e.targetCompany = "Company is required";
+        if (!formData.targetName.trim() && !formData.wantsContactEnrichment) {
+          e.targetName = "Add a contact, or check the box below to have us find one";
+        }
       }
       if (step === 3) {
         if (!formData.outreachType) e.outreachType = "Select an outreach type";
@@ -2660,6 +2803,8 @@ export default function IntakePage() {
           uniqueAngle: formData.uniqueAngle,
           mediaKitText: formData.mediaKitText,
           mediaKitFileName: formData.mediaKitFileName,
+          jobPostingText: formData.jobPostingText,
+          publishedWorkLinks: formData.publishedWorkLinks,
           plan: selectedPlan,
           contactIdRequested: formData.wantsContactEnrichment,
         }),
