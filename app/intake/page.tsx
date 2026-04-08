@@ -174,13 +174,13 @@ function HelperTip({
         }}
       >
         <span
-          className="font-mono text-[10px] uppercase mt-1 flex-shrink-0"
+          className="font-mono text-[11px] uppercase mt-1 flex-shrink-0"
           style={{ letterSpacing: "0.18em", color: "#f28fb5" }}
         >
           Tip
         </span>
         <p
-          className="font-sans text-sm leading-relaxed"
+          className="font-sans text-base leading-relaxed"
           style={{ color: "#e8e4f4" }}
         >
           {text}{" "}
@@ -199,8 +199,8 @@ function HelperTip({
   }
   return (
     <p
-      className="font-sans text-xs mt-2"
-      style={{ color: "#9890ab" }}
+      className="font-sans text-sm mt-2 leading-relaxed"
+      style={{ color: "#b4adc6" }}
     >
       {text}
     </p>
@@ -225,30 +225,30 @@ function ProTipsBox({
       }}
     >
       <div
-        className="font-mono text-[10px] uppercase mb-3"
+        className="font-mono text-[12px] uppercase mb-4"
         style={{ letterSpacing: "0.18em", color: "#c9a96e" }}
       >
         {title}
       </div>
-      <ul className="space-y-2.5">
+      <ul className="space-y-3.5">
         {tips.map((tip, i) => (
           <li key={i} className="flex gap-3">
             <span
-              className="font-mono text-[10px] mt-1 flex-shrink-0"
+              className="font-mono text-[12px] mt-1 flex-shrink-0"
               style={{ color: "#c9a96e", letterSpacing: "0.1em" }}
             >
               0{i + 1}
             </span>
             <div>
               <div
-                className="font-sans text-sm font-medium"
+                className="font-sans text-base font-medium"
                 style={{ color: "#e8e4f4" }}
               >
                 {tip.headline}
               </div>
               <div
-                className="font-sans text-xs mt-0.5 leading-relaxed"
-                style={{ color: "#9890ab" }}
+                className="font-sans text-sm mt-1 leading-relaxed"
+                style={{ color: "#b4adc6" }}
               >
                 {tip.detail}
               </div>
@@ -1155,7 +1155,7 @@ function JS_StepTarget({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
-      <HelperTip text="Drop their LinkedIn URL — we run it through our research database (Apollo) to pull verified intel: title, company, headline, industry, size. We never scrape LinkedIn directly. Best-effort: works ~80% of the time." />
+      <HelperTip text="Drop their LinkedIn URL — we use it to pull verified intel about them: title, company, headline, industry, company size. We never scrape LinkedIn directly. Works most of the time." />
 
       {/* Contact fetch addon — inline at the moment of friction */}
       <button
@@ -1365,7 +1365,7 @@ function HM_StepResume({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
-      <HelperTip text="We run their LinkedIn through our research database (Apollo) to pull verified intel: title, company, headline, industry. We never scrape LinkedIn directly. Best-effort — works ~80% of the time." />
+      <HelperTip text="Drop their LinkedIn — we use it to pull verified intel: title, company, headline, industry. We never scrape LinkedIn directly. Works most of the time." />
     </div>
   );
 }
@@ -1621,7 +1621,7 @@ function SP_StepProspect({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
-      <HelperTip text="We run their LinkedIn through our research database (Apollo) to pull verified intel: title, company, headline, industry, size. We never scrape LinkedIn directly. Best-effort — works ~80% of the time." />
+      <HelperTip text="Drop their LinkedIn — we use it to pull verified intel: title, company, headline, industry, company size. We never scrape LinkedIn directly. Works most of the time." />
       <TextInput
         label="Industry (optional)"
         value={formData.prospectIndustry}
@@ -1978,7 +1978,7 @@ function IB_StepTarget({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
-      <HelperTip text="We run their LinkedIn through our research database (Apollo) to pull verified intel: brand, role, company size, industry, past positioning. We never scrape LinkedIn directly. Best-effort — works ~80% of the time." />
+      <HelperTip text="Drop their LinkedIn — we use it to pull verified intel: brand, role, company size, industry, past positioning. We never scrape LinkedIn directly. Works most of the time." />
 
       <TextArea
         label="Specific angle or unique value prop? (optional)"
