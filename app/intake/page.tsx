@@ -153,7 +153,50 @@ function ProgressBar({
   );
 }
 
-function HelperTip({ text }: { text: string }) {
+function HelperTip({
+  text,
+  linkText,
+  linkUrl,
+  prominent = false,
+}: {
+  text: string;
+  linkText?: string;
+  linkUrl?: string;
+  prominent?: boolean;
+}) {
+  if (prominent && linkText && linkUrl) {
+    return (
+      <div
+        className="mt-3 p-4 rounded-lg flex items-start gap-3"
+        style={{
+          backgroundColor: "rgba(242, 143, 181, 0.08)",
+          border: "1px solid rgba(242, 143, 181, 0.35)",
+        }}
+      >
+        <span
+          className="font-mono text-[10px] uppercase mt-1 flex-shrink-0"
+          style={{ letterSpacing: "0.18em", color: "#f28fb5" }}
+        >
+          Tip
+        </span>
+        <p
+          className="font-sans text-sm leading-relaxed"
+          style={{ color: "#e8e4f4" }}
+        >
+          {text}{" "}
+          <a
+            href={linkUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold underline transition-colors"
+            style={{ color: "#f28fb5", textUnderlineOffset: "3px" }}
+          >
+            {linkText} →
+          </a>
+        </p>
+      </div>
+    );
+  }
   return (
     <p
       className="font-sans text-xs mt-2"
@@ -806,7 +849,12 @@ function JS_StepResume({
         error={errors.resumeText}
         ownerLabel="Your"
       />
-      <HelperTip text="No resume handy? Harvard's free guide has great sample formats: https://hwpi.harvard.edu/files/ocs/files/undergrad_resumes_and_cover_letters.pdf" />
+      <HelperTip
+        prominent
+        text="No resume handy? Harvard's free resume guide has gold-standard sample formats."
+        linkText="Open Harvard's resume guide"
+        linkUrl="https://hwpi.harvard.edu/files/ocs/files/undergrad_resumes_and_cover_letters.pdf"
+      />
       <ProTipsBox
         title="Make your resume work harder"
         tips={[
@@ -860,7 +908,7 @@ function JS_StepAboutYou({
         error={errors.senderName}
       />
       <TextInput
-        label="Current role or title"
+        label="Your current role"
         value={formData.senderRole}
         onChange={(v) => setField("senderRole", v)}
         placeholder="Head of Video Strategy"
@@ -871,8 +919,14 @@ function JS_StepAboutYou({
         label="Your 1–2 greatest accomplishments — use STAR (Situation, Task, Action, Result) + numbers"
         value={formData.senderBackground}
         onChange={(v) => setField("senderBackground", v)}
-        placeholder="Pick one or two. Situation → Task → Action → Result. 'I cut onboarding from 14 days to 3, unlocking $400K in retained ARR.'"
-        rows={5}
+        placeholder={`Pick one or two. Walk us through what you actually DID — the action is the part that sells you.
+
+Example:
+SITUATION — Customer onboarding at a Series B fintech took 14 days, driving 22% churn in the first 60 days.
+TASK — I owned cutting time-to-value without adding headcount.
+ACTION — I rebuilt the flow end-to-end: replaced 6 manual handoffs with a self-serve setup wizard, wrote 11 in-product tooltips that killed our top support tickets, and built a Slack alert that pinged me the moment any account stalled past day 3.
+RESULT — Onboarding dropped from 14 days to 3. Churn fell from 22% to 7%. We retained $400K in ARR that would've walked.`}
+        rows={11}
       />
 
       <TextArea
@@ -883,6 +937,12 @@ function JS_StepAboutYou({
         rows={3}
       />
       <HelperTip text="The more we can see, the sharper the brief. Real work beats job titles." />
+      <HelperTip
+        prominent
+        text="Need inspiration on how to write strong accomplishments? Harvard's free resume guide has gold-standard examples."
+        linkText="Open Harvard's resume guide"
+        linkUrl="https://hwpi.harvard.edu/files/ocs/files/undergrad_resumes_and_cover_letters.pdf"
+      />
       <ProTipsBox
         title="How to make this hit"
         tips={[
@@ -892,7 +952,7 @@ function JS_StepAboutYou({
           },
           {
             headline: "STAR = Situation, Task, Action, Result",
-            detail: "Set the scene, name your job, say what YOU did, then the measurable outcome. Harvard's resume guide has great examples: https://hwpi.harvard.edu/files/ocs/files/undergrad_resumes_and_cover_letters.pdf",
+            detail: "The ACTION is the part that sells you — go deep on HOW you did it, not just what happened. 'I rebuilt onboarding' is weak. 'I replaced 6 manual handoffs with a self-serve wizard, wrote 11 in-product tooltips, and built a Slack alert for stalled accounts' is strong.",
           },
           {
             headline: "Quantify the outcome",
@@ -1211,7 +1271,7 @@ function HM_StepAboutYou({
         error={errors.senderName}
       />
       <TextInput
-        label="Your role"
+        label="Your current role"
         value={formData.senderRole}
         onChange={(v) => setField("senderRole", v)}
         placeholder="VP of Content"
@@ -1342,7 +1402,7 @@ function SP_StepAboutYou({
         error={errors.senderName}
       />
       <TextInput
-        label="Your role"
+        label="Your current role"
         value={formData.senderRole}
         onChange={(v) => setField("senderRole", v)}
         placeholder="Account Executive"
@@ -1644,7 +1704,7 @@ function IB_StepAboutYou({
         error={errors.brandCreatorName}
       />
       <TextInput
-        label="Your role or title"
+        label="Your current role"
         value={formData.senderRole}
         onChange={(v) => setField("senderRole", v)}
         placeholder="Founder, Content Creator, Brand Manager"
@@ -1960,15 +2020,15 @@ function StepPreview({
 
         {/* Teaser sections — first one unlocked as a real taste */}
         <div className="px-8 md:px-12 pb-8 space-y-4">
-          {/* UNLOCKED preview block */}
+          {/* UNLOCKED preview block — real cinematic sample */}
           <div
-            className="p-6 rounded-lg border relative overflow-hidden"
+            className="p-6 md:p-8 rounded-lg border relative overflow-hidden"
             style={{
               borderColor: "rgba(201, 169, 110, 0.4)",
-              backgroundColor: "rgba(30, 21, 53, 0.4)",
+              backgroundColor: "rgba(30, 21, 53, 0.5)",
             }}
           >
-            <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center justify-between gap-3 mb-5">
               <div className="flex items-center gap-3">
                 <div
                   className="w-2 h-2 rounded-full"
@@ -1978,7 +2038,7 @@ function StepPreview({
                   className="font-mono text-xs uppercase"
                   style={{ letterSpacing: "0.1em", color: "#c9a96e" }}
                 >
-                  Opening Hook · Unlocked Sample
+                  01 — The Mirror · Sample
                 </span>
               </div>
               <span
@@ -1992,43 +2052,125 @@ function StepPreview({
                 Free taste
               </span>
             </div>
-            <p
-              className="font-serif text-lg md:text-xl font-light leading-snug mb-3"
+
+            {/* Headline using the formula */}
+            <h4
+              className="font-serif text-2xl md:text-3xl font-light leading-tight mb-2"
               style={{ color: "#e8e4f4" }}
             >
-              {userType === "job_seeker" ? (
-                <>
-                  &ldquo;{recipientName} — most candidates open with their resume.{" "}
-                  <em style={{ color: "#f28fb5" }}>{senderName}</em> opened with
-                  homework on {formData.targetCompany || "your company"}.&rdquo;
-                </>
-              ) : userType === "hiring_manager" ? (
-                <>
-                  &ldquo;{recipientName} isn&rsquo;t the loudest name in the
-                  pile —{" "}
-                  <em style={{ color: "#f28fb5" }}>but the right one</em> for
-                  the {formData.roleHiringFor || "role"}.&rdquo;
-                </>
-              ) : userType === "influencer_brand" ? (
-                <>
-                  &ldquo;{recipientName}, this isn&rsquo;t a pitch.{" "}
-                  <em style={{ color: "#f28fb5" }}>It&rsquo;s a brief</em> on
-                  why our audiences already overlap.&rdquo;
-                </>
-              ) : (
-                <>
-                  &ldquo;{recipientName}, you don&rsquo;t need another vendor.{" "}
-                  <em style={{ color: "#f28fb5" }}>You need this</em> answered
-                  first.&rdquo;
-                </>
-              )}
+              Sixteen years building the ops layer.{" "}
+              <em className="italic font-normal" style={{ color: "#f28fb5" }}>
+                Not inheriting it. Building it.
+              </em>
+            </h4>
+            <p className="font-sans text-sm mb-6" style={{ color: "#9890ab" }}>
+              {senderName} hasn&rsquo;t just worked in CES — {senderName} has built it from zero, three times.
             </p>
-            <p
-              className="font-sans text-xs"
-              style={{ color: "#9890ab" }}
+
+            {/* Stat cards row */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <div
+                className="p-3 rounded-md"
+                style={{ backgroundColor: "rgba(13, 11, 23, 0.6)", border: "1px solid #2a2340" }}
+              >
+                <div
+                  className="font-serif text-2xl md:text-3xl font-light"
+                  style={{ color: "#c9a96e" }}
+                >
+                  $2.1M
+                </div>
+                <div
+                  className="font-mono text-[9px] uppercase mt-1"
+                  style={{ letterSpacing: "0.1em", color: "#9890ab" }}
+                >
+                  Co-sell ARR
+                </div>
+              </div>
+              <div
+                className="p-3 rounded-md"
+                style={{ backgroundColor: "rgba(13, 11, 23, 0.6)", border: "1px solid #2a2340" }}
+              >
+                <div
+                  className="font-serif text-2xl md:text-3xl font-light"
+                  style={{ color: "#f28fb5" }}
+                >
+                  78%
+                </div>
+                <div
+                  className="font-mono text-[9px] uppercase mt-1"
+                  style={{ letterSpacing: "0.1em", color: "#9890ab" }}
+                >
+                  Churn drop
+                </div>
+              </div>
+              <div
+                className="p-3 rounded-md"
+                style={{ backgroundColor: "rgba(13, 11, 23, 0.6)", border: "1px solid #2a2340" }}
+              >
+                <div
+                  className="font-serif text-2xl md:text-3xl font-light"
+                  style={{ color: "#c9a96e" }}
+                >
+                  4,000+
+                </div>
+                <div
+                  className="font-mono text-[9px] uppercase mt-1"
+                  style={{ letterSpacing: "0.1em", color: "#9890ab" }}
+                >
+                  Devs enabled
+                </div>
+              </div>
+            </div>
+
+            {/* Inline SVG bar chart */}
+            <div className="mb-5">
+              <div
+                className="font-mono text-[10px] uppercase mb-3"
+                style={{ letterSpacing: "0.12em", color: "#c9a96e" }}
+              >
+                Onboarding time, before vs after
+              </div>
+              <svg viewBox="0 0 320 90" className="w-full" style={{ maxHeight: "90px" }}>
+                {/* Before bar */}
+                <text x="0" y="22" fill="#9890ab" fontSize="9" fontFamily="monospace">BEFORE</text>
+                <rect x="60" y="14" width="240" height="14" fill="#2a2340" rx="2" />
+                <rect x="60" y="14" width="240" height="14" fill="#9890ab" rx="2" />
+                <text x="305" y="24" fill="#e8e4f4" fontSize="10" fontFamily="serif">14d</text>
+                {/* After bar */}
+                <text x="0" y="58" fill="#9890ab" fontSize="9" fontFamily="monospace">AFTER</text>
+                <rect x="60" y="50" width="240" height="14" fill="#2a2340" rx="2" />
+                <rect x="60" y="50" width="51" height="14" fill="#f28fb5" rx="2" />
+                <text x="116" y="60" fill="#f28fb5" fontSize="10" fontFamily="serif">3d</text>
+                {/* Caption */}
+                <text x="0" y="84" fill="#9890ab" fontSize="8" fontFamily="monospace">
+                  CRUNCHBASE FILINGS, 2024
+                </text>
+              </svg>
+            </div>
+
+            {/* Executed line */}
+            <div
+              className="p-3 rounded-md flex items-start gap-3"
+              style={{
+                backgroundColor: "rgba(242, 143, 181, 0.08)",
+                border: "1px solid rgba(242, 143, 181, 0.25)",
+              }}
             >
-              The full brief expands this into 3–5 minutes of cinematic,
-              personalized intel.
+              <span
+                className="font-mono text-[10px] flex-shrink-0 mt-0.5"
+                style={{ color: "#f28fb5", letterSpacing: "0.1em" }}
+              >
+                EXECUTED
+              </span>
+              <p className="font-sans text-sm leading-snug" style={{ color: "#e8e4f4" }}>
+                <span style={{ color: "#f28fb5" }}>{senderName}</span> rebuilt
+                onboarding end-to-end — replaced 6 manual handoffs with a self-serve
+                wizard, retained $400K in ARR.
+              </p>
+            </div>
+
+            <p className="font-sans text-xs mt-4" style={{ color: "#9890ab" }}>
+              Your full brief turns this into 5 sections of cinematic, personalized intel — with motion, citations, and a custom color scheme matched to {formData.targetCompany || "the target"}&rsquo;s industry.
             </p>
           </div>
 
