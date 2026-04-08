@@ -346,31 +346,37 @@ A static brief is a failed brief. Every brief MUST include an inline <script> at
 
 8. **Subtle parallax on the hero personalization pill.** Translate Y based on scroll position (transform: translateY(scrollY * 0.15)) until hero exits.
 
-### CSS rules to put in <style>:
+### CSS rules to put in <style> — CRITICAL SAFETY CONTRACT:
+
+**All content must be VISIBLE BY DEFAULT. Motion hides are opt-in only when JS is confirmed running.** Never put \`opacity: 0\` as a default state on content. Gate every fade class behind \`body.js-animate\`. This guarantees the brief renders fully in print, no-JS, IntersectionObserver failures, or any non-scroll context.
 
 \`\`\`css
-.lore-fade { opacity: 0; transform: translateY(40px); transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1), transform 900ms cubic-bezier(0.16, 1, 0.3, 1); }
-.lore-fade.in { opacity: 1; transform: translateY(0); }
-.lore-fade-left { opacity: 0; transform: translateX(-16px); transition: opacity 700ms ease-out, transform 700ms ease-out; }
-.lore-fade-left.in { opacity: 1; transform: translateX(0); }
-.lore-fade-right { opacity: 0; transform: translateX(16px); transition: opacity 700ms ease-out, transform 700ms ease-out; }
-.lore-fade-right.in { opacity: 1; transform: translateX(0); }
+/* Content is visible by default — motion classes only hide when JS has confirmed animate mode */
+body.js-animate .lore-fade { opacity: 0; transform: translateY(40px); transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1), transform 900ms cubic-bezier(0.16, 1, 0.3, 1); }
+body.js-animate .lore-fade.in { opacity: 1; transform: translateY(0); }
+body.js-animate .lore-fade-left { opacity: 0; transform: translateX(-16px); transition: opacity 700ms ease-out, transform 700ms ease-out; }
+body.js-animate .lore-fade-left.in { opacity: 1; transform: translateX(0); }
+body.js-animate .lore-fade-right { opacity: 0; transform: translateX(16px); transition: opacity 700ms ease-out, transform 700ms ease-out; }
+body.js-animate .lore-fade-right.in { opacity: 1; transform: translateX(0); }
 [data-typewriter] { display: inline-block; min-height: 1em; }
 .lore-cursor { display: inline-block; width: 3px; background: currentColor; animation: blink 0.8s infinite; margin-left: 2px; }
 @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .lore-fade, .lore-fade-left, .lore-fade-right { opacity: 1 !important; transform: none !important; } }
+@media (prefers-reduced-motion: reduce) { body.js-animate .lore-fade, body.js-animate .lore-fade-left, body.js-animate .lore-fade-right { opacity: 1 !important; transform: none !important; } }
+@media print { body.js-animate .lore-fade, body.js-animate .lore-fade-left, body.js-animate .lore-fade-right { opacity: 1 !important; transform: none !important; } }
 \`\`\`
 
-### The <script> at end of <body> must include:
+### The <script> at end of <body> must:
 
-- IntersectionObserver loop adding .in class to .lore-fade elements
-- Typewriter function targeting [data-typewriter] elements (run on load)
-- Count-up function targeting [data-countup] elements (run when their parent enters viewport)
-- SVG chart animation (draw bars / animate stroke-dashoffset on enter)
-- Sticky header reveal on scroll
-- Respect prefers-reduced-motion
+1. **First line of script: \`document.body.classList.add('js-animate');\`** — this is what opts content into the motion system. If this line is missing, content stays visible (safe fallback).
+2. IntersectionObserver loop adding .in class to .lore-fade elements. Wrap in \`try/catch\` — if IO throws, immediately add .in to every fade element so content reveals.
+3. Typewriter function targeting [data-typewriter] elements (run on DOMContentLoaded). If the element is missing the data attribute, leave textContent alone.
+4. Count-up function targeting [data-countup] elements (run when their parent enters viewport). If IO unavailable, write final value immediately.
+5. SVG chart animation (draw bars / animate stroke-dashoffset on enter). If IO unavailable, skip animation and leave at final state.
+6. Sticky header reveal on scroll.
+7. Respect prefers-reduced-motion: if matches, add \`.in\` to all fades on load and skip count-ups.
+8. Fallback: after 3000ms, force-add \`.in\` to any \`.lore-fade\` still without it (catches any observer misfires).
 
-If the brief HTML you generate has NO <script> block and NO motion classes, you have failed. Cinematic means it MOVES.
+If the brief HTML you generate has NO <script> block and NO motion classes, you have failed. But the inverse also fails: if the content is invisible without JS, you have also failed. Content ships visible; JS upgrades it to cinematic.
 
 ## LAYOUT
 
