@@ -93,7 +93,7 @@ const STEP_CONFIG: Record<
   { titles: string[]; total: number }
 > = {
   job_seeker: {
-    titles: ["Resume", "About You", "Target", "Context", "Preview", "Review"],
+    titles: ["Resume", "Target", "About You", "Context", "Preview", "Review"],
     total: 6,
   },
   hiring_manager: {
@@ -887,12 +887,61 @@ function JS_StepAboutYou({
   setField,
   errors,
   starDrafted,
+  onApplyStarDraft,
 }: {
   formData: FormData;
   setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
   starDrafted?: boolean;
+  onApplyStarDraft?: (draft: string) => void;
 }) {
+  /* ── STAR auto-suggest ──
+     Fires once on mount when resume + target signal exist.
+     Cached in component state so re-renders don't re-bill. */
+  const eligibleForStar =
+    !!formData.resumeText.trim() &&
+    (!!formData.targetTitle.trim() || !!formData.targetCompany.trim()) &&
+    !!onApplyStarDraft &&
+    !starDrafted &&
+    !formData.senderBackground.trim();
+
+  const [starState, setStarState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [starDraft, setStarDraft] = useState<string>("");
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (!eligibleForStar || fetchedRef.current) return;
+    fetchedRef.current = true;
+    setStarState("loading");
+    fetch("/api/extract-star", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        resumeText: formData.resumeText,
+        targetTitle: formData.targetTitle,
+        targetCompany: formData.targetCompany,
+        senderName: formData.senderName,
+      }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const j = await r.json();
+        if (j?.starDraft) {
+          setStarDraft(j.starDraft);
+          setStarState("ready");
+        } else {
+          setStarState("error");
+        }
+      })
+      .catch(() => setStarState("error"));
+  }, [
+    eligibleForStar,
+    formData.resumeText,
+    formData.targetTitle,
+    formData.targetCompany,
+    formData.senderName,
+  ]);
+
   return (
     <div>
       <h2
@@ -907,6 +956,57 @@ function JS_StepAboutYou({
       >
         Quick details so we can personalize your brief.
       </p>
+
+      {(eligibleForStar || starState === "ready" || starState === "loading") && (
+        <div
+          className="mb-8 p-4 rounded-xl border flex items-center justify-between gap-4"
+          style={{
+            borderColor: "rgba(242, 143, 181, 0.35)",
+            background:
+              "linear-gradient(90deg, rgba(242,143,181,0.06), rgba(201,169,110,0.04))",
+          }}
+        >
+          <div className="flex-1 min-w-0">
+            <div
+              className="font-mono text-[11px] uppercase mb-1"
+              style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+            >
+              ✨ {starState === "loading"
+                ? "Scanning your resume…"
+                : starState === "ready"
+                ? `2 wins from your resume that map to ${
+                    formData.targetTitle || formData.targetCompany || "this role"
+                  }`
+                : "Want us to draft this from your resume?"}
+            </div>
+            <div
+              className="font-sans text-sm font-light"
+              style={{ color: "#9890ab" }}
+            >
+              {starState === "loading"
+                ? "Picking the bullets that matter most for this target."
+                : "One click drops a STAR draft into the field below. You edit the ACTION line to add the HOW."}
+            </div>
+          </div>
+          <button
+            type="button"
+            disabled={starState !== "ready"}
+            onClick={() => onApplyStarDraft && onApplyStarDraft(starDraft)}
+            className="font-mono text-xs uppercase px-4 py-2.5 rounded-full border transition-all duration-200 whitespace-nowrap"
+            style={{
+              letterSpacing: "0.12em",
+              color: starState === "ready" ? "#fff" : "#9890ab",
+              borderColor: starState === "ready" ? "#f28fb5" : "#2a2340",
+              background: starState === "ready" ? "#f28fb5" : "transparent",
+              cursor: starState === "ready" ? "pointer" : "wait",
+              opacity: starState === "ready" ? 1 : 0.6,
+            }}
+          >
+            {starState === "ready" ? "Use as my STAR draft →" : "Drafting…"}
+          </button>
+        </div>
+      )}
+
       <TextInput
         label="Full name"
         value={formData.senderName}
@@ -2427,7 +2527,6 @@ function StepReview({
   onEmailChange,
   emailError,
   onContactToggle,
-  onApplyStarDraft,
 }: {
   userType: Exclude<UserType, null>;
   formData: FormData;
@@ -2437,54 +2536,7 @@ function StepReview({
   onEmailChange: (email: string) => void;
   emailError?: string;
   onContactToggle: (value: boolean) => void;
-  onApplyStarDraft?: (draft: string) => void;
 }) {
-  /* ── STAR auto-suggest (job_seeker only) ─────────────
-     Calls /api/extract-star once on mount when we have
-     resume + target signal. Cached in component state
-     so re-renders don't re-bill. ─────────────────────── */
-  const eligibleForStar =
-    userType === "job_seeker" &&
-    !!formData.resumeText.trim() &&
-    (!!formData.targetTitle.trim() || !!formData.targetCompany.trim()) &&
-    !!onApplyStarDraft;
-
-  const [starState, setStarState] = useState<"idle" | "loading" | "ready" | "error">("idle");
-  const [starDraft, setStarDraft] = useState<string>("");
-  const fetchedRef = useRef(false);
-
-  useEffect(() => {
-    if (!eligibleForStar || fetchedRef.current) return;
-    fetchedRef.current = true;
-    setStarState("loading");
-    fetch("/api/extract-star", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        resumeText: formData.resumeText,
-        targetTitle: formData.targetTitle,
-        targetCompany: formData.targetCompany,
-        senderName: formData.senderName,
-      }),
-    })
-      .then(async (r) => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        const j = await r.json();
-        if (j?.starDraft) {
-          setStarDraft(j.starDraft);
-          setStarState("ready");
-        } else {
-          setStarState("error");
-        }
-      })
-      .catch(() => setStarState("error"));
-  }, [
-    eligibleForStar,
-    formData.resumeText,
-    formData.targetTitle,
-    formData.targetCompany,
-    formData.senderName,
-  ]);
 
   const buildSections = () => {
     if (userType === "job_seeker") {
@@ -2671,50 +2723,6 @@ function StepReview({
         Everything look good? Edit any section before proceeding.
       </p>
 
-      {eligibleForStar && starState !== "error" && (
-        <div
-          className="mb-6 p-4 rounded-xl border flex items-center justify-between gap-4"
-          style={{
-            borderColor: "rgba(242, 143, 181, 0.35)",
-            background:
-              "linear-gradient(90deg, rgba(242,143,181,0.06), rgba(201,169,110,0.04))",
-          }}
-        >
-          <div className="flex-1 min-w-0">
-            <div
-              className="font-mono text-[11px] uppercase mb-1"
-              style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
-            >
-              ✨ {starState === "loading" ? "Scanning your resume…" : "We found 2 wins from your resume that map to this role"}
-            </div>
-            <div
-              className="font-sans text-sm font-light"
-              style={{ color: "#9890ab" }}
-            >
-              {starState === "loading"
-                ? "Picking the bullets that matter most for this target."
-                : "One click drops a STAR draft into your About You step. You edit the ACTION line to add the HOW."}
-            </div>
-          </div>
-          <button
-            type="button"
-            disabled={starState !== "ready"}
-            onClick={() => onApplyStarDraft && onApplyStarDraft(starDraft)}
-            className="font-mono text-xs uppercase px-4 py-2.5 rounded-full border transition-all duration-200 whitespace-nowrap"
-            style={{
-              letterSpacing: "0.12em",
-              color: starState === "ready" ? "#fff" : "#9890ab",
-              borderColor: starState === "ready" ? "#f28fb5" : "#2a2340",
-              background: starState === "ready" ? "#f28fb5" : "transparent",
-              cursor: starState === "ready" ? "pointer" : "wait",
-              opacity: starState === "ready" ? 1 : 0.6,
-            }}
-          >
-            {starState === "ready" ? "Use as my STAR draft →" : "Drafting…"}
-          </button>
-        </div>
-      )}
-
       <div className="space-y-6">
         {sections.map((section) => (
           <div
@@ -2891,8 +2899,8 @@ export default function IntakePage() {
   const applyStarDraft = (draft: string) => {
     setFormData((prev) => ({ ...prev, senderBackground: draft }));
     setStarDrafted(true);
-    // Jump back to About You step (step 1 for job_seeker)
-    setStep(1);
+    // About You is step 2 for job_seeker (Resume→Target→About You)
+    setStep(2);
     setTimeout(() => {
       const wrap = document.getElementById("star-field-wrapper");
       if (wrap) wrap.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -2953,15 +2961,15 @@ export default function IntakePage() {
       if (step === 0 && !formData.resumeText.trim())
         e.resumeText = "Upload or paste your resume";
       if (step === 1) {
-        if (!formData.senderName.trim()) e.senderName = "Name is required";
-        if (!formData.senderRole.trim()) e.senderRole = "Role is required";
-      }
-      if (step === 2) {
         if (!formData.targetCompany.trim())
           e.targetCompany = "Company is required";
         if (!formData.targetName.trim() && !formData.wantsContactEnrichment) {
           e.targetName = "Add a contact, or check the box below to have us find one";
         }
+      }
+      if (step === 2) {
+        if (!formData.senderName.trim()) e.senderName = "Name is required";
+        if (!formData.senderRole.trim()) e.senderRole = "Role is required";
       }
       if (step === 3) {
         if (!formData.outreachType) e.outreachType = "Select an outreach type";
@@ -3154,20 +3162,20 @@ export default function IntakePage() {
   const renderStep = () => {
     if (!userType) return null;
 
-    /* Job Seeker: Resume(0) → About(1) → Target(2) → Context(3) → Preview(4) → Review(5) */
+    /* Job Seeker: Resume(0) → Target(1) → About(2) → Context(3) → Preview(4) → Review(5) */
     if (userType === "job_seeker") {
       if (step === 0)
         return <JS_StepResume formData={formData} setField={setField} onFileRead={handleFileRead} errors={errors} />;
       if (step === 1)
-        return <JS_StepAboutYou formData={formData} setField={setField} errors={errors} starDrafted={starDrafted} />;
-      if (step === 2)
         return <JS_StepTarget formData={formData} setField={setField} errors={errors} />;
+      if (step === 2)
+        return <JS_StepAboutYou formData={formData} setField={setField} errors={errors} starDrafted={starDrafted} onApplyStarDraft={applyStarDraft} />;
       if (step === 3)
         return <JS_StepContext formData={formData} setField={setField} errors={errors} />;
       if (step === 4)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 5)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} onApplyStarDraft={applyStarDraft} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} />;
     }
 
     /* Hiring Manager: Resume(0) → About(1) → Role(2) → Preview(3) → Review(4) */
