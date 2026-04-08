@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
@@ -886,10 +886,12 @@ function JS_StepAboutYou({
   formData,
   setField,
   errors,
+  starDrafted,
 }: {
   formData: FormData;
   setField: (key: keyof FormData, val: string | boolean) => void;
   errors: Record<string, string>;
+  starDrafted?: boolean;
 }) {
   return (
     <div>
@@ -921,6 +923,20 @@ function JS_StepAboutYou({
         required
         error={errors.senderRole}
       />
+      <div id="star-field-wrapper">
+      {starDrafted && (
+        <div
+          className="mb-2 px-3 py-2 rounded-md font-mono text-[11px] uppercase tracking-wider"
+          style={{
+            background: "rgba(242, 143, 181, 0.08)",
+            border: "1px solid rgba(242, 143, 181, 0.35)",
+            color: "#f28fb5",
+            letterSpacing: "0.12em",
+          }}
+        >
+          ✨ Drafted from your resume — edit the ACTION line to add the HOW
+        </div>
+      )}
       <TextArea
         label="Your 1–2 greatest accomplishments — use STAR (Situation, Task, Action, Result) + numbers"
         value={formData.senderBackground}
@@ -934,6 +950,7 @@ ACTION — I rebuilt the flow end-to-end: replaced 6 manual handoffs with a self
 RESULT — Onboarding dropped from 14 days to 3. Churn fell from 22% to 7%. We retained $400K in ARR that would've walked.`}
         rows={11}
       />
+      </div>
 
       <TextArea
         label="Links to published work, portfolio, or projects (optional)"
@@ -2410,6 +2427,7 @@ function StepReview({
   onEmailChange,
   emailError,
   onContactToggle,
+  onApplyStarDraft,
 }: {
   userType: Exclude<UserType, null>;
   formData: FormData;
@@ -2419,7 +2437,55 @@ function StepReview({
   onEmailChange: (email: string) => void;
   emailError?: string;
   onContactToggle: (value: boolean) => void;
+  onApplyStarDraft?: (draft: string) => void;
 }) {
+  /* ── STAR auto-suggest (job_seeker only) ─────────────
+     Calls /api/extract-star once on mount when we have
+     resume + target signal. Cached in component state
+     so re-renders don't re-bill. ─────────────────────── */
+  const eligibleForStar =
+    userType === "job_seeker" &&
+    !!formData.resumeText.trim() &&
+    (!!formData.targetTitle.trim() || !!formData.targetCompany.trim()) &&
+    !!onApplyStarDraft;
+
+  const [starState, setStarState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [starDraft, setStarDraft] = useState<string>("");
+  const fetchedRef = useRef(false);
+
+  useEffect(() => {
+    if (!eligibleForStar || fetchedRef.current) return;
+    fetchedRef.current = true;
+    setStarState("loading");
+    fetch("/api/extract-star", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        resumeText: formData.resumeText,
+        targetTitle: formData.targetTitle,
+        targetCompany: formData.targetCompany,
+        senderName: formData.senderName,
+      }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const j = await r.json();
+        if (j?.starDraft) {
+          setStarDraft(j.starDraft);
+          setStarState("ready");
+        } else {
+          setStarState("error");
+        }
+      })
+      .catch(() => setStarState("error"));
+  }, [
+    eligibleForStar,
+    formData.resumeText,
+    formData.targetTitle,
+    formData.targetCompany,
+    formData.senderName,
+  ]);
+
   const buildSections = () => {
     if (userType === "job_seeker") {
       return [
@@ -2605,6 +2671,50 @@ function StepReview({
         Everything look good? Edit any section before proceeding.
       </p>
 
+      {eligibleForStar && starState !== "error" && (
+        <div
+          className="mb-6 p-4 rounded-xl border flex items-center justify-between gap-4"
+          style={{
+            borderColor: "rgba(242, 143, 181, 0.35)",
+            background:
+              "linear-gradient(90deg, rgba(242,143,181,0.06), rgba(201,169,110,0.04))",
+          }}
+        >
+          <div className="flex-1 min-w-0">
+            <div
+              className="font-mono text-[11px] uppercase mb-1"
+              style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+            >
+              ✨ {starState === "loading" ? "Scanning your resume…" : "We found 2 wins from your resume that map to this role"}
+            </div>
+            <div
+              className="font-sans text-sm font-light"
+              style={{ color: "#9890ab" }}
+            >
+              {starState === "loading"
+                ? "Picking the bullets that matter most for this target."
+                : "One click drops a STAR draft into your About You step. You edit the ACTION line to add the HOW."}
+            </div>
+          </div>
+          <button
+            type="button"
+            disabled={starState !== "ready"}
+            onClick={() => onApplyStarDraft && onApplyStarDraft(starDraft)}
+            className="font-mono text-xs uppercase px-4 py-2.5 rounded-full border transition-all duration-200 whitespace-nowrap"
+            style={{
+              letterSpacing: "0.12em",
+              color: starState === "ready" ? "#fff" : "#9890ab",
+              borderColor: starState === "ready" ? "#f28fb5" : "#2a2340",
+              background: starState === "ready" ? "#f28fb5" : "transparent",
+              cursor: starState === "ready" ? "pointer" : "wait",
+              opacity: starState === "ready" ? 1 : 0.6,
+            }}
+          >
+            {starState === "ready" ? "Use as my STAR draft →" : "Drafting…"}
+          </button>
+        </div>
+      )}
+
       <div className="space-y-6">
         {sections.map((section) => (
           <div
@@ -2776,6 +2886,20 @@ export default function IntakePage() {
   const [formData, setFormData] = useState<FormData>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedPlan, setSelectedPlan] = useState("one_off");
+  const [starDrafted, setStarDrafted] = useState(false);
+
+  const applyStarDraft = (draft: string) => {
+    setFormData((prev) => ({ ...prev, senderBackground: draft }));
+    setStarDrafted(true);
+    // Jump back to About You step (step 1 for job_seeker)
+    setStep(1);
+    setTimeout(() => {
+      const wrap = document.getElementById("star-field-wrapper");
+      if (wrap) wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+      const ta = wrap?.querySelector<HTMLTextAreaElement>("textarea");
+      if (ta) ta.focus();
+    }, 80);
+  };
 
   const config = userType ? STEP_CONFIG[userType] : null;
   const totalSteps = config?.total ?? 0;
@@ -3035,7 +3159,7 @@ export default function IntakePage() {
       if (step === 0)
         return <JS_StepResume formData={formData} setField={setField} onFileRead={handleFileRead} errors={errors} />;
       if (step === 1)
-        return <JS_StepAboutYou formData={formData} setField={setField} errors={errors} />;
+        return <JS_StepAboutYou formData={formData} setField={setField} errors={errors} starDrafted={starDrafted} />;
       if (step === 2)
         return <JS_StepTarget formData={formData} setField={setField} errors={errors} />;
       if (step === 3)
@@ -3043,7 +3167,7 @@ export default function IntakePage() {
       if (step === 4)
         return <StepPreview userType={userType} formData={formData} />;
       if (step === 5)
-        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} />;
+        return <StepReview userType={userType} formData={formData} onEdit={(s) => setStep(s)} selectedPlan={selectedPlan} onPlanChange={setSelectedPlan} onEmailChange={(v) => setField("senderEmail", v)} emailError={errors.senderEmail} onContactToggle={(v) => setField("wantsContactEnrichment", v)} onApplyStarDraft={applyStarDraft} />;
     }
 
     /* Hiring Manager: Resume(0) → About(1) → Role(2) → Preview(3) → Review(4) */
