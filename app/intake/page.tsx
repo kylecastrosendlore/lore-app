@@ -855,6 +855,12 @@ function JS_StepResume({
         linkText="Open Harvard's resume guide"
         linkUrl="https://hwpi.harvard.edu/files/ocs/files/undergrad_resumes_and_cover_letters.pdf"
       />
+      <HelperTip
+        prominent
+        text="Or pull straight from LinkedIn: open your profile → Resources (under your photo) → Save to PDF. Two clicks, full export."
+        linkText="Open LinkedIn"
+        linkUrl="https://www.linkedin.com/in/me/"
+      />
       <ProTipsBox
         title="Make your resume work harder"
         tips={[
@@ -1032,6 +1038,7 @@ function JS_StepTarget({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
+      <HelperTip text="Drop their LinkedIn URL — we run it through our research database (Apollo) to pull verified intel: title, company, headline, industry, size. We never scrape LinkedIn directly. Best-effort: works ~80% of the time." />
 
       {/* Contact fetch addon — inline at the moment of friction */}
       <button
@@ -1203,6 +1210,12 @@ function HM_StepResume({
         error={errors.resumeText}
         ownerLabel="Candidate's"
       />
+      <HelperTip
+        prominent
+        text="No resume? Pull theirs from LinkedIn: open their profile → More → Save to PDF. Two clicks."
+        linkText="Open LinkedIn"
+        linkUrl="https://www.linkedin.com"
+      />
       <ProTipsBox
         title="Get the most out of their resume"
         tips={[
@@ -1235,6 +1248,7 @@ function HM_StepResume({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
+      <HelperTip text="We run their LinkedIn through our research database (Apollo) to pull verified intel: title, company, headline, industry. We never scrape LinkedIn directly. Best-effort — works ~80% of the time." />
     </div>
   );
 }
@@ -1490,7 +1504,7 @@ function SP_StepProspect({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
-      <HelperTip text="This helps us gather intel on their background and interests." />
+      <HelperTip text="We run their LinkedIn through our research database (Apollo) to pull verified intel: title, company, headline, industry, size. We never scrape LinkedIn directly. Best-effort — works ~80% of the time." />
       <TextInput
         label="Industry (optional)"
         value={formData.prospectIndustry}
@@ -1847,7 +1861,7 @@ function IB_StepTarget({
         placeholder="https://linkedin.com/in/..."
         type="url"
       />
-      <HelperTip text="This helps us gather intel on their brand positioning and past partnerships." />
+      <HelperTip text="We run their LinkedIn through our research database (Apollo) to pull verified intel: brand, role, company size, industry, past positioning. We never scrape LinkedIn directly. Best-effort — works ~80% of the time." />
 
       <TextArea
         label="Specific angle or unique value prop? (optional)"
@@ -2905,11 +2919,18 @@ export default function IntakePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleProceedToPayment = async () => {
-    if (isSubmitting) return;
+    console.log("[LORE] Proceed to Payment clicked", { selectedPlan, email: formData.senderEmail });
+    if (isSubmitting) {
+      console.log("[LORE] Already submitting, ignoring click");
+      return;
+    }
 
     /* Validate email before proceeding */
     if (!formData.senderEmail.trim() || !formData.senderEmail.includes("@")) {
+      console.log("[LORE] Email validation failed");
       setErrors((prev) => ({ ...prev, senderEmail: "Valid email is required" }));
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      alert("Please enter a valid email in the 'Email for delivery' field above before proceeding.");
       return;
     }
 
@@ -2917,6 +2938,7 @@ export default function IntakePage() {
 
     try {
       /* Step 1: Save brief to Supabase */
+      console.log("[LORE] Saving brief to /api/briefs...");
       const briefRes = await fetch("/api/briefs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2958,14 +2980,16 @@ export default function IntakePage() {
       });
 
       const briefData = await briefRes.json();
+      console.log("[LORE] /api/briefs response", { status: briefRes.status, data: briefData });
 
       if (!briefRes.ok) {
-        alert(briefData.error || "Something went wrong saving your brief.");
+        alert(`Save failed (HTTP ${briefRes.status}): ${briefData.error || "Unknown error"}`);
         setIsSubmitting(false);
         return;
       }
 
       /* Step 2: Create Stripe Checkout session and redirect */
+      console.log("[LORE] Creating Stripe checkout session...");
       const checkoutRes = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2977,17 +3001,27 @@ export default function IntakePage() {
       });
 
       const checkoutData = await checkoutRes.json();
+      console.log("[LORE] /api/checkout response", { status: checkoutRes.status, data: checkoutData });
 
       if (!checkoutRes.ok) {
-        alert(checkoutData.error || "Failed to start checkout. Please try again.");
+        alert(`Checkout failed (HTTP ${checkoutRes.status}): ${checkoutData.error || "Unknown error"}`);
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (!checkoutData.url) {
+        alert("Checkout returned no URL. Stripe may not be configured. Please contact kyle@sendlore.com.");
         setIsSubmitting(false);
         return;
       }
 
       /* Redirect to Stripe Checkout */
+      console.log("[LORE] Redirecting to Stripe:", checkoutData.url);
       window.location.href = checkoutData.url;
-    } catch {
-      alert("Network error. Please check your connection and try again.");
+    } catch (err) {
+      console.error("[LORE] Proceed to Payment error:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      alert(`Network/JS error: ${msg}\n\nOpen DevTools → Console for full details.`);
       setIsSubmitting(false);
     }
   };
@@ -3166,6 +3200,7 @@ export default function IntakePage() {
             </button>
           ) : (
             <motion.button
+              type="button"
               onClick={handleProceedToPayment}
               disabled={isSubmitting}
               className="font-mono text-sm uppercase px-8 py-3 rounded-full font-bold transition-all duration-200"
