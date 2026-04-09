@@ -652,3 +652,320 @@ export async function generateBrief(input: BriefInput): Promise<BriefOutput> {
     emailBody: parsed.emailBody,
   };
 }
+
+/* ═══════════════════════════════════════════
+   PHASE 3 — JSON Brief Generation (Shell)
+   Returns a BriefContent object that the
+   React Brief Shell renders. Claude fills
+   content slots only; no HTML/CSS/motion.
+   ═══════════════════════════════════════════ */
+
+import type { BriefContent, AccentKey } from "./brief-content";
+
+export interface BriefJsonOutput {
+  content: BriefContent;
+}
+
+/* JSON schema for the emit_brief tool. Mirrors lib/brief-content.ts.
+   Kept strict so Claude cannot invent layout or styling. */
+const BRIEF_TOOL_SCHEMA = {
+  type: "object" as const,
+  required: ["version", "accent", "meta", "hero", "mirror", "gap", "fit", "playbook", "close", "email"],
+  properties: {
+    version: { type: "number", enum: [1] },
+    accent: { type: "string", enum: ["blue", "rose", "gold", "emerald", "violet"] },
+    meta: {
+      type: "object",
+      required: ["docTitle", "senderEmail"],
+      properties: {
+        docTitle: { type: "string" },
+        senderEmail: { type: "string" },
+        senderPhone: { type: "string" },
+        senderLinkedIn: { type: "string" },
+      },
+    },
+    hero: {
+      type: "object",
+      required: ["headerPill", "headlineBold", "headlineItalic", "subhead", "byline"],
+      properties: {
+        headerPill: { type: "string", description: "Short all-caps pill, e.g. 'A CANDIDACY BRIEF — PREPARED FOR EMILY HAAHR, CCO · PLAID'" },
+        headlineBold: { type: "string", description: "First half of the hero headline. White serif. Together with italic half, max 22 words." },
+        headlineItalic: { type: "string", description: "Italic accent half of the hero headline." },
+        subhead: { type: "string", description: "One short paragraph. Max 55 words." },
+        byline: { type: "string", description: "'NAME · ROLE · CITY, ST'" },
+      },
+    },
+    mirror: {
+      type: "object",
+      required: ["eyebrow", "headlineBold", "headlineItalic", "intro"],
+      properties: {
+        eyebrow: { type: "string", description: "'01 — THE MIRROR'" },
+        headlineBold: { type: "string" },
+        headlineItalic: { type: "string" },
+        intro: { type: "string", description: "Max 45 words." },
+        cards: {
+          type: "array",
+          description: "3-4 stat cards OR omit and use bigStat.",
+          items: {
+            type: "object",
+            required: ["eyebrow", "value", "valueLabel", "body", "citation"],
+            properties: {
+              eyebrow: { type: "string" },
+              value: { type: "string" },
+              valueLabel: { type: "string" },
+              body: { type: "string" },
+              citation: { type: "string" },
+            },
+          },
+        },
+        bigStat: {
+          type: "object",
+          required: ["value", "label", "caption"],
+          properties: {
+            value: { type: "string" },
+            label: { type: "string" },
+            caption: { type: "string" },
+          },
+        },
+        pullQuote: {
+          type: "object",
+          required: ["text"],
+          properties: {
+            text: { type: "string", description: "1-3 sentences, max 60 words. Use {{i}}...{{/i}} for italic accent spans." },
+            attribution: { type: "string" },
+          },
+        },
+      },
+    },
+    gap: {
+      type: "object",
+      required: ["eyebrow", "headlineBold", "headlineItalic", "intro", "cards", "chart"],
+      properties: {
+        eyebrow: { type: "string" },
+        headlineBold: { type: "string" },
+        headlineItalic: { type: "string" },
+        intro: { type: "string" },
+        cards: {
+          type: "array",
+          minItems: 3,
+          maxItems: 3,
+          items: {
+            type: "object",
+            required: ["eyebrow", "value", "valueLabel", "body", "citation"],
+            properties: {
+              eyebrow: { type: "string" },
+              value: { type: "string" },
+              valueLabel: { type: "string" },
+              body: { type: "string" },
+              citation: { type: "string" },
+            },
+          },
+        },
+        chart: {
+          type: "object",
+          required: ["type"],
+          description: "Exactly one chart. type=bar|donut|line.",
+          properties: {
+            type: { type: "string", enum: ["bar", "donut", "line"] },
+            xLabel: { type: "string" },
+            yLabel: { type: "string" },
+            bars: {
+              type: "array",
+              items: {
+                type: "object",
+                required: ["label", "value"],
+                properties: { label: { type: "string" }, value: { type: "number" } },
+              },
+            },
+            slices: {
+              type: "array",
+              items: {
+                type: "object",
+                required: ["label", "value"],
+                properties: { label: { type: "string" }, value: { type: "number" } },
+              },
+            },
+            xLabels: { type: "array", items: { type: "string" } },
+            yValues: { type: "array", items: { type: "number" } },
+            citation: { type: "string" },
+          },
+        },
+      },
+    },
+    fit: {
+      type: "object",
+      required: ["eyebrow", "headlineBold", "headlineItalic", "intro", "leftColumnTitle", "rightColumnTitle", "leftBullets", "rightBullets"],
+      properties: {
+        eyebrow: { type: "string" },
+        headlineBold: { type: "string" },
+        headlineItalic: { type: "string" },
+        intro: { type: "string" },
+        leftColumnTitle: { type: "string" },
+        rightColumnTitle: { type: "string" },
+        leftBullets: {
+          type: "array",
+          minItems: 3,
+          maxItems: 5,
+          items: {
+            type: "object",
+            required: ["lead", "rest"],
+            properties: { lead: { type: "string" }, rest: { type: "string" } },
+          },
+        },
+        rightBullets: {
+          type: "array",
+          minItems: 3,
+          maxItems: 5,
+          items: {
+            type: "object",
+            required: ["lead", "rest"],
+            properties: { lead: { type: "string" }, rest: { type: "string" } },
+          },
+        },
+      },
+    },
+    playbook: {
+      type: "object",
+      required: ["eyebrow", "headlineBold", "headlineItalic", "intro", "actions"],
+      properties: {
+        eyebrow: { type: "string" },
+        headlineBold: { type: "string" },
+        headlineItalic: { type: "string" },
+        intro: { type: "string" },
+        actions: {
+          type: "array",
+          minItems: 3,
+          maxItems: 3,
+          items: {
+            type: "object",
+            required: ["headline", "body", "receipt"],
+            properties: {
+              headline: { type: "string", description: "Use {{i}}...{{/i}} to mark italic accent spans." },
+              body: { type: "string" },
+              receipt: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    close: {
+      type: "object",
+      required: ["eyebrow", "headlineBold", "headlineItalic", "body", "ctaText", "ctaSubtext"],
+      properties: {
+        eyebrow: { type: "string" },
+        headlineBold: { type: "string" },
+        headlineItalic: { type: "string" },
+        body: { type: "string" },
+        ctaText: { type: "string" },
+        ctaSubtext: { type: "string" },
+      },
+    },
+    email: {
+      type: "object",
+      required: ["subject", "body"],
+      properties: {
+        subject: { type: "string" },
+        body: { type: "string", description: "Plain text. Line breaks preserved. No HTML." },
+      },
+    },
+  },
+};
+
+function buildJsonSystemPrompt(): string {
+  return `You are LORE's brief author. You generate structured intelligence briefs as JSON via the emit_brief tool.
+
+WHAT YOU ARE BUILDING
+A cinematic, research-backed outreach brief. Think of it as a one-page argument: "Here is what you've built (Mirror) → here is the cost of the gap (Gap) → here is why I fit (Fit) → here is exactly what I'll do (Playbook) → reply." Structure modeled on top-performing candidacy briefs.
+
+HARD RULES
+1. Respond ONLY by calling the emit_brief tool. No prose. No HTML. No markdown.
+2. You fill CONTENT slots only. The React shell owns all layout, color, motion, typography. Do not embed HTML tags, CSS, SVG, or style hints in any field.
+3. Word counts in the schema descriptions are MAX caps — stay under them. Shorter is better.
+4. Every StatCard.citation must be a real, credible source (firm + year). If you cannot credibly cite, use broadly-accepted industry sources (Gartner, McKinsey, BLS, Forrester, HBR, Pew, LinkedIn Economic Graph, etc.). Never fabricate studies you can't identify. If truly unknown, leave citation as "".
+5. In playbook.actions[].headline and pullQuote.text, wrap emphasis spans as {{i}}like this{{/i}}. The shell renders them in the accent color as italic serif.
+6. Hero headline: bold + italic halves combine into ONE sentence. Max 22 words combined.
+7. Mirror: choose ONE visual mode. Either 3-4 cards OR a single bigStat. Not both.
+8. Gap: ALWAYS exactly 3 stat cards AND exactly 1 chart.
+9. Fit: leftBullets and rightBullets must have the SAME count in parallel order (what they need → what I've built).
+10. Playbook: ALWAYS exactly 3 actions.
+11. Accent selection:
+    - job_seeker → "blue"
+    - hiring_manager → "emerald"
+    - salesperson → "gold"
+    - influencer_brand → "rose"
+    - anything else → "violet"
+12. meta.senderEmail is REQUIRED and must match the sender's actual email from the input.
+13. email.subject + email.body are owner-only. Write them as the SENDER would email the RECIPIENT directly — short, warm, no brief excerpts. The brief link replaces the pitch.
+
+VOICE
+Declarative. Confident. Specific. No corporate hedging. No "I believe" or "I think." Name things. Cite things. The reader should feel like a research analyst handed them a dossier.
+
+Now call emit_brief with the complete brief.`;
+}
+
+export async function generateBriefJson(input: BriefInput): Promise<BriefJsonOutput> {
+  const client = getClient();
+
+  const accentDefault: AccentKey =
+    input.userType === "job_seeker" ? "blue" :
+    input.userType === "hiring_manager" ? "emerald" :
+    input.userType === "salesperson" ? "gold" :
+    input.userType === "influencer_brand" ? "rose" : "violet";
+
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-5",
+    max_tokens: 16000,
+    system: buildJsonSystemPrompt(),
+    tools: [
+      {
+        name: "emit_brief",
+        description: "Emit the final BriefContent JSON for the LORE shell to render.",
+        input_schema: BRIEF_TOOL_SCHEMA,
+      },
+    ],
+    tool_choice: { type: "tool", name: "emit_brief" },
+    messages: [
+      {
+        role: "user",
+        content: buildUserPrompt(input) + `\n\nDefault accent for this user type: "${accentDefault}". Sender email to use in meta.senderEmail: ${input.senderEmail || "(missing — use empty string)"}`,
+      },
+    ],
+  });
+
+  const toolUse = response.content.find((b) => b.type === "tool_use");
+  if (!toolUse || toolUse.type !== "tool_use" || toolUse.name !== "emit_brief") {
+    throw new Error("AI did not call emit_brief tool");
+  }
+
+  const content = toolUse.input as BriefContent;
+
+  /* Minimal structural validation — throw loud if required sections missing */
+  if (
+    !content ||
+    content.version !== 1 ||
+    !content.accent ||
+    !content.hero?.headlineBold ||
+    !content.mirror?.eyebrow ||
+    !content.gap?.cards ||
+    content.gap.cards.length !== 3 ||
+    !content.gap.chart ||
+    !content.fit?.leftBullets?.length ||
+    !content.playbook?.actions ||
+    content.playbook.actions.length !== 3 ||
+    !content.close?.ctaText ||
+    !content.email?.subject
+  ) {
+    console.error("Invalid BriefContent shape from AI:", JSON.stringify(content).slice(0, 800));
+    throw new Error("AI returned an incomplete BriefContent");
+  }
+
+  /* Ensure meta.senderEmail always set to the real sender, even if model forgot */
+  if (!content.meta) {
+    (content as BriefContent).meta = { docTitle: "A Brief", senderEmail: input.senderEmail || "" };
+  }
+  if (!content.meta.senderEmail && input.senderEmail) {
+    content.meta.senderEmail = input.senderEmail;
+  }
+
+  return { content };
+}
