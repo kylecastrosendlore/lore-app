@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { generateBrief } from "@/lib/ai";
+import { generateBrief, generateBriefJson } from "@/lib/ai";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 /* Allow up to 300s — sonnet-4-5 generating 16K tokens of HTML can take 90-180s */
@@ -91,8 +91,8 @@ export async function POST(request: Request) {
       }
     }
 
-    /* ── Generate the brief with AI ── */
-    const result = await generateBrief({
+    /* ── Shared input payload for both generation paths ── */
+    const aiInput = {
       userType: brief.user_type,
       senderName: brief.sender_name,
       senderEmail: brief.sender_email || undefined,
@@ -123,15 +123,39 @@ export async function POST(request: Request) {
       jobPostingText: brief.job_posting_text || undefined,
       publishedWorkLinks: brief.published_work_links || undefined,
       enrichmentData,
-    });
+    };
 
-    /* ── Save generated output ── */
+    /* ── Dual-write: JSON brief (shell) is primary.
+       Legacy HTML brief is a fallback if the JSON path fails,
+       so we never ship a dead link. ── */
+    let brief_json: unknown = null;
+    let brief_html: string | null = null;
+    let email_subject = "";
+    let email_body = "";
+
+    try {
+      const jsonResult = await generateBriefJson(aiInput);
+      brief_json = jsonResult.content;
+      email_subject = jsonResult.content.email.subject;
+      email_body = jsonResult.content.email.body;
+      console.log(`✅ Brief ${briefId} generated via JSON shell path`);
+    } catch (jsonErr) {
+      const msg = jsonErr instanceof Error ? jsonErr.message : String(jsonErr);
+      console.warn(`⚠️  JSON brief path failed for ${briefId}, falling back to legacy HTML: ${msg}`);
+      const legacy = await generateBrief(aiInput);
+      brief_html = legacy.briefHtml;
+      email_subject = legacy.emailSubject;
+      email_body = legacy.emailBody;
+    }
+
+    /* ── Save generated output (dual-write columns) ── */
     const { error: updateError } = await supabase
       .from("briefs")
       .update({
-        brief_html: result.briefHtml,
-        email_subject: result.emailSubject,
-        email_body: result.emailBody,
+        brief_json,
+        brief_html,
+        email_subject,
+        email_body,
         brief_status: "ready",
       })
       .eq("id", briefId);
@@ -148,13 +172,13 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(`✅ Brief ${briefId} generated successfully`);
+    console.log(`✅ Brief ${briefId} saved (json=${brief_json ? "yes" : "no"}, html=${brief_html ? "yes" : "no"})`);
 
     return NextResponse.json(
       {
         success: true,
         briefId,
-        emailSubject: result.emailSubject,
+        emailSubject: email_subject,
       },
       { status: 200 }
     );

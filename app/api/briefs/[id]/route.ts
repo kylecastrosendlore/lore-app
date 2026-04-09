@@ -30,21 +30,12 @@ export async function GET(
     const { data: brief, error } = await supabase
       .from("briefs")
       .select(
-        "id, access_token, brief_status, brief_html, email_subject, email_body, target_name, sender_name, user_type, payment_status, contact_id_status"
+        "id, access_token, brief_status, brief_html, brief_json, email_subject, email_body, target_name, sender_name, user_type, payment_status, contact_id_status"
       )
       .eq("id", id)
       .single();
 
     if (error || !brief) {
-      return NextResponse.json(
-        { error: "Brief not found" },
-        { status: 404 }
-      );
-    }
-
-    /* If the brief has an access token, require it. (Legacy rows without
-       one fall through for backward compat until backfill runs.) */
-    if (brief.access_token && brief.access_token !== token) {
       return NextResponse.json(
         { error: "Brief not found" },
         { status: 404 }
@@ -58,15 +49,24 @@ export async function GET(
       );
     }
 
+    /* Token model (post-cutover):
+       - Valid access_token → owner view. Shows email copy + share controls.
+       - No token or wrong token → public recipient view. Brief still renders; owner-only copy hidden.
+       Legacy rows without an access_token default to owner semantics. */
+    const isOwner = !brief.access_token || brief.access_token === token;
+
     return NextResponse.json({
       id: brief.id,
       status: brief.brief_status,
       targetName: brief.target_name,
       senderName: brief.sender_name,
       userType: brief.user_type,
+      isOwner,
       briefHtml: brief.brief_status === "ready" ? brief.brief_html : null,
-      emailSubject: brief.brief_status === "ready" ? brief.email_subject : null,
-      emailBody: brief.brief_status === "ready" ? brief.email_body : null,
+      briefJson: brief.brief_status === "ready" ? brief.brief_json : null,
+      /* Owner-only fields — never leak email copy to recipients. */
+      emailSubject: brief.brief_status === "ready" && isOwner ? brief.email_subject : null,
+      emailBody: brief.brief_status === "ready" && isOwner ? brief.email_body : null,
       contactIdStatus: brief.contact_id_status,
     });
   } catch (err) {

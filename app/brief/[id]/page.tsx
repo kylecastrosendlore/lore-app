@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import BriefShell from "@/components/BriefShell";
+import type { BriefContent } from "@/lib/brief-content";
 
 /* ───────────────────────────────────────────
    /brief/[id]
@@ -16,7 +18,9 @@ interface BriefData {
   targetName: string;
   senderName: string;
   userType: string;
+  isOwner: boolean;
   briefHtml: string | null;
+  briefJson: BriefContent | null;
   emailSubject: string | null;
   emailBody: string | null;
   contactIdStatus: string | null;
@@ -198,51 +202,236 @@ export default function BriefViewer() {
     );
   }
 
-  /* ── Brief ready — show it! ── */
+  /* ── Brief ready ── */
+  const isOwner = brief.isOwner;
+
+  /* Build the PUBLIC recipient URL (strip the ?t= token). */
+  const publicShareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}${window.location.pathname}`
+      : "";
+
+  /* ── JSON shell path (preferred when brief_json exists) ── */
+  if (brief.briefJson) {
+    return (
+      <div style={{ backgroundColor: "#0a0814" }} className="min-h-screen">
+        {/* Owner-only top bar: share controls + email jump */}
+        {isOwner && (
+          <div
+            className="sticky top-0 z-50 px-6 py-3 flex items-center justify-between"
+            style={{
+              backgroundColor: "rgba(10, 8, 20, 0.92)",
+              backdropFilter: "blur(12px)",
+              borderBottom: "1px solid rgba(42, 35, 64, 0.5)",
+            }}
+          >
+            <a href="/" className="flex items-center gap-2">
+              <span className="font-serif text-lg font-light" style={{ color: "#e8e4f4" }}>
+                L<span style={{ color: "#f28fb5" }}>O</span>R<span style={{ color: "#c9a96e" }}>E</span>
+              </span>
+            </a>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => copyToClipboard(publicShareUrl, "link")}
+                className="font-mono text-xs uppercase px-4 py-2 rounded-full border transition-all duration-200"
+                style={{
+                  letterSpacing: "0.1em",
+                  color: "#0d0b17",
+                  backgroundColor: copied === "link" ? "#c9a96e" : "#f28fb5",
+                  borderColor: "transparent",
+                }}
+              >
+                {copied === "link" ? "Link copied!" : "Copy shareable link"}
+              </button>
+              {brief.emailSubject && (
+                <button
+                  onClick={() => {
+                    setShowEmail(true);
+                    setTimeout(() => {
+                      document.getElementById("email-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 50);
+                  }}
+                  className="font-mono text-xs uppercase px-4 py-2 rounded-full border transition-all duration-200 hover:border-[#c9a96e] hover:text-[#c9a96e]"
+                  style={{ letterSpacing: "0.1em", color: "#9890ab", borderColor: "#2a2340" }}
+                >
+                  Subject Line + Email ↓
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* The brief itself — rendered by the React shell. Always visible. */}
+        <BriefShell content={brief.briefJson} isOwner={false} />
+
+        {/* Owner-only: email copy panel + shareable link block */}
+        {isOwner && brief.emailSubject && brief.emailBody && (
+          <div
+            id="email-panel"
+            className="px-6 py-16"
+            style={{ borderTop: "1px solid #2a2340", backgroundColor: "rgba(20, 14, 38, 0.4)" }}
+          >
+            <div className="max-w-3xl mx-auto">
+              {!showEmail ? (
+                <div className="text-center">
+                  <span
+                    className="font-mono text-xs uppercase block mb-4"
+                    style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+                  >
+                    Need words too?
+                  </span>
+                  <h2
+                    className="font-serif text-3xl md:text-4xl font-light mb-6"
+                    style={{ color: "#e8e4f4" }}
+                  >
+                    Reveal the <span style={{ color: "#f28fb5", fontStyle: "italic" }}>subject line and email.</span>
+                  </h2>
+                  <button
+                    onClick={() => setShowEmail(true)}
+                    className="font-mono text-xs uppercase px-6 py-3 rounded-full transition-all duration-200"
+                    style={{ letterSpacing: "0.1em", color: "#0d0b17", backgroundColor: "#f28fb5" }}
+                  >
+                    Show Subject Line + Email
+                  </button>
+                </div>
+              ) : (
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                  <div className="text-center mb-10">
+                    <span className="font-mono text-xs uppercase block mb-3" style={{ letterSpacing: "0.15em", color: "#c9a96e" }}>
+                      Your outreach copy
+                    </span>
+                    <h2 className="font-serif text-3xl md:text-4xl font-light" style={{ color: "#e8e4f4" }}>
+                      Subject line + <span style={{ color: "#f28fb5", fontStyle: "italic" }}>email body.</span>
+                    </h2>
+                  </div>
+                  <div className="mb-8">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-xs uppercase" style={{ letterSpacing: "0.15em", color: "#c9a96e" }}>Subject Line</span>
+                      <button
+                        onClick={() => copyToClipboard(brief.emailSubject!, "subject")}
+                        className="font-mono text-xs uppercase px-3 py-1 rounded-full border transition-all hover:border-[#c9a96e]"
+                        style={{ color: copied === "subject" ? "#c9a96e" : "#9890ab", borderColor: "#2a2340" }}
+                      >
+                        {copied === "subject" ? "Copied!" : "Copy"}
+                      </button>
+                    </div>
+                    <p className="font-sans text-lg" style={{ color: "#e8e4f4" }}>{brief.emailSubject}</p>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-xs uppercase" style={{ letterSpacing: "0.15em", color: "#c9a96e" }}>Email Body</span>
+                      <button
+                        onClick={() => copyToClipboard(brief.emailBody!, "body")}
+                        className="font-mono text-xs uppercase px-3 py-1 rounded-full border transition-all hover:border-[#c9a96e]"
+                        style={{ color: copied === "body" ? "#c9a96e" : "#9890ab", borderColor: "#2a2340" }}
+                      >
+                        {copied === "body" ? "Copied!" : "Copy"}
+                      </button>
+                    </div>
+                    <div className="font-sans text-base whitespace-pre-wrap leading-relaxed" style={{ color: "#d2cfe0" }}>
+                      {brief.emailBody}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Owner-only: shareable link block */}
+        {isOwner && (
+          <div className="py-16 px-6 text-center" style={{ borderTop: "1px solid #2a2340" }}>
+            <span className="font-mono text-xs uppercase block mb-4" style={{ letterSpacing: "0.15em", color: "#c9a96e" }}>
+              Your shareable brief link
+            </span>
+            <h2 className="font-serif text-3xl md:text-4xl font-light mb-3" style={{ color: "#e8e4f4" }}>
+              Paste this in your email <span style={{ color: "#f28fb5", fontStyle: "italic" }}>and send it.</span>
+            </h2>
+            <p className="font-sans text-base mb-8 max-w-xl mx-auto" style={{ color: "#9890ab" }}>
+              Anyone with this link can view the brief. Your email copy and controls stay private — only visible to you via the full link in your inbox.
+            </p>
+            <div
+              className="max-w-2xl mx-auto p-4 rounded-xl border flex items-center justify-between gap-3 mb-4"
+              style={{ borderColor: "#2a2340", backgroundColor: "rgba(30, 21, 53, 0.4)" }}
+            >
+              <code className="font-mono text-xs md:text-sm truncate text-left flex-1" style={{ color: "#d2cfe0" }}>
+                {publicShareUrl}
+              </code>
+              <button
+                onClick={() => copyToClipboard(publicShareUrl, "link-bottom")}
+                className="font-mono text-xs uppercase px-4 py-2 rounded-full transition-all duration-200 whitespace-nowrap"
+                style={{
+                  letterSpacing: "0.1em",
+                  color: "#0d0b17",
+                  backgroundColor: copied === "link-bottom" ? "#c9a96e" : "#f28fb5",
+                }}
+              >
+                {copied === "link-bottom" ? "Copied!" : "Copy link"}
+              </button>
+            </div>
+            <p className="font-mono text-xs uppercase mt-8" style={{ letterSpacing: "0.15em", color: "#9890ab" }}>
+              Crafted by LORE &mdash; Intelligence Briefs
+            </p>
+            <a
+              href="/"
+              className="inline-block mt-3 font-mono text-xs uppercase transition-colors hover:text-[#f28fb5]"
+              style={{ letterSpacing: "0.15em", color: "#c9a96e" }}
+            >
+              Build another brief &rarr;
+            </a>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ── Legacy HTML path (briefs generated before shell cut-over) ── */
   return (
     <div style={{ backgroundColor: "#0d0b17" }} className="min-h-screen">
-      {/* Top bar */}
-      <div
-        className="sticky top-0 z-50 px-6 py-3 flex items-center justify-between"
-        style={{
-          backgroundColor: "rgba(13, 11, 23, 0.92)",
-          backdropFilter: "blur(12px)",
-          borderBottom: "1px solid rgba(42, 35, 64, 0.5)",
-        }}
-      >
-        <a href="/" className="flex items-center gap-2">
-          <span className="font-serif text-lg font-light" style={{ color: "#e8e4f4" }}>
-            L<span style={{ color: "#f28fb5" }}>O</span>R<span style={{ color: "#c9a96e" }}>E</span>
-          </span>
-        </a>
+      {/* Top bar — owner-only */}
+      {isOwner && (
+        <div
+          className="sticky top-0 z-50 px-6 py-3 flex items-center justify-between"
+          style={{
+            backgroundColor: "rgba(13, 11, 23, 0.92)",
+            backdropFilter: "blur(12px)",
+            borderBottom: "1px solid rgba(42, 35, 64, 0.5)",
+          }}
+        >
+          <a href="/" className="flex items-center gap-2">
+            <span className="font-serif text-lg font-light" style={{ color: "#e8e4f4" }}>
+              L<span style={{ color: "#f28fb5" }}>O</span>R<span style={{ color: "#c9a96e" }}>E</span>
+            </span>
+          </a>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => copyToClipboard(typeof window !== "undefined" ? window.location.href : "", "link")}
-            className="font-mono text-xs uppercase px-4 py-2 rounded-full border transition-all duration-200"
-            style={{
-              letterSpacing: "0.1em",
-              color: copied === "link" ? "#0d0b17" : "#0d0b17",
-              backgroundColor: copied === "link" ? "#c9a96e" : "#f28fb5",
-              borderColor: "transparent",
-            }}
-          >
-            {copied === "link" ? "Link copied!" : "Copy shareable link"}
-          </button>
-          <button
-            onClick={() => {
-              setShowEmail(true);
-              setTimeout(() => {
-                document.getElementById("email-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }, 50);
-            }}
-            className="font-mono text-xs uppercase px-4 py-2 rounded-full border transition-all duration-200 hover:border-[#c9a96e] hover:text-[#c9a96e]"
-            style={{ letterSpacing: "0.1em", color: "#9890ab", borderColor: "#2a2340" }}
-          >
-            Subject Line + Email ↓
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => copyToClipboard(publicShareUrl, "link")}
+              className="font-mono text-xs uppercase px-4 py-2 rounded-full border transition-all duration-200"
+              style={{
+                letterSpacing: "0.1em",
+                color: copied === "link" ? "#0d0b17" : "#0d0b17",
+                backgroundColor: copied === "link" ? "#c9a96e" : "#f28fb5",
+                borderColor: "transparent",
+              }}
+            >
+              {copied === "link" ? "Link copied!" : "Copy shareable link"}
+            </button>
+            <button
+              onClick={() => {
+                setShowEmail(true);
+                setTimeout(() => {
+                  document.getElementById("email-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 50);
+              }}
+              className="font-mono text-xs uppercase px-4 py-2 rounded-full border transition-all duration-200 hover:border-[#c9a96e] hover:text-[#c9a96e]"
+              style={{ letterSpacing: "0.1em", color: "#9890ab", borderColor: "#2a2340" }}
+            >
+              Subject Line + Email ↓
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* The actual brief HTML — sandboxed (no allow-same-origin, no top-nav)
           so AI-generated content can't touch parent cookies, storage, or DOM.
@@ -278,8 +467,8 @@ export default function BriefViewer() {
         </div>
       )}
 
-      {/* Email copy panel — sits below the brief, revealed by top-bar button */}
-      {brief.emailSubject && brief.emailBody && (
+      {/* Email copy panel — owner-only, sits below the brief */}
+      {isOwner && brief.emailSubject && brief.emailBody && (
         <div
           id="email-panel"
           className="px-6 py-16"
@@ -383,7 +572,8 @@ export default function BriefViewer() {
         </div>
       )}
 
-      {/* Big Copy Link block — paste this URL into your email */}
+      {/* Big Copy Link block — owner-only */}
+      {isOwner && (
       <div
         className="py-16 px-6 text-center"
         style={{ borderTop: "1px solid #2a2340" }}
@@ -444,6 +634,7 @@ export default function BriefViewer() {
           Build another brief &rarr;
         </a>
       </div>
+      )}
     </div>
   );
 }
